@@ -19,9 +19,13 @@
   },
   "homepage": "https://github.com/KuronekoServer/newer-kuronekobot#readme",
   "dependencies": {
+    "@vitalets/google-translate-api": "^9.1.0",
     "chalk": "^4.1.2",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "iso-639-1": "^2.1.15",
+    "node-fetch": "^2.6.1",
+    "sourcebin_js": "^0.0.3-ignore"
   }
 }
