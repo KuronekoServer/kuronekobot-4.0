@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, codeBlock } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,7 +8,10 @@ module.exports = {
         const msg = await interaction.reply({ content: 'レイテンシーを計測中です...', fetchReply: true });
         const embed = new EmbedBuilder()
             .setTitle('現在のBOTのPing値')
-            .setDescription(`計測結果:\n📡BOT応答時間:${msg.createdTimestamp - interaction.createdTimestamp}ws\n📡API応答時間:${interaction.client.ws.ping}ws`);
+            .addFields(
+                { name: '📡BOT応答時間', value: `${codeBlock(`${msg.createdTimestamp - interaction.createdTimestamp}ms`)}`, inline: true },
+                { name: '📡API応答時間', value: `${codeBlock(`${interaction.client.ws.ping}ms`)}` }
+            )
 
         await interaction.editReply({
             content: '計測終了しました。',
