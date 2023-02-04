@@ -6,6 +6,10 @@ const { COLORS } = require("../data.json");
 const { readdirSync, lstatSync } = require("fs");
 const { join, extname } = require("path");
 const permissions = require("./permissions");
+const mariadb = require('mariadb');
+const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.db_user, connectionLimit: process.env.db_limit, password: process.env.db_password, port: process.env.db_port });
+let conn;
+(async () => conn = await pool.getConnection())();
 
 module.exports = class Utils {
   /**
@@ -137,4 +141,14 @@ module.exports = class Utils {
     readCommands(dir);
     return filePaths;
   }
+
+  /**
+ * use mariasql command
+ * @param {any} command
+ * @return outputdata
+ */
+  static async sql(command) {
+    const data = await conn.query(command);
+    return data;
+  };
 };

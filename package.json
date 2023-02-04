@@ -25,6 +25,7 @@
     "dotenv": "^16.0.3",
     "fs": "^0.0.1-security",
     "iso-639-1": "^2.1.15",
+    "mariadb": "^3.0.2",
     "node-fetch": "^2.6.1",
     "sourcebin_js": "^0.0.3-ignore"
   }
