@@ -7,7 +7,7 @@ const { readdirSync, lstatSync } = require("fs");
 const { join, extname } = require("path");
 const permissions = require("./permissions");
 const mariadb = require('mariadb');
-const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.db_user, connectionLimit: process.env.db_limit, password: process.env.db_password, port: process.env.db_port });
+const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.db_user, connectionLimit: process.env.db_limit, password: process.env.db_password, port: process.env.db_port, database: db_name });
 let conn;
 (async () => conn = await pool.getConnection())();
 
