@@ -143,8 +143,10 @@ module.exports = class Utils {
   }
 
   /**
- * use mariasql command
- * @param {any} command
+ * use sql command
+ * @param {any} command 
+ *  example: create table table_name (id int, name varchar(10), address varchar(10));
+ *  detail: https://www.javadrive.jp/mysql/
  * @return outputdata
  */
   static async sql(command) {
