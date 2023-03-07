@@ -2,6 +2,7 @@ const {
   GuildChannel,
   SlashCommandBuilder,
   EmbedBuilder,
+  Colors,
 } = require("discord.js");
 
 const { getJson } = require("../../helpers/HttpUtils");
@@ -40,7 +41,7 @@ module.exports = {
             value: `[Wikipedia](${json.content_urls.desktop.page})で続きを読む`
           },
         )
-        .setColor(RANDOM)
+        .setColor(Colors.Green)
         .setFooter({ text: `${interaction.user.tag}` });
       await interaction.reply({ embeds: [embed] });
     } else {
