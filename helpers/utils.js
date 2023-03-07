@@ -6,7 +6,7 @@ const { COLORS } = require("../data.json");
 const { readdirSync, lstatSync } = require("fs");
 const { join, extname } = require("path");
 const permissions = require("./permissions");
-
+const tmp = new Set();
 module.exports = class Utils {
   /**
    * Checks if a string contains a URL
@@ -137,4 +137,16 @@ module.exports = class Utils {
     readCommands(dir);
     return filePaths;
   }
+
+  /**
+   * ticket timer
+   * @param { [action: interaction.channel, type: String("delete","cancel")] }
+   */
+  static ticket_timer(channel) {
+    if (channel.type === "delete") setTimeout(() => {
+      if (tmp.has(channel.action.id)) return tmp.delete(channel.action.id);
+      channel.action.delete().catch(() => { });
+    }, 5 * 1000);
+    if (channel.type === "cancel") tmp.add(channel.action.id);
+  };
 };
