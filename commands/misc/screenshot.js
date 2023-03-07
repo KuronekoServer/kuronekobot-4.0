@@ -20,7 +20,6 @@ module.exports = {
 
         const url = options.getString("url");
 
-        const ScreenShotEmbed = new EmbedBuilder();
         const ERROREmbed = new EmbedBuilder()
             .setTitle("⚠️エラー")
             .setDescription("URL先のページが見つかりませんでした。")
