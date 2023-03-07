@@ -1,17 +1,10 @@
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, Colors } = require("discord.js");
 const { getJson } = require("../../../helpers/HttpUtils");
-
-module.exports = async (query, interaction) => {
-    const response = await getJson(`https://api.mcstatus.io/v2/status/java/${query}`);
-    if (!response.success) return(`Couldn't find anything for that term...`);
-
-    const json = response.data;
-    if (json.online) {
-        stat = "オンライン";
-      } else {
-        stat = "オフライン";
-      }
-    const embed = new EmbedBuilder()
+module.exports = async (query) => {
+  const response = await getJson(`https://api.mcstatus.io/v2/status/java/${query}`);
+  if (!response?.success) return (`Couldn't find anything for that term...`);
+  const json = response.data;
+  const embed = new EmbedBuilder()
     .setThumbnail(`https://cdn.mikn.dev/mclogo.png`)
     .setAuthor({
       name: `Minecraftサーバー (Java)`,
@@ -19,7 +12,7 @@ module.exports = async (query, interaction) => {
     .addFields(
       {
         name: `ステータス`,
-        value: stat
+        value: json.online ? "オンライン" : "オフライン"
       },
       {
         name: `アドレス`,
@@ -27,11 +20,11 @@ module.exports = async (query, interaction) => {
       },
       {
         name: `ポート`,
-        value: json.port
+        value: String(json.port)
       },
     )
-    .setColor(RANDOM);
+    .setColor(Colors.Green);
 
-    return({ embeds: [embed] });
+  return ({ embeds: [embed] });
 
 };
