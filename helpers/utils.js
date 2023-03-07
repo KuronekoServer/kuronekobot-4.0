@@ -147,6 +147,6 @@ module.exports = class Utils {
       if (tmp.has(channel.action.id)) return tmp.delete(channel.action.id);
       channel.action.delete().catch(() => { });
     }, 5 * 1000);
-    if (channel.type === "cancel") tmp.add(channel.action.id);
+    if (channel.type === "cancel") return tmp.add(channel.action.id);
   };
 };

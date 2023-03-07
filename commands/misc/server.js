@@ -3,6 +3,7 @@ const { SlashCommandBuilder, EmbedBuilder, time } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('server-info')
+        .setDMPermission(false)
         .setDescription('サーバー情報を表示します'),
     async execute(interaction) {
         const embed = new EmbedBuilder()

@@ -48,12 +48,12 @@ module.exports = {
         const ticket_embed = new EmbedBuilder()
             .setTitle(options.getString("title") || "お問い合わせ")
             .setDescription(options.getString("description") || "サポートとのチケットを発行します。\n発行後、メンションしたチャンネルにて質問などをご記入ください。")
-            .setColor(Colors[options.getString("color")])
+            .setColor(Colors[options.getString("color") || "Green"])
             .setImage(options.getAttachment("image")?.attachment);
         const success_embed = new EmbedBuilder()
             .setTitle("✅成功")
-            .setDescription("チケットの作成に成功しました!")
+            .setDescription("チケットの作成に成功しました!");
         await interaction.channel.send({ embeds: [ticket_embed], components: [ticket_button] });
-        await interaction.reply({ embeds: [success_embed], ephemeral: true })
+        await interaction.reply({ embeds: [success_embed], ephemeral: true });
     },
 };
