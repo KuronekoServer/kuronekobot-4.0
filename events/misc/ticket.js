@@ -1,5 +1,5 @@
 const { Events, Colors, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
-const { ticket_timer } = require("../../helpers/utils");
+const { ticket_timer, sql } = require("../../helpers/utils");
 
 /*  
    embed
@@ -68,17 +68,22 @@ module.exports = {
                     await new_channel.send({ embeds: [wait_embed], components: [close_button] });
                     await new_channel.send({ content: `${interaction.member}` });
                     await interaction.reply({ embeds: [success_embed], ephemeral: true });
+                    const create_embed = new EmbedBuilder()
+                        .setTitle("チケットが作成されました")
+                        .setDescription(`チャンネル:${new_channel.name}\nユーザー:${interaction.user}\n日時:${new Date()}`)
+                        .setColor(Colors.Green);
+                    const getdata = await sql(`select * from ticket_channel where guildid="${interaction.guild.id}";`);
+                    if (getdata[0]?.guildid) await (await interaction.guild.channels.fetch(getdata[0].channelid)).send({ embeds: [create_embed] });
                 };
                 if (interaction.customId == "ticket_close") {
                     const channel = await interaction.channel.messages.fetch({ after: '0', limit: 1 });
                     const message = await interaction.channel.messages.fetch(channel.map(x => x.id)[0]);
                     await message.edit({ embeds: [wait_embed], components: [close_button1] });
                     await interaction.reply({ embeds: [confirmation_embed], components: [cancel_button], ephemeral: true });
-                    ticket_timer({ action: interaction.channel, type: "delete" });
-
+                    ticket_timer({ action: interaction, type: "delete" });
                 };
                 if (interaction.customId == "ticket_cancel") {
-                    ticket_timer({ action: interaction.channel, type: "cancel" });
+                    ticket_timer({ action: interaction, type: "cancel" });
                     const channel = await interaction.channel.messages.fetch({ after: '0', limit: 1 });
                     const message = await interaction.channel.messages.fetch(channel.map(x => x.id)[0]);
                     await message.edit({ embeds: [wait_embed], components: [close_button] });

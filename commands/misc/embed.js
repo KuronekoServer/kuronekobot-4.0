@@ -9,6 +9,8 @@ const {
   ButtonStyle,
   ComponentType,
   EmbedBuilder,
+  ChannelType,
+  PermissionFlagsBits
 } = require("discord.js");
 
 const { isValidColor, isHex } = require("../../helpers/utils");
@@ -217,10 +219,11 @@ module.exports = {
     .setName('embed')
     .setDescription('埋め込みメッセージを作る')
     .setDMPermission(false)
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addChannelOption(option =>
       option.setName("channel")
         .setDescription('埋め込みを送信したいチャンネル')
-        //.addChannelTypes(GuildText)
+        .addChannelTypes(ChannelType.GuildText)
         .setRequired(true)),
 
   async execute(interaction) {
