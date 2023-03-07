@@ -1,6 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const mcjava = require("./sub/mcjava");
-
+const mcbedrock = require("./sub/mcbedrock");
+let response;
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('minecraft')
@@ -9,26 +10,32 @@ module.exports = {
       subcommand
         .setName('server-java')
         .setDescription('Java版Minecraftサーバー情報')
-        .addStringOption(option => option.setName('address').setDescription('サーバーのアドレス')))
+        .addStringOption(option => option.setName('address').setDescription('サーバーのアドレス').setRequired(true)))
     .addSubcommand(subcommand =>
       subcommand
         .setName('server-bedrock')
         .setDescription('統合版Minecraftサーバー情報')
-        .addStringOption(option => option.setName('address').setDescription('サーバーのアドレス')))
+        .addStringOption(option => option.setName('address').setDescription('サーバーのアドレス').setRequired(true)))
     .addSubcommand(subcommand =>
       subcommand
         .setName('user')
         .setDescription('Minecraftユーザー情報')
-        .addStringOption(option => option.setName('username').setDescription('検索したいユーザーの名前'))),
+        .addStringOption(option => option.setName('username').setDescription('検索したいユーザーの名前').setRequired(true))),
   async execute(interaction) {
     const sub = interaction.options.getSubcommand();
-    let response;
 
     // Javaサーバー
     if (sub === "server-java") {
       const query = interaction.options.getString("address");
-      response = await mcjava(query, interaction);
+      response = await mcjava(query);
     };
+    // BedRockサーバー
+    if (sub === "server-bedrock") {
+      const query = interaction.options.getString("address");
+      response = await mcbedrock(query);
+    };
+
+    //user https://mojang-api-docs.gapple.pw/no-auth/uuid-to-profile
     await interaction.reply(response);
   },
 };
