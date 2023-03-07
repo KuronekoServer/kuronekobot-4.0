@@ -15,6 +15,7 @@ const status = {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('user-info')
+        .setDMPermission(false)
         .addUserOption(option => option
             .setName("user")
             .setDescription('調べたいユーザー'))
