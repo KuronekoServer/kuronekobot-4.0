@@ -5,8 +5,8 @@ const client = new Client({
 });
 const chalk = require('chalk');
 require('dotenv').config();
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 require('./deploy-commands.js');
 
 // イベントハンドラー
@@ -38,7 +38,7 @@ fs.readdirSync('./commands/').forEach(async dir => {
     };
 });
 
-// エラー後も処理継続
+//エラー後も処理継続
 process.on("uncaughtException", (reason, promise) => {
     console.log(chalk.red(`[エラー] ${reason}`));
 });
