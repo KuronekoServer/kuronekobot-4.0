@@ -33,6 +33,7 @@ const membersRole = (members, role) => {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('server-info')
+        .setDMPermission(false)
         .setDescription('サーバー情報を取得します'),
     async execute(interaction) {
         const members = interaction.guild.members.cache;
