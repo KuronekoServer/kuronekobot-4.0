@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ChatInputCommandInteraction, Colors, EmbedBuilder, Attachment } = require('discord.js');
+const { SlashCommandBuilder, ChatInputCommandInteraction, Colors, EmbedBuilder } = require('discord.js');
 const puppeteer = require('puppeteer');
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,7 +16,7 @@ module.exports = {
      * @param {Client} client 
      */
     async execute(interaction) {
-        const { options, member } = interaction;
+        const { options } = interaction;
 
         const url = options.getString("url");
 
