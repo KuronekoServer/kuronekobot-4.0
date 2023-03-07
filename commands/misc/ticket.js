@@ -1,10 +1,12 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, Colors } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, Colors, ChannelType } = require('discord.js');
+const { sql } = require("../../helpers/utils");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ticket')
         .addStringOption(option => option.setName("title").setDescription("タイトルを設定"))
         .addStringOption(option => option.setName("description").setDescription("説明を設定"))
         .addStringOption(option => option.setName("label").setDescription("ボタンの名前"))
+        .addChannelOption(option => option.addChannelTypes(ChannelType.GuildText).setName("log").setDescription("logを残したいチャンネルを選択"))
         .addAttachmentOption(option => option.setName("image").setDescription("表示したい画像"))
         .addStringOption(option => option.setName("color").setDescription("色を決められます").setChoices(
             { name: "赤色", value: "Red" },
@@ -53,6 +55,14 @@ module.exports = {
         const success_embed = new EmbedBuilder()
             .setTitle("✅成功")
             .setDescription("チケットの作成に成功しました!");
+        const getdata = await sql(`select * from ticket_channel where guildid="${interaction.guild.id}";`);
+        if(interaction.options.getChannel("log")?.id){
+            if (getdata[0]?.guildid) {
+                await sql(`update ticket_channel set channelid="${interaction.options.getChannel("log").id}" where guildid="${interaction.guild.id}";`);
+            } else {
+                await sql(`insert into ticket_channel values ("${interaction.guild.id}","${interaction.options.getChannel("log").id}");`);
+            };
+        };
         await interaction.channel.send({ embeds: [ticket_embed], components: [ticket_button] });
         await interaction.reply({ embeds: [success_embed], ephemeral: true });
     },
