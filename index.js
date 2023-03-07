@@ -17,7 +17,6 @@ fs.readdirSync('./events/').forEach(async dir => {
     for (const file of eventFiles) {
         const filePath = path.join(eventsPath, file);
         const event = require(filePath);
-
         client.on(event.name, (...args) => event.execute(...args));
     };
 });
