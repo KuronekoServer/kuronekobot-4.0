@@ -1,44 +1,41 @@
-const { Client, SlashCommandBooleanOption, SlashCommandBuilder, ChatInputCommandInteraction, AttachmentBuilder } = require('discord.js');
+const { SlashCommandBuilder, ChatInputCommandInteraction, Colors, EmbedBuilder, Attachment } = require('discord.js');
 const puppeteer = require('puppeteer');
-
 module.exports = {
     data: new SlashCommandBuilder()
-    .setName("screenshot")
-    .setDescription("Webサイトをスクリーンショットする")
-    .addStringOption(
-        option =>
-        option.setName("url")
-        .setDescription("スクリーンショット撮りたいWebサイトのURL")
-        .setRequired(true)
-    ),
+        .setName("screenshot")
+        .setDescription("Webサイトをスクリーンショットする")
+        .addStringOption(
+            option =>
+                option.setName("url")
+                    .setDescription("スクリーンショット撮りたいWebサイトのURL")
+                    .setRequired(true)
+        ),
     /**
      * 
      * @param {ChatInputCommandInteraction} interaction 
      * @param {Client} client 
      */
-    async execute(interaction, client) {
-        const { options, guild, member } = interaction;
+    async execute(interaction) {
+        const { options, member } = interaction;
 
-        const url = options.getString("url")
-        const color = client.hexMainColor
+        const url = options.getString("url");
 
-        const ScreenShotEmbed = new EmbedBuilder()
-        
-        const path = member.id + ".jpg";
-        //スクリーンショットを撮る部分
+        const ERROREmbed = new EmbedBuilder()
+            .setTitle("⚠️エラー")
+            .setDescription("URL先のページが見つかりませんでした。")
+            .setColor(Colors.Red)
         const VirtualBrowser = await puppeteer.launch();
+        //スクリーンショットを撮る部分
         const page = await VirtualBrowser.newPage();
-        await page.goto(url);
+        const go = await page.goto(url).catch((err) => { });
+        if (!go) return await interaction.reply({ embeds: [ERROREmbed], ephemeral: true });//エラーハンドリング
         //スクリーンショット
-        await page.screenshot({ path: path});
-        //embedにデータを追加
-        ScreenShotEmbed.addFields({ name: "サイトアドレス", value: url})
-        .setColor(color)
-        .setTitle("スクリーンショット")
-        .setImage("attachment://" + path)
-        .setFooter({ text: client.user.tag, iconURL: client.user.displayAvatarURL()});
-        
-        await interaction.reply({ embeds: [ScreenShotEmbed]});
-        
+        //ファイルで保存すると容量食うのでbase64にして渡すようにする
+        const base64 = await page.screenshot({ encoding: "base64" });
+        const imageStream = new Buffer.from(base64, 'base64');
+
+        //ページ撮ったら閉じないとリソース食っちゃう
+        await VirtualBrowser.close();
+        await interaction.reply({ content: "スクリーンショット", files: [{ attachment: imageStream }] });
     }
 }
