@@ -1,16 +1,32 @@
 //MikanBot Discord Utilities
 //Licenced to KuronekoServer under the MIT
 //© 2023 MikanDev All Rights Reserved
-
+const { Colors, EmbedBuilder } = require('discord.js');
+const Client = require('ftp');
+const ftp = new Client();
+const tmp = new Set();
 const { COLORS } = require("../data.json");
-const { readdirSync, lstatSync } = require("fs");
-const { join, extname } = require("path");
+const { readdirSync, lstatSync } = require("node:fs");
+const { join, extname } = require("node:path");
 const permissions = require("./permissions");
 const mariadb = require('mariadb');
+const discordTranscripts = require('discord-html-transcripts');
+const chalk = require('chalk');
 const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.db_user, connectionLimit: process.env.db_limit, password: process.env.db_password, port: process.env.db_port, database: process.env.db_name });
 let conn;
-(async () => conn = await pool.getConnection())();
-
+(async () => {conn =
+   await pool.getConnection()
+   console.log(chalk.green("[成功]"), `mariadbと接続しました。`);
+})();
+ftp.connect({
+  host: process.env.core_host,
+  port: process.env.core_port,
+  user: process.env.core_account,
+  password: process.env.core_password
+});
+ftp.on('ready', function () {
+  console.log(chalk.green("[成功]"), `FTP接続しました。`);
+})
 module.exports = class Utils {
   /**
    * Checks if a string contains a URL
@@ -157,11 +173,33 @@ module.exports = class Utils {
  * ticket timer
  * @param { [action: interaction.channel, type: String("delete","cancel")] }
  */
-  static ticket_timer(channel) {
-    if (channel.type === "delete") setTimeout(() => {
-      if (tmp.has(channel.action.id)) return tmp.delete(channel.action.id);
-      channel.action.delete().catch(() => { });
+  static async ticket_timer(data) {
+    if (data.type === "delete") setTimeout(async () => {
+      if (tmp.has(data.action.channel.id)) return tmp.delete(data.action.channel.id);
+      const attachment = await discordTranscripts.createTranscript(data.action.channel, {
+        limit: -1,
+        returnType: 'buffer',
+        saveImages: true,
+        footerText: "Exported {number} message{s}",
+        poweredBy: false
+      });
+      const date = new Date();
+      ftp.mkdir(`./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`, function (err) {
+        //誰かフォルダーが既にあったらこいつ処理しないようにできない？
+        //console.log(err);
+      });
+      ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, function (err) {
+        console.log(err);
+      });
+      const create_embed = new EmbedBuilder()
+        .setTitle("チケットが削除されました")
+        .setDescription(`チャンネル:${data.action.channel.name}\nユーザー:${data.action.user}\n日時:${new Date()}\n詳細:https://kuronekobot.kuroneko6423.com/${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`)
+        .setColor(Colors.Green);
+      await data.action.channel.delete().catch(() => { });
+      const getdata = await conn.query(`select * from ticket_channel where guildid="${data.action.guild.id}";`);
+      if (getdata[0]?.guildid) await (await data.action.guild.channels.fetch(getdata[0].channelid)).send({ embeds: [create_embed] });
+      data.action.user.send({ embeds: [create_embed] })
     }, 5 * 1000);
-    if (channel.type === "cancel") return tmp.add(channel.action.id);
+    if (data.type === "cancel") return tmp.add(data.action.channel.id);
   };
 };
