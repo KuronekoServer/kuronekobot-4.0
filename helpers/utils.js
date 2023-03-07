@@ -153,4 +153,15 @@ module.exports = class Utils {
     const data = await conn.query(command);
     return data;
   };
+  /**
+ * ticket timer
+ * @param { [action: interaction.channel, type: String("delete","cancel")] }
+ */
+  static ticket_timer(channel) {
+    if (channel.type === "delete") setTimeout(() => {
+      if (tmp.has(channel.action.id)) return tmp.delete(channel.action.id);
+      channel.action.delete().catch(() => { });
+    }, 5 * 1000);
+    if (channel.type === "cancel") return tmp.add(channel.action.id);
+  };
 };
