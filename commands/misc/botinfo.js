@@ -11,6 +11,7 @@ const ticket_log = new ActionRowBuilder()
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('botinfo')
+        .setDMPermission(false)
         .setDescription('BOTの情報を表示します'),
     async execute(interaction) {
         const getdata = await sql(`select * from ticket_channel where guildid="${interaction.guild.id}";`);
