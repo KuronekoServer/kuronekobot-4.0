@@ -28,7 +28,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setThumbnail(`https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png`)
         .setAuthor({
-          name: `Wikipediaで ${json.titles.normalized} を検索してみたよ～`,
+          name: `Wikipediaで ${json.titles.normalized} を検索しました`,
           url: json.content_urls.desktop.page,
         })
         .addFields(
@@ -42,13 +42,14 @@ module.exports = {
           },
         )
         .setColor(Colors.Green)
+        .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | Wikipedia" })
         .setFooter({ text: `${interaction.user.tag}` });
       await interaction.reply({ embeds: [embed] });
     } else {
       const embed2 = new EmbedBuilder()
         .setThumbnail(`https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png`)
         .setAuthor({
-          name: `Wikipediaで ${json.titles.normalized} を検索してみたよ～`,
+          name: `Wikipediaで ${json.titles.normalized} を検索しました`,
           url: json.content_urls.desktop.page,
         })
         .addFields(
@@ -61,9 +62,9 @@ module.exports = {
             value: `[Wikipedia](${json.content_urls.desktop.page})で続きを読む`
           }
         )
-        .setColor(RANDOM)
+        .setColor(Colors.Green)
         .setImage(json.originalimage.source)
-        .setFooter({ text: `${interaction.user.tag}` });
+        .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | Wikipedia" });
       await interaction.reply({ embeds: [embed2] });
     };
   }

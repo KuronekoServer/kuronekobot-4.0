@@ -51,10 +51,13 @@ module.exports = {
             .setTitle(options.getString("title") || "お問い合わせ")
             .setDescription(options.getString("description") || "サポートとのチケットを発行します。\n発行後、メンションしたチャンネルにて質問などをご記入ください。")
             .setColor(Colors[options.getString("color") || "Green"])
-            .setImage(options.getAttachment("image")?.attachment);
+            .setImage(options.getAttachment("image")?.attachment)
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | ticket" });
         const success_embed = new EmbedBuilder()
             .setTitle("✅成功")
-            .setDescription("チケットの作成に成功しました!");
+            .setDescription("チケットの作成に成功しました!")
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | ticket" })
+            .setColor(Colors.Green);
         const getdata = await sql(`select * from ticket_channel where guildid="${interaction.guild.id}";`);
         if (interaction.options.getChannel("log")?.id) {
             if (getdata[0]?.guildid) {
