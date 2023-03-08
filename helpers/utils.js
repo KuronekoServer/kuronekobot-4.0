@@ -189,12 +189,12 @@ module.exports = class Utils {
         poweredBy: false
       });
       const date = new Date();
-      ftp.mkdir(`./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`, function (err) {
-        //誰かフォルダーが既にあったらこいつ処理しないようにできない？
-        //console.log(err);
-      });
-      ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, function (err) {
-        console.log(err.message);
+
+      ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => {
+        if (err.message.includes("No such file or directory")) {
+          ftp.mkdir(`./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`, (err) => { });
+          ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => { });
+        };
       });
       const create_embed = new EmbedBuilder()
         .setTitle("チケットが削除されました")
