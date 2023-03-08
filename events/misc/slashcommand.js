@@ -23,7 +23,7 @@ module.exports = {
         try {
             await command.execute(interaction);
         } catch (err) {
-            console.error(err);
+            console.error(err.message);
             if (err.message === "Missing Permissions") return await interaction.reply({ embeds: [permissions_embed], ephemeral: true }).catch(() => { });
             await interaction.reply({ content: 'コマンドの実行中にエラーが発生しました。', ephemeral: true }).catch(() => { });
         };

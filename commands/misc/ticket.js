@@ -33,7 +33,7 @@ module.exports = {
             { name: "濃い灰色", value: "DarkGrey" },
             { name: "明るい灰色", value: "LightGrey" },
             { name: "濃い紺色", value: "DarkNavy" },
-            { name: "青紫色", value: "Blurple" },
+            { name: "青紫色", value: "Blurple" }
         ))
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
@@ -56,7 +56,7 @@ module.exports = {
             .setTitle("✅成功")
             .setDescription("チケットの作成に成功しました!");
         const getdata = await sql(`select * from ticket_channel where guildid="${interaction.guild.id}";`);
-        if(interaction.options.getChannel("log")?.id){
+        if (interaction.options.getChannel("log")?.id) {
             if (getdata[0]?.guildid) {
                 await sql(`update ticket_channel set channelid="${interaction.options.getChannel("log").id}" where guildid="${interaction.guild.id}";`);
             } else {

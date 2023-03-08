@@ -18,8 +18,12 @@ const confirmation_embed = new EmbedBuilder()
     .setColor(Colors.Red);
 const permissions_embed = new EmbedBuilder()
     .setTitle("⚠️エラー")
-    .setDescription("権限が足りません。\nBOTに権限を与えてください")
+    .setDescription("権限が足りません。\nBOTに権限を与えてください。")
     .setColor(Colors.Red);
+const sql_embed = new EmbedBuilder()
+    .setTitle("✅成功")
+    .setDescription("データベースからTicket情報を削除しました。")
+    .setColor(Colors.Green);
 /*
 button
 */
@@ -50,7 +54,7 @@ module.exports = {
     async execute(interaction) {
         if (interaction.isButton()) {
             try {
-                if (interaction.customId == "ticket_button") {
+                if (interaction.customId === "ticket_button") {
                     const new_channel = await interaction.guild.channels.create({
                         name: `￤🎫-${interaction.user.username}￤`,
                         permissionOverwrites:
@@ -75,19 +79,23 @@ module.exports = {
                     const getdata = await sql(`select * from ticket_channel where guildid="${interaction.guild.id}";`);
                     if (getdata[0]?.guildid) await (await interaction.guild.channels.fetch(getdata[0].channelid)).send({ embeds: [create_embed] });
                 };
-                if (interaction.customId == "ticket_close") {
+                if (interaction.customId === "ticket_close") {
                     const channel = await interaction.channel.messages.fetch({ after: '0', limit: 1 });
                     const message = await interaction.channel.messages.fetch(channel.map(x => x.id)[0]);
                     await message.edit({ embeds: [wait_embed], components: [close_button1] });
                     await interaction.reply({ embeds: [confirmation_embed], components: [cancel_button], ephemeral: true });
                     ticket_timer({ action: interaction, type: "delete" });
                 };
-                if (interaction.customId == "ticket_cancel") {
+                if (interaction.customId === "ticket_cancel") {
                     ticket_timer({ action: interaction, type: "cancel" });
                     const channel = await interaction.channel.messages.fetch({ after: '0', limit: 1 });
                     const message = await interaction.channel.messages.fetch(channel.map(x => x.id)[0]);
                     await message.edit({ embeds: [wait_embed], components: [close_button] });
                     await interaction.reply({ embeds: [cancel_embed], ephemeral: true });
+                };
+                if (interaction.customId === "ticket_log") {
+                    await sql(`DELETE FROM ticket_channel where guildid="${interaction.guild.id}";`);
+                    await interaction.reply({ embeds: [sql_embed], ephemeral: true });
                 };
             } catch (error) {
                 if (error.message === "Missing Permissions") return await interaction.reply({ embeds: [permissions_embed], ephemeral: true }).catch(() => { });

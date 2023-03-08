@@ -14,9 +14,9 @@ const discordTranscripts = require('discord-html-transcripts');
 const chalk = require('chalk');
 const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.db_user, connectionLimit: process.env.db_limit, password: process.env.db_password, port: process.env.db_port, database: process.env.db_name });
 let conn;
-(async () => {conn =
-   await pool.getConnection()
-   console.log(chalk.green("[成功]"), `mariadbと接続しました。`);
+(async () => {
+  conn = await pool.getConnection()
+  console.log(chalk.green("[成功]"), `mariadbと接続しました。`);
 })();
 ftp.connect({
   host: process.env.core_host,
@@ -189,7 +189,7 @@ module.exports = class Utils {
         //console.log(err);
       });
       ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, function (err) {
-        console.log(err);
+        console.log(err.message);
       });
       const create_embed = new EmbedBuilder()
         .setTitle("チケットが削除されました")
