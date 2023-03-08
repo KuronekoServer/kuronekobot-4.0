@@ -13,19 +13,24 @@ const mariadb = require('mariadb');
 const discordTranscripts = require('discord-html-transcripts');
 const chalk = require('chalk');
 const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.db_user, connectionLimit: process.env.db_limit, password: process.env.db_password, port: process.env.db_port, database: process.env.db_name });
+const ftp_option = { host: process.env.core_host, port: process.env.core_port, user: process.env.core_account, password: process.env.core_password, keepalive: 250 }
 let conn;
 (async () => {
   conn = await pool.getConnection()
   console.log(chalk.green("[成功]"), `mariadbと接続しました。`);
+  conn.on("error", async () => {
+    conn = await pool.getConnection()
+    console.log(chalk.red("[注意]"), `mariadbと非常自動接続しました。`);
+  });
 })();
-ftp.connect({
-  host: process.env.core_host,
-  port: process.env.core_port,
-  user: process.env.core_account,
-  password: process.env.core_password
-});
-ftp.on('ready', function () {
+
+ftp.connect(ftp_option);
+ftp.on("ready", () => {
   console.log(chalk.green("[成功]"), `FTP接続しました。`);
+})
+ftp.on("error", (e) => {
+  ftp.connect(ftp_option);
+  console.log(chalk.red("[注意]"), `FTPの非常自動再接続しました。\n${e}`);
 })
 module.exports = class Utils {
   /**
