@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const mcjava = require("./sub/mcjava");
 const mcbedrock = require("./sub/mcbedrock");
+const mcuser = require("./sub/mcuser");
 let response;
 module.exports = {
   data: new SlashCommandBuilder()
@@ -34,7 +35,11 @@ module.exports = {
       const query = interaction.options.getString("address");
       response = await mcbedrock(query);
     };
-
+    //user
+    if (sub === "user") {
+      const query = interaction.options.getString("username");
+      response = await mcuser(query);
+    };
     //user https://mojang-api-docs.gapple.pw/no-auth/uuid-to-profile
     await interaction.reply(response);
   },

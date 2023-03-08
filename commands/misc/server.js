@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, codeBlock, ChannelType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, codeBlock, ChannelType, Colors } = require('discord.js');
 const moment = require('moment');
 moment.locale('ja');
 
@@ -44,8 +44,8 @@ module.exports = {
         const owner = await interaction.guild.fetchOwner();
 
         const embed = new EmbedBuilder()
-            .setTitle('サーバー情報')
-            .setColor('Random')
+            .setTitle('✅サーバー情報')
+            .setColor(Colors.Green)
             .setThumbnail(interaction.guild.iconURL({ dynamic: true, format: 'png', size: 4096 }))
             .addFields(
                 { name: '基本情報', value: '\u200b' },
@@ -74,6 +74,6 @@ module.exports = {
                 iconURL: `${interaction.guild.icon === null ? "https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" : interaction.guild.iconURL({ dynamic: true, format: 'png', size: 4096 })}`
             });
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed], ephemeral: true });
     }
 }

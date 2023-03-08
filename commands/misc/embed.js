@@ -10,9 +10,51 @@ const {
   ComponentType,
   EmbedBuilder,
   ChannelType,
-  PermissionFlagsBits
+  PermissionFlagsBits,
+  Colors
 } = require("discord.js");
 
+const error = new EmbedBuilder()
+  .setTitle(`⚠️注意`)
+  .setDescription("このチャンネルでは埋め込みメッセージを送れません。")
+  .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | embed" })
+  .setColor(Colors.Red);
+
+const button_msg = new EmbedBuilder()
+  .setTitle(`✅埋め込み`)
+  .setDescription("下のボタンを押して埋め込みメッセージを作成してください。")
+  .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | embed" })
+  .setColor(Colors.Green);
+
+const break_msg = new EmbedBuilder()
+  .setTitle(`⚠️注意`)
+  .setDescription("応答がなかったため中断しました。")
+  .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | embed" })
+  .setColor(Colors.Red);
+
+const add_msg = new EmbedBuilder()
+  .setTitle(`✅埋め込み`)
+  .setDescription("フィールドを追加しました。")
+  .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | embed" })
+  .setColor(Colors.Green);
+
+const end_msg = new EmbedBuilder()
+  .setTitle(`✅埋め込み`)
+  .setDescription("埋め込みを送信しました。")
+  .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | embed" })
+  .setColor(Colors.Green);
+
+const delete_msg = new EmbedBuilder()
+  .setTitle(`✅埋め込み`)
+  .setDescription("フィールドを削除しました。")
+  .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | embed" })
+  .setColor(Colors.Green);
+
+const fieldnot_msg = new EmbedBuilder()
+  .setTitle(`⚠️注意`)
+  .setDescription("削除できるフィールド存在しません。")
+  .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | embed" })
+  .setColor(Colors.Red);
 const { isValidColor, isHex } = require("../../helpers/utils");
 
 GuildChannel.prototype.canSendEmbeds = function () {
@@ -21,7 +63,7 @@ GuildChannel.prototype.canSendEmbeds = function () {
 
 async function embedSetup(channel, member) {
   const sentMsg = await channel.send({
-    content: "下のボタンを押して埋め込みメッセージを作成してください",
+    embeds: [button_msg],
     components: [
       new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId("EMBED_ADD").setLabel("埋め込みを作成").setStyle(ButtonStyle.Primary)
@@ -34,10 +76,9 @@ async function embedSetup(channel, member) {
       componentType: ComponentType.Button,
       filter: (i) => i.customId === "EMBED_ADD" && i.member.id === member.id && i.message.id === sentMsg.id,
       time: 20000,
-    })
-    .catch((ex) => { });
+    });
 
-  if (!btnInteraction) return await sentMsg.edit({ content: "応答がなかったため埋め込み作成を停止したよ～", components: [] });
+  if (!btnInteraction) return await sentMsg.edit({ embeds: [break_msg], components: [], ephemeral: true });
 
   await btnInteraction.showModal(
     new ModalBuilder({
@@ -88,12 +129,11 @@ async function embedSetup(channel, member) {
     .awaitModalSubmit({
       time: 1 * 60 * 1000,
       filter: (m) => m.customId === "EMBED_MODAL" && m.member.id === member.id && m.message.id === sentMsg.id
-    })
-    .catch((ex) => { });
+    });
 
-  if (!modal) return await sentMsg.edit({ content: "応答がなかったため埋め込み作成を停止したよ～", components: [] });
+  if (!modal) return await sentMsg.edit({ embeds: [break_msg], components: [], ephemeral: true });
 
-  await modal.reply({ content: "埋め込みを送信したよ～", ephemeral: true }).catch((ex) => { });
+  await modal.reply({ embeds: [end_msg], ephemeral: true });
 
   const title = modal.fields.getTextInputValue("title");
   const author = modal.fields.getTextInputValue("author");
@@ -102,7 +142,7 @@ async function embedSetup(channel, member) {
   const color = modal.fields.getTextInputValue("color");
 
   if (!title && !author && !description && !footer)
-    return await sentMsg.edit({ content: "おい！空の埋め込みは送信できないぞ！ :rage:", components: [] });
+    return await sentMsg.edit({ content: "空の埋め込みは送信できません。", components: [] });
 
   const embed = new EmbedBuilder();
   if (title) embed.setTitle(title);
@@ -119,7 +159,7 @@ async function embedSetup(channel, member) {
   );
 
   await sentMsg.edit({
-    content: "フィールドを追加したいなら下のボタンを使ってて追加してね～\n終わったら「完成」を押してね！",
+    content: "フィールドを追加する場合は下のボタンを使用し追加してください。\n終了後「完成」を押してください。",
     embeds: [embed],
     components: [buttonRow]
   });
@@ -169,12 +209,11 @@ async function embedSetup(channel, member) {
         .awaitModalSubmit({
           time: 5 * 60 * 1000,
           filter: (m) => m.customId === "EMBED_ADD_FIELD_MODAL" && m.member.id === member.id
-        })
-        .catch((ex) => { });
+        });
 
       if (!modal) return sentMsg.edit({ components: [] });
 
-      await modal.reply({ content: "フィールドを追加したぞ！", ephemeral: true }).catch((ex) => { });
+      await modal.reply({ embeds: [add_msg], ephemeral: true });
 
       const name = modal.fields.getTextInputValue("name");
       const value = modal.fields.getTextInputValue("value");
@@ -195,9 +234,9 @@ async function embedSetup(channel, member) {
       if (fields) {
         fields.pop();
         embed.setFields(fields);
-        await interaction.reply({ content: "フィールドを削除したぞ！", ephemeral: true });
+        await interaction.reply({ embeds: [delete_msg], ephemeral: true });
       } else {
-        await interaction.reply({ content: "削除できるフィールドがないぞ！", ephemeral: true });
+        await interaction.reply({ embeds: [fieldnot_msg], ephemeral: true });
       };
     }
 
@@ -214,6 +253,7 @@ async function embedSetup(channel, member) {
 };
 
 
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('embed')
@@ -228,10 +268,13 @@ module.exports = {
 
   async execute(interaction) {
     const channel = interaction.options.getChannel("channel");
-    if (!channel.canSendEmbeds) {
-      return interaction.reply("このチャンネルでは私埋め込みメッセージ送れないよ :pleading_face:");
-    }
-    await interaction.reply({ content: `${channel} で埋め込みメッセージを送ります`, ephemeral: true });
+    if (!channel.canSendEmbeds) return await interaction.reply({ embeds: [error], ephemeral: true });
+    const success = new EmbedBuilder()
+      .setTitle(`✅埋め込み送信`)
+      .setDescription(`${channel} に埋め込みメッセージを送ります。`)
+      .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | embed" })
+      .setColor(Colors.Green);
+    await interaction.reply({ embeds: [success], ephemeral: true });
     await embedSetup(channel, interaction.member);
   },
 };

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, Colors } = require('discord.js');
 const { ja } = require('../../helpers/permissions');
 const status = {
     key: {
@@ -23,9 +23,10 @@ module.exports = {
     async execute(interaction) {
         const member = interaction.guild.members.cache.get(interaction.options.getUser("user")?.id) || interaction.member;
         const embed = new EmbedBuilder()
-            .setTitle(`${member.user.username}の情報`)
+            .setTitle(`✅${member.user.username}の情報`)
             .setThumbnail((member.user.avatar) ? `https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.webp` : "https://discord.com/assets/7c8f476123d28d103efe381543274c25.png")
-            .setColor("Aqua")
+            .setColor(Colors.Green)
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | userinfo" })
             .addFields(
                 { name: '名前(ID)', value: `${member.user.tag}(${member.user.id})` },
                 { name: 'サーバー参加日', value: `<t:${String(member.joinedTimestamp).slice(0, 10)}>(<t:${String(member.joinedTimestamp).slice(0, 10)}:R>)` },
