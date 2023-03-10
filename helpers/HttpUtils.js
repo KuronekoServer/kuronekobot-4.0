@@ -5,7 +5,7 @@
 const ISO6391 = require("iso-639-1");
 const sourcebin = require("sourcebin_js");
 const fetch = require("node-fetch");
-const gTranslate = require("@vitalets/google-translate-api");
+const { translate } = require("@vitalets/google-translate-api");
 
 module.exports = class HttpUtils {
   /**
@@ -55,14 +55,9 @@ module.exports = class HttpUtils {
    */
   static async translate(content, outputCode) {
     try {
-      const response = await gTranslate(content, { to: outputCode });
+      const response = await translate(content, { to: outputCode });
       return {
-        input: response.from.text.value,
-        output: response.text,
-        inputCode: response.from.language.iso,
-        outputCode,
-        inputLang: ISO6391.getName(response.from.language.iso),
-        outputLang: ISO6391.getName(outputCode),
+        output: response.text
       };
     } catch (ex) {
     }
