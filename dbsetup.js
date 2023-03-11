@@ -4,12 +4,16 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
 (async () => {
     const conn = await pool.getConnection();
     /**
- * テーブル自動生成
- * column:guildid=サーバーID
- * column:channelid=チャンネルID
- * table:ticket_channel=チケットのログチャンネル
- * table:log_channel=各イベントのログチャンネル
- */
+     * サーバーIDとチャンネルIDを含むテーブルを自動生成する。
+     *
+     * @typedef {Object} TicketChannel
+     * @property {string} guildid - サーバーID
+     * @property {string} channelid - チャンネルID
+     *
+     * @typedef {Object} LogChannel
+     * @property {string} guildid - サーバーID
+     * @property {string} channelid - チャンネルID
+     */
     await conn.query("create table ticket_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table log_channel (guildid text,channelid text);").catch(() => { });
     console.log("処理が終了しました。");

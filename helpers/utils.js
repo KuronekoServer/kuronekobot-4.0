@@ -163,22 +163,23 @@ module.exports = class Utils {
   }
 
   /**
- * use sql command
- * @param {any} command 
- *  example: create table table_name (id int, name varchar(10), address varchar(10));
- *  detail: https://www.javadrive.jp/mysql/
- * @return outputdata
- */
+   * SQLコマンドを使用する
+   * @param {string} command - SQLコマンドの文字列
+   * @example
+   * const command = "CREATE TABLE table_name (id int, name varchar(10), address varchar(10));"
+   * @returns {any} - 出力データ
+   */
   static async sql(command) {
     const data = await conn.query(command).catch(ex => console.log(chalk.red("[警告]"), `SQLでエラーが発生しました。\n詳細:${ex}`));
     await conn.release();
     return data;
   };
   /**
- * ticket timer
- * @param { [action: interaction.channel, type: String("delete"|"cancel")] } interactiondata
- * @return undefined
- */
+   * タイマーチケット
+   * @param {string} interactiondata.action - アクション
+   * @param {"delete"|"cancel"} interactiondata.type - タイプ
+   * @returns {undefined}
+   */
   static async ticket_timer(data) {
     if (data.type === "delete") setTimeout(async () => {
       if (tmp.has(data.action.channel.id)) return tmp.delete(data.action.channel.id);
