@@ -18,9 +18,8 @@ let conn;
 (async () => {
   conn = await pool.getConnection()
   console.log(chalk.green("[成功]"), `mariadbと接続しました。`);
-  conn.on("error", async () => {
-    conn = await pool.getConnection()
-    console.log(chalk.red("[注意]"), `mariadbと非常自動接続しました。`);
+  conn.on("error", error => {
+    console.log(`SQLERROR\n詳細:${error}`)
   });
 })();
 
@@ -171,12 +170,14 @@ module.exports = class Utils {
  * @return outputdata
  */
   static async sql(command) {
-    const data = await conn.query(command);
+    const data = await conn.query(command).catch(ex => console.log(chalk.red("[警告]"), `SQLでエラーが発生しました。\n詳細:${ex}`));
+    await conn.release();
     return data;
   };
   /**
  * ticket timer
- * @param { [action: interaction.channel, type: String("delete","cancel")] }
+ * @param { [action: interaction.channel, type: String("delete"|"cancel")] } interactiondata
+ * @return undefined
  */
   static async ticket_timer(data) {
     if (data.type === "delete") setTimeout(async () => {
@@ -189,7 +190,6 @@ module.exports = class Utils {
         poweredBy: false
       });
       const date = new Date();
-
       ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => {
         if (err.message.includes("No such file or directory")) {
           ftp.mkdir(`./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`, (err) => { });
@@ -202,8 +202,15 @@ module.exports = class Utils {
         .setColor(Colors.Green);
       await data.action.channel.delete().catch(() => { });
       const getdata = await conn.query(`select * from ticket_channel where guildid="${data.action.guild.id}";`);
-      if (getdata[0]?.guildid) await (await data.action.guild.channels.fetch(getdata[0].channelid)).send({ embeds: [create_embed] });
-      data.action.user.send({ embeds: [create_embed] })
+      if (getdata[0]?.guildid) {
+        try {
+          const channel = await data.action.guild.channels.fetch(getdata[0].channelid)
+          await channel.send({ embeds: [create_embed] });
+        } catch (error) {
+          await sql(`DELETE FROM ticket_channel WHERE guildid = "${data.action.guild.id}";`);
+        }
+      }
+      await data.action.user.send({ embeds: [create_embed] }).catch(() => { });
     }, 5 * 1000);
     if (data.type === "cancel") return tmp.add(data.action.channel.id);
   };
