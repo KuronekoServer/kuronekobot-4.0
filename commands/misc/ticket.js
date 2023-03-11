@@ -104,7 +104,7 @@ module.exports = {
         };
         if (sub === "delete") {
             if (!getdata[0]?.guildid) return await interaction.reply({ embeds: [undefined_embed], ephemeral: true });
-            const sql_delete = await sql(`DELETE FROM log_channel WHERE guildid = "${interaction.guild.id}";`);
+            const sql_delete = await sql(`DELETE FROM ticket_channel WHERE guildid = "${interaction.guild.id}";`);
             if (!sql_delete) return await interaction.reply({ embeds: [delete_error], ephemeral: true });
             await interaction.reply({ embeds: [delete_embed], ephemeral: true });
         }
