@@ -7,6 +7,7 @@ const chalk = require('chalk');
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 require('./deploy-commands.js');
 
 // イベントハンドラー
@@ -38,6 +39,17 @@ fs.readdirSync('./commands/').forEach(async dir => {
         };
     };
 });
+
+// 10秒ごとにURLにGETリクエストを送信する
+setInterval(() => {
+    axios.get(process.env.URL)
+        .then(response => {
+            console.log(chalk.green(`[GETリクエスト] ${response.config.url} - ステータスコード: ${response.status}`));
+        })
+        .catch(error => {
+            console.log(chalk.red(`[GETリクエストエラー] ${error.config.url} - ${error.message}`));
+        });
+}, 10000);
 
 // エラー後も処理継続
 process.on("uncaughtException", (reason, promise) => {
