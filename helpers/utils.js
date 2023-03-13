@@ -171,7 +171,7 @@ module.exports = class Utils {
    */
   static async sql(command) {
     const data = await conn.query(command).catch(ex => console.log(chalk.red("[警告]"), `SQLでエラーが発生しました。\n詳細:${ex}`));
-    await conn.release();
+    await conn.release().catch(() => process.exit(1));
     return data;
   };
   /**
