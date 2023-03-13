@@ -13,9 +13,15 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
      * @typedef {Object} LogChannel
      * @property {string} guildid - サーバーID
      * @property {string} channelid - チャンネルID
+     *  
+     * @typedef {Object} JobPanel
+     * @property {string} guildid - サーバーID
+     * @property {string} channelid - チャンネルID
+     * @property {string} messageid - メッセージID
      */
     await conn.query("create table ticket_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table log_channel (guildid text,channelid text);").catch(() => { });
+    await conn.query("create table job_message (guildid text,channelid text,messageid text);");
     console.log("処理が終了しました。");
     process.exit(1);
 })();
