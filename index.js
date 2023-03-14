@@ -39,8 +39,8 @@ fs.readdirSync('./commands/').forEach(async dir => {
 });
 
 //エラー後も処理継続
-process.on("uncaughtException", (reason, promise) => {
-    console.log(chalk.red(`[エラー] ${reason}`));
-});
+// process.on("uncaughtException", (reason, promise) => {
+//     console.log(chalk.red(`[エラー] ${reason}`));
+// });
 
 client.login(process.env.TOKEN);
