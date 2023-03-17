@@ -18,10 +18,21 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
      * @property {string} guildid - サーバーID
      * @property {string} channelid - チャンネルID
      * @property {string} messageid - メッセージID
+     *     
+     * 読み上げ関連(user設定)
+     * @typedef {Object} user_speak
+     * @property {string} userid - ユーザーID
+     * @property {int} speakid - 話者ID
+     * @property {int} speakport - 対象話者APIのポート番号
+     * @property {int} pitch - 話者のピッチ
+     * @property {int} intonation - 話者のイントネーション
+     * @property {int} speed - 話者スピード
+     * 
      */
     await conn.query("create table ticket_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table log_channel (guildid text,channelid text);").catch(() => { });
-    await conn.query("create table job_message (guildid text,channelid text,messageid text);");
+    await conn.query("create table job_message (guildid text,channelid text,messageid text);").catch(() => { });
+    await conn.query("create table user_speak (userid text,speakid int,speakport int,pitch int,intonation int,speed int);").catch(() => { });
     console.log("処理が終了しました。");
     process.exit(1);
 })();
