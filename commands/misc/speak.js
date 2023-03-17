@@ -1,7 +1,6 @@
 //voicevox:http://127.0.0.1:50021/docs#/
 //COEIROINK:http://127.0.0.1:50031/docs#/
 //SHAREVOX:http://127.0.0.1:50025/docs#/
-const fs = require("node:fs");
 const { SlashCommandBuilder } = require('discord.js');
 const join = require("./speak/join");
 const disconnect = require("./speak/disconnect");
@@ -38,6 +37,24 @@ module.exports = {
                 .addStringOption(option => option.setName("coeiroink話者名").setDescription("話者を選択してください").addChoices(... require("../../helpers/voicelist/coeiroinklist.json")))
                 .addStringOption(option => option.setName("sharevox話者名").setDescription("話者を選択してください").addChoices(... require("../../helpers/voicelist/sharevoxlist.json")))
                 .setDescription('話者を変更します。')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('user_pitch')
+                .setDescription('ピッチを設定します。')
+                .addNumberOption(option=>option.setName("pitch").setDescription("-0.15~0.15の間の数字を入力"))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('user_intonation')
+                .setDescription('イントネーションを設定します。')
+                .addNumberOption(option=>option.setName("intonation").setDescription("0.0～2.0の間の数字を入力"))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('user_speed')
+                .setDescription('スピードを設定します。')
+                .addNumberOption(option=>option.setName("speed").setDescription("0.5～4.0の間の数字を入力"))
         ),
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();

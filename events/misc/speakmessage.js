@@ -1,7 +1,7 @@
 const { Events } = require('discord.js');
 const { createAudioPlayer, createAudioResource, getVoiceConnection } = require('@discordjs/voice');
 const { Readable } = require('node:stream');
-const {sql}= require("../../helpers/utils")
+const { sql } = require("../../helpers/utils")
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
@@ -11,6 +11,9 @@ module.exports = {
         const getdata = await sql(`select * from user_speak where userid="${message.member.id}";`);
         const speaker = getdata[0]?.speakid || 3;
         const port = getdata[0]?.speakport || 50021;
+        const speed = getdata[0]?.speed || 1;
+        const pitch = getdata[0]?.pitch || 0;
+        const intonation = getdata[0]?.intonation || 1;
         const audio_query_response = await fetch(
             `http://127.0.0.1:${port}/audio_query?text=${message.content}&speaker=${speaker}`,
             {
@@ -19,6 +22,10 @@ module.exports = {
             }
         );
         const audio_query_json = await audio_query_response.json();
+        audio_query_json["speedScale"] = speed;
+        audio_query_json["pitchScale"] = pitch;
+        audio_query_json["intonationScale"] = intonation;
+        console.log(audio_query_json)
         const synthesis_response = await fetch(
             `http://127.0.0.1:${port}/synthesis?speaker=${speaker}`,
             {
