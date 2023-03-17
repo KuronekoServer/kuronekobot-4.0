@@ -32,7 +32,7 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
     await conn.query("create table ticket_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table log_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table job_message (guildid text,channelid text,messageid text);").catch(() => { });
-    await conn.query("create table user_speak (userid text,speakid int,speakport int,pitch int,intonation int,speed int);").catch(() => { });
+    await conn.query("create table user_speak (userid text,speakid int,speakport int,pitch decimal,intonation decimal,speed decimal);").catch(() => { });
     console.log("処理が終了しました。");
     process.exit(1);
 })();
