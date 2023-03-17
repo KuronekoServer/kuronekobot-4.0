@@ -30,14 +30,12 @@ module.exports = {
                         const set = await sql(`insert into job_message values ("${interaction.guild.id}","${msg.channel.id}","${msg.id}");`);
                         if (!set) return ({ embeds: [db_error], ephemeral: true });
                     };
-                    await interaction.reply({ embeds: [success], ephemeral: true })
+                    await interaction.reply({ embeds: [success], ephemeral: true });
                 } else {
-                    console.log(2)
-                    await interaction.reply({ embeds: [undefined_error], ephemeral: true })
+                    await interaction.reply({ embeds: [undefined_error], ephemeral: true });
                 };
             } else {
-                console.log(1)
-                await interaction.reply({ embeds: [undefined_error], ephemeral: true })
+                await interaction.reply({ embeds: [undefined_error], ephemeral: true });
             };
         }
     }
