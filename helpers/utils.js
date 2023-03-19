@@ -18,9 +18,6 @@ let conn;
 (async () => {
   conn = await pool.getConnection()
   console.log(chalk.green("[成功]"), `mariadbと接続しました。`);
-  conn.on("error", error => {
-    console.log(`SQLERROR\n詳細:${error}`)
-  });
 })();
 
 ftp.connect(ftp_option);
@@ -170,9 +167,17 @@ module.exports = class Utils {
    * @returns {any} - 出力データ
    */
   static async sql(command) {
-    const data = await conn.query(command).catch(ex => console.log(chalk.red("[警告]"), `SQLでエラーが発生しました。\n詳細:${ex}`));
-    await conn.release().catch(() => process.exit(1));
-    return data;
+    try {
+      const result = await conn.query(command);
+      return result;
+    } catch (ex) {
+      console.error(chalk.red("[警告]"), "SQLでエラーが発生しました。");
+      console.error("エラー内容:", ex);
+      console.error(chalk.yellow("[注意]"), "SQLを自動再接続を行います。");
+      conn = await pool.getConnection();
+    } finally {
+      await conn.release();
+    };
   };
   /**
    * タイマーチケット

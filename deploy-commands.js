@@ -1,24 +1,23 @@
-const fs = require("fs");
-const path = require("path");
-const chalk = require("chalk");
-const { REST, Routes } = require("discord.js");
-
+const fs = require('fs');
+const path = require('path');
+const { REST, Routes } = require('discord.js');
 const { TOKEN, clientId } = process.env;
-const option = require("./optionslash.json");
+const chalk = require('chalk');
+const option = require("./helpers/optionslash.json");
 
 const commands = [];
 commands.push(option);
-fs.readdirSync(path.resolve(__dirname, "commands")).forEach((dir) => {
-    const commandsPath = path.resolve(__dirname, "commands", dir);
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
-    commandFiles.forEach((file) => {
-        const commandPath = path.join(commandsPath, file);
-        const command = require(commandPath);
+fs.readdirSync('./commands/').forEach(async dir => {
+    const commandsPath = path.join(__dirname, `./commands/${dir}`);
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+    for (const file of commandFiles) {
+        const command = require(`./commands/${dir}/${file}`);
         commands.push(command.data.toJSON());
-    });
+    };
 });
 
-const rest = new REST({ version: "10" }).setToken(TOKEN);
+const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 (async () => {
     try {

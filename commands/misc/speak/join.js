@@ -15,19 +15,12 @@ const undefined_channel = new EmbedBuilder()
 module.exports = async (interaction) => {
     const voiceChannel = interaction.member.voice.channel;
     if (!voiceChannel) return ({ embeds: [undefined_channel], ephemeral: true });
-    joinVoiceChannel({
+     joinVoiceChannel({
         channelId: voiceChannel.id,
         guildId: voiceChannel.guild.id,
         adapterCreator: voiceChannel.guild.voiceAdapterCreator,
     });
+    if (!globalThis.voice_channel[interaction.guild.id]) delete globalThis.voice_channel[interaction.guild.id];
+    globalThis.voice_channel[interaction.guild.id] = interaction.channel.id;
     return ({ embeds: [success] });
-
-    //   const resource = createAudioResource('ファイルパス');
-
-    //   // 音声プレイヤーを作成
-    //   const player = createAudioPlayer();
-    //   player.play(resource);
-
-    //   // コネクションにプレイヤーを接続
-    //   connection.subscribe(player);
 };

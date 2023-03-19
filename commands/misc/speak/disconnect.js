@@ -15,5 +15,6 @@ module.exports = async (interaction) => {
     const voiceChannel = getVoiceConnection(interaction.guildId);
     if (!voiceChannel) return ({ embeds: [undefined_channel], ephemeral: true });
     voiceChannel.destroy();
+    delete globalThis.voice_channel[interaction.guild.id];
     return ({ embeds: [success] });
 };
