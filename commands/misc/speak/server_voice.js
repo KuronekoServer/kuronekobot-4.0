@@ -22,7 +22,7 @@ module.exports = async (interaction) => {
                     .addOptions(...voicevox_array
                         .filter(name => name.name === interaction.options.getString("voicevox話者名"))[0]
                         .styles
-                        .map(option => ({ label: option.name, description: `${option.name}を選択します`, value: `${process.env.voicevox},${option.id},${interaction.options.getString("voicevox話者名")}` }))
+                        .map(option => ({ label: option.name, description: `${option.name}を選択します`, value: `${process.env.voicevox},${option.id},${interaction.options.getString("voicevox話者名")},${interaction.guild.id}` }))
                     ),
             );
         return ({ embeds: [success], components: [select] });
@@ -40,7 +40,7 @@ module.exports = async (interaction) => {
                     .addOptions(...coeiroink_array
                         .filter(name => name.name === interaction.options.getString("coeiroink話者名"))[0]
                         .styles
-                        .map(option => ({ label: option.name, description: `${option.name}を選択します`, value: `${process.env.COEIROINK},${option.id},${interaction.options.getString("coeiroink話者名")}` }))
+                        .map(option => ({ label: option.name, description: `${option.name}を選択します`, value: `${process.env.COEIROINK},${option.id},${interaction.options.getString("coeiroink話者名")},${interaction.guild.id}` }))
                     ),
             );
         return ({ embeds: [success], components: [select] });
@@ -58,7 +58,7 @@ module.exports = async (interaction) => {
                     .addOptions(...sharevox_array
                         .filter(name => name.name === interaction.options.getString("sharevox話者名"))[0]
                         .styles
-                        .map(option => ({ label: option.name, description: `${option.name}を選択します`, value: `${process.env.SHAREVOX},${option.id},${interaction.options.getString("sharevox話者名")}` }))
+                        .map(option => ({ label: option.name, description: `${option.name}を選択します`, value: `${process.env.SHAREVOX},${option.id},${interaction.options.getString("sharevox話者名")},${interaction.guild.id}` }))
                     ),
             );
         return ({ embeds: [success], components: [select] });
