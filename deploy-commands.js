@@ -3,7 +3,7 @@ const path = require('path');
 const { REST, Routes } = require('discord.js');
 const { TOKEN, clientId } = process.env;
 const chalk = require('chalk');
-const option = require("./optionslash.json");
+const option = require("./helpers/optionslash.json");
 
 const commands = [];
 commands.push(option);
