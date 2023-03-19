@@ -3,9 +3,10 @@ const path = require('path');
 const { REST, Routes } = require('discord.js');
 const { TOKEN, clientId } = process.env;
 const chalk = require('chalk');
-
+const option = require("./helpers/optionslash.json");
 
 const commands = [];
+commands.push(option);
 fs.readdirSync('./commands/').forEach(async dir => {
     const commandsPath = path.join(__dirname, `./commands/${dir}`);
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));

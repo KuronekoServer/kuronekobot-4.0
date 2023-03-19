@@ -10,6 +10,26 @@ BOTはあらゆる点に置いて大変な作業が多いのである！(ha
 
 
 
+起動法
+
+1.mariadbを構築
+
+2.npm i でいろいろなmoduleインスコ
+
+3.envに記載
+
+4.sqlにログインしてcreate database 名前でデータベースを作る(envではtestでできてる)
+
+5.npm run setupでテーブルを作成する
+
+6.npm run startで気合でうごかす
+
+おしまい<=足りないところあったら付け足しといて(複雑になってきた)
+
+補足
+
+npm run speechlistで音声の最新情報を保存する
+
 
 ....
 

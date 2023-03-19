@@ -1,12 +1,33 @@
 //MikanBot Discord Utilities
 //Licenced to KuronekoServer under the MIT
 //© 2023 MikanDev All Rights Reserved
-
+const { Colors, EmbedBuilder } = require('discord.js');
+const Client = require('ftp');
+const ftp = new Client();
+const tmp = new Set();
 const { COLORS } = require("../data.json");
-const { readdirSync, lstatSync } = require("fs");
-const { join, extname } = require("path");
+const { readdirSync, lstatSync } = require("node:fs");
+const { join, extname } = require("node:path");
 const permissions = require("./permissions");
+const mariadb = require('mariadb');
+const discordTranscripts = require('discord-html-transcripts');
+const chalk = require('chalk');
+const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.db_user, connectionLimit: process.env.db_limit, password: process.env.db_password, port: process.env.db_port, database: process.env.db_name });
+const ftp_option = { host: process.env.core_host, port: process.env.core_port, user: process.env.core_account, password: process.env.core_password, keepalive: 250 }
+let conn;
+(async () => {
+  conn = await pool.getConnection()
+  console.log(chalk.green("[成功]"), `mariadbと接続しました。`);
+})();
 
+ftp.connect(ftp_option);
+ftp.on("ready", () => {
+  console.log(chalk.green("[成功]"), `FTP接続しました。`);
+})
+ftp.on("error", (e) => {
+  ftp.connect(ftp_option);
+  console.log(chalk.red("[注意]"), `FTPの非常自動再接続しました。\n${e}`);
+})
 module.exports = class Utils {
   /**
    * Checks if a string contains a URL
@@ -137,4 +158,66 @@ module.exports = class Utils {
     readCommands(dir);
     return filePaths;
   }
+
+  /**
+   * SQLコマンドを使用する
+   * @param {string} command - SQLコマンドの文字列
+   * @example
+   * const command = "CREATE TABLE table_name (id int, name varchar(10), address varchar(10));"
+   * @returns {any} - 出力データ
+   */
+  static async sql(command) {
+    try {
+      const result = await conn.query(command);
+      return result;
+    } catch (ex) {
+      console.error(chalk.red("[警告]"), "SQLでエラーが発生しました。");
+      console.error("エラー内容:", ex);
+      console.error(chalk.yellow("[注意]"), "SQLを自動再接続を行います。");
+      conn = await pool.getConnection();
+    } finally {
+      await conn.release();
+    };
+  };
+  /**
+   * タイマーチケット
+   * @param {string} interactiondata.action - アクション
+   * @param {"delete"|"cancel"} interactiondata.type - タイプ
+   * @returns {undefined}
+   */
+  static async ticket_timer(data) {
+    if (data.type === "delete") setTimeout(async () => {
+      if (tmp.has(data.action.channel.id)) return tmp.delete(data.action.channel.id);
+      const attachment = await discordTranscripts.createTranscript(data.action.channel, {
+        limit: -1,
+        returnType: 'buffer',
+        saveImages: true,
+        footerText: "Exported {number} message{s}",
+        poweredBy: false
+      });
+      const date = new Date();
+      ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => {
+        if (err.message.includes("No such file or directory")) {
+          ftp.mkdir(`./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`, (err) => { });
+          ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => { });
+        };
+      });
+      const create_embed = new EmbedBuilder()
+        .setTitle("チケットが削除されました")
+        .setDescription(`チャンネル:${data.action.channel.name}\nユーザー:${data.action.user}\n日時:${new Date()}\n詳細:https://kuronekobot.kuroneko6423.com/${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`)
+        .setColor(Colors.Green);
+      await data.action.channel.delete().catch(() => { });
+      const getdata = await conn.query(`select * from ticket_channel where guildid="${data.action.guild.id}";`);
+      if (getdata[0]?.guildid) {
+        try {
+          const channel = await data.action.guild.channels.fetch(getdata[0].channelid)
+          await channel.send({ embeds: [create_embed] });
+        } catch (error) {
+          await sql(`DELETE FROM ticket_channel WHERE guildid = "${data.action.guild.id}";`);
+        }
+      }
+      await data.action.user.send({ embeds: [create_embed] }).catch(() => { });
+    }, 5 * 1000);
+    if (data.type === "cancel") return tmp.add(data.action.channel.id);
+  };
 };

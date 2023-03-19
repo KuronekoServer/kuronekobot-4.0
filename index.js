@@ -8,8 +8,9 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-require('./deploy-commands.js');
 
+require('./deploy-commands.js');
+globalThis.voice_channel = [];
 // イベントハンドラー
 client.events = new Collection();
 fs.readdirSync('./events/').forEach(async dir => {
@@ -18,7 +19,6 @@ fs.readdirSync('./events/').forEach(async dir => {
     for (const file of eventFiles) {
         const filePath = path.join(eventsPath, file);
         const event = require(filePath);
-
         client.on(event.name, (...args) => event.execute(...args));
     };
 });
