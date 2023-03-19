@@ -8,7 +8,7 @@ require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
 require('./deploy-commands.js');
-
+globalThis.voice_channel = [];
 // イベントハンドラー
 client.events = new Collection();
 fs.readdirSync('./events/').forEach(async dir => {
