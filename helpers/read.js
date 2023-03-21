@@ -103,7 +103,9 @@ module.exports = {
             const voiceChannel = getVoiceConnection(message.guild.id);
             if (!voiceChannel) return;
             const player = createAudioPlayer();
-            if (skip && player.state.status === AudioPlayerStatus.Playing) player.stop();
+            if (skip) {
+                player.stop();
+            };
             await new Promise(resolve => {
                 const subscription = voiceChannel.state.subscription;
                 if (subscription && subscription.player.state.status !== AudioPlayerStatus.Idle) {
@@ -155,7 +157,9 @@ module.exports = {
             const voiceChannel = getVoiceConnection(message.guild.id);
             if (!voiceChannel) return;
             const player = createAudioPlayer();
-            if (skip && player.state.status === AudioPlayerStatus.Playing) player.stop();
+            if (skip) {
+                player.stop();
+            };
             await new Promise(resolve => {
                 const subscription = voiceChannel.state.subscription;
                 if (subscription && subscription.player.state.status !== AudioPlayerStatus.Idle) {
