@@ -24,6 +24,8 @@ BOTはあらゆる点に置いて大変な作業が多いのである！(ha
 
 6.npm run startで気合でうごかす
 
+> Ubuntuの場合Twitchを読み込むため以下のコマンドを使おう
+`sudo apt install libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 libasound2 libpangocairo-1.0-0 libxss1 libgtk-3-0`
 おしまい<=足りないところあったら付け足しといて(複雑になってきた)
 
 補足
