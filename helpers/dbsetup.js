@@ -24,7 +24,7 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
      * @property {string} userid - ユーザーID
      * @property {string} speakname - 対象話者名前
      * @property {int} speakid - 話者ID
-     * @property {string} speakport - 対象話者のhost
+     * @property {string} speakhost - 対象話者のhost
      * @property {decimal} pitch - 話者のピッチ
      * @property {decimal} intonation - 話者のイントネーション
      * @property {decimal} speed - 話者スピード
@@ -44,7 +44,7 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
      * @property {decimal} intonation - 話者のイントネーション
      * @property {decimal} speed - 話者のスピード
      * @property {int} speakid - 話者ID
-     * @property {string} speakport - 対象話者のhost
+     * @property {string} speakhost - 対象話者のhost
      * @property {boolean} bot_read - BOTのメッセージを読み上げるかどうか
      * @property {boolean} read_username - ユーザーネームを読み上げるかどうか
      * @property {boolean} read_joinremove - 入退出を読み上げるかどうか
@@ -70,9 +70,9 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
     await conn.query("create table ticket_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table log_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table job_message (guildid text,channelid text,messageid text);").catch(() => { });
-    await conn.query("create table user_speak (userid text,speakname text,speakid int,speakport int,pitch decimal,intonation decimal,speed decimal);").catch(() => { });
+    await conn.query("create table user_speak (userid text,speakname text,speakid int,speakhost text,pitch decimal,intonation decimal,speed decimal);").catch(() => { });
     await conn.query("create table dictionary (guildid text,before_text text,after_text text);").catch(() => { });
-    await conn.query("create table server_speak (guildid text,auto_voice_channel text,auto_text_channel text,speakname text,pitch decimal,intonation decimal,speed decimal,speakid int,speakport text,bot_read boolean,read_username boolean,read_joinremove boolean,force_args boolean,force_voice boolean,exvoice boolean,dictionary_username boolean,only_tts boolean,read_through boolean);").catch(() => { });
+    await conn.query("create table server_speak (guildid text,auto_voice_channel text,auto_text_channel text,speakname text,pitch decimal,intonation decimal,speed decimal,speakid int,speakhost text,bot_read boolean,read_username boolean,read_joinremove boolean,force_args boolean,force_voice boolean,exvoice boolean,dictionary_username boolean,only_tts boolean,read_through boolean);").catch(() => { });
     await conn.query("create table read_user (guildid text,userid text,readmsg boolean);").catch(() => { });
     await conn.query("create table exvoiceword (guildid text,word text,speakname text);").catch(() => { });
 

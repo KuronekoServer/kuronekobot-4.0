@@ -15,7 +15,7 @@ module.exports = {
         const getdata = await sql(`select * from user_speak where userid="${message.member.id}";`);
         const dictionary = await sql(`select * from dictionary where guildid="${message.guild.id}";`);
         const speaker = (get_server_data[0]?.force_voice) ? get_server_data[0]?.speakid || getdata[0]?.speakid || 3 : getdata[0]?.speakid || get_server_data[0]?.speakid || 3;
-        const port = (get_server_data[0]?.force_voice) ? get_server_data[0]?.speakport || getdata[0]?.speakport || process.env.voicevox : getdata[0]?.speakport || get_server_data[0]?.speakport || process.env.voicevox;
+        const host = (get_server_data[0]?.force_voice) ? get_server_data[0]?.speakhost || getdata[0]?.speakhost || process.env.voicevox : getdata[0]?.speakphost || get_server_data[0]?.speakhost || process.env.voicevox;
         const name = (get_server_data[0]?.force_voice) ? get_server_data[0]?.speakname || getdata[0]?.speakname || "ずんだもん" : getdata[0]?.speakname || get_server_data[0]?.speakname || "ずんだもん";
         const speed = (get_server_data[0]?.force_args) ? get_server_data[0]?.speed || getdata[0]?.speed || 1 : getdata[0]?.speed || get_server_data[0]?.speed || 1;
         const pitch = (get_server_data[0]?.force_args) ? get_server_data[0]?.pitch || getdata[0]?.pitch || 0 : getdata[0]?.pitch || get_server_data[0]?.pitch || 0;
@@ -52,14 +52,14 @@ module.exports = {
                 (string_array.join("").length >= max_message) ? `${string_array[1].slice(0, (max_message - string_array[0].length <= 0) ? 0 : max_message - string_array[0].length)}以下省略` : string_array[1];
             const start_content = (string_array.length === 0) ? splitResult[0] : string_array[0];
             const audio_query_response_start = await fetch(
-                `${port}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${start_content}` : start_content}&speaker=${speaker}`,
+                `${host}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${start_content}` : start_content}&speaker=${speaker}`,
                 {
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' }
                 }
             );
             const audio_query_response_last = await fetch(
-                `${port}/audio_query?text=${last_content}&speaker=${speaker}`,
+                `${host}/audio_query?text=${last_content}&speaker=${speaker}`,
                 {
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' }
@@ -72,7 +72,7 @@ module.exports = {
                 audio_query_json["pitchScale"] = pitch;
                 audio_query_json["intonationScale"] = intonation;
                 const synthesis_response = await fetch(
-                    `${port}/synthesis?speaker=${speaker}`,
+                    `${host}/synthesis?speaker=${speaker}`,
                     {
                         method: 'post',
                         body: JSON.stringify(audio_query_json),
@@ -87,7 +87,7 @@ module.exports = {
             const exvoice_file = fs.readFileSync(`${process.env.exvoice}/${name}/${result}.wav`).toString("base64");
             buffer_array.splice(1, 0, exvoice_file);
             const response = await axios.post(
-                `${port}/connect_waves`,
+                `${host}/connect_waves`,
                 buffer_array,
                 {
                     headers: {
@@ -130,7 +130,7 @@ module.exports = {
                 (msg.length >= max_message) ? `${msg.slice(0, max_message)}以下省略` : msg :
                 (newString.length >= max_message) ? `${newString.slice(0, max_message)}以下省略` : newString;
             const audio_query_response = await fetch(
-                `${port}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${content}` : content}&speaker=${speaker}`,
+                `${host}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${content}` : content}&speaker=${speaker}`,
                 {
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' }
@@ -141,7 +141,7 @@ module.exports = {
             audio_query_json["pitchScale"] = pitch;
             audio_query_json["intonationScale"] = intonation;
             const synthesis_response = await fetch(
-                `${port}/synthesis?speaker=${speaker}`,
+                `${host}/synthesis?speaker=${speaker}`,
                 {
                     method: 'post',
                     body: JSON.stringify(audio_query_json),
