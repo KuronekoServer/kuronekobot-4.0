@@ -86,7 +86,6 @@ module.exports = async (interaction) => {
             if (globalThis.tlivechat[interaction.guild.id]) return ({ embeds: [already_error] });
             globalThis.tlivechat[interaction.guild.id] = tw.start(id, async (err, message) => {
                 if (err) {
-                    console.log(err);
                     await read(interaction, "system", "ツイッチのデータ取得中にエラーが発生しました　取得を停止します");
                     delete globalThis.tlivechat[interaction.guild.id];
                     return;
