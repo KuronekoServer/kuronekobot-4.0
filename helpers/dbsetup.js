@@ -51,6 +51,9 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
      * @property {boolean} force_args - サーバーの設定を強制するかどうか
      * @property {boolean} force_voice - サーバーの話者を強制するかどうか
      * @property {boolean} exvoice - exvoiceを有効にするかどうか(無効がtrue)
+     * @property {boolean} dictionary_username - 辞書をユーザー名に適応するか
+     * @property {boolean} only_tts - vc以外の人も読み上げるか
+     * 
      * 
      * @typedef {Object} read_user
      * @property {string} guildid - サーバーID
@@ -68,7 +71,7 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
     await conn.query("create table job_message (guildid text,channelid text,messageid text);").catch(() => { });
     await conn.query("create table user_speak (userid text,speakname text,speakid int,speakport int,pitch decimal,intonation decimal,speed decimal);").catch(() => { });
     await conn.query("create table dictionary (guildid text,before_text text,after_text text);").catch(() => { });
-    await conn.query("create table server_speak (guildid text,auto_voice_channel text,auto_text_channel text,speakname text,pitch decimal,intonation decimal,speed decimal,speakid int,speakport int,bot_read boolean,read_username boolean,read_joinremove boolean,force_args boolean,force_voice boolean,exvoice boolean);").catch(() => { });
+    await conn.query("create table server_speak (guildid text,auto_voice_channel text,auto_text_channel text,speakname text,pitch decimal,intonation decimal,speed decimal,speakid int,speakport int,bot_read boolean,read_username boolean,read_joinremove boolean,force_args boolean,force_voice boolean,exvoice boolean,dictionary_username boolean,only_tts boolean);").catch(() => { });
     await conn.query("create table read_user (guildid text,userid text,readmsg boolean);").catch(() => { });
     await conn.query("create table exvoiceword (guildid text,word text,speakname text);").catch(() => { });
 

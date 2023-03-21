@@ -40,6 +40,8 @@
     "node-fetch": "^2.6.9",
     "puppeteer": "^19.7.3",
     "slash-command-builder": "^0.1.1",
-    "sourcebin_js": "^0.0.3-ignore"
+    "sourcebin_js": "^0.0.3-ignore",
+    "twitch-webchat": "^5.0.3",
+    "youtube-chat": "^2.2.0"
   }
 }

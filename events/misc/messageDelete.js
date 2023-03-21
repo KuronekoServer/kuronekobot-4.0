@@ -14,7 +14,6 @@ module.exports = {
                 .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | messagedelete" });
             await channel.send({ embeds: [Embed] });
         } catch (error) {
-            console.log(error)
             await sql(`DELETE FROM log_channel WHERE guildid = "${message.guild.id}";`);
         };
     }

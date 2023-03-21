@@ -11,6 +11,8 @@ const axios = require('axios');
 
 require('./deploy-commands.js');
 globalThis.voice_channel = [];
+globalThis.ylivechat = {};
+globalThis.tlivechat = {};
 // イベントハンドラー
 client.events = new Collection();
 fs.readdirSync('./events/').forEach(async dir => {
@@ -53,6 +55,7 @@ setInterval(() => {
 
 // エラー後も処理継続
 process.on("uncaughtException", (reason, promise) => {
+    if (reason === "TypeError: fetch failed") return;
     console.log(chalk.red(`[エラー] ${reason}`));
 });
 
