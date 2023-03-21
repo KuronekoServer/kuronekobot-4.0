@@ -16,5 +16,7 @@ module.exports = async (interaction) => {
     if (!voiceChannel) return ({ embeds: [undefined_channel], ephemeral: true });
     voiceChannel.destroy();
     delete globalThis.voice_channel[interaction.guild.id];
+    if (globalThis.ylivechat[interaction.guild.id]) delete globalThis.ylivechat[interaction.guild.id];
+    if (globalThis.tlivechat[interaction.guild.id]) delete globalThis.tlivechat[interaction.guild.id];
     return ({ embeds: [success] });
 };

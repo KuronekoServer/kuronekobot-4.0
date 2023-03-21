@@ -26,7 +26,6 @@ module.exports = {
         try {
             await command.execute(interaction);
         } catch (err) {
-            console.log(err)
             console.log(chalk.red(`[エラー] ${err.message}`));
             if (err.message === "Missing Permissions") return await interaction.reply({ embeds: [permissions_embed], ephemeral: true }).catch(() => { });
             const unknown_embed = new EmbedBuilder()

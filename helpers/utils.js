@@ -15,10 +15,6 @@ const chalk = require('chalk');
 const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.db_user, connectionLimit: process.env.db_limit, password: process.env.db_password, port: process.env.db_port, database: process.env.db_name });
 const ftp_option = { host: process.env.core_host, port: process.env.core_port, user: process.env.core_account, password: process.env.core_password, keepalive: 250 }
 let conn;
-(async () => {
-  conn = await pool.getConnection()
-  console.log(chalk.green("[成功]"), `mariadbと接続しました。`);
-})();
 
 ftp.connect(ftp_option);
 ftp.on("ready", () => {
@@ -168,15 +164,17 @@ module.exports = class Utils {
    */
   static async sql(command) {
     try {
+      conn = await pool.getConnection()
       const result = await conn.query(command);
       return result;
     } catch (ex) {
       console.error(chalk.red("[警告]"), "SQLでエラーが発生しました。");
       console.error("エラー内容:", ex);
       console.error(chalk.yellow("[注意]"), "SQLを自動再接続を行います。");
+      await pool.closed();
       conn = await pool.getConnection();
     } finally {
-      await conn.release();
+      if(conn)await conn.release();
     };
   };
   /**
