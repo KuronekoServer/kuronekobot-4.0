@@ -15,19 +15,19 @@ const db_set = async (data, interaction) => {
     if (data[3]) {
         const getdata = await sql(`select * from server_speak where guildid="${interaction?.guild?.id}";`);
         if (getdata[0]?.guildid) {
-            const set = await sql(`update server_speak set speakid=${data[1]},speakport=${data[0]},speakname="${data[2]}" where guildid="${interaction.guild.id}";`);
+            const set = await sql(`update server_speak set speakid=${data[1]},speakport="${data[0]}",speakname="${data[2]}" where guildid="${interaction.guild.id}";`);
             if (!set) return interaction.reply({ embeds: [db_error], ephemeral: true });
         } else {
-            const set = await sql(`INSERT INTO server_speak(guildid,speakid,speakport,speakname) VALUES ("${interaction.user.id}",${data[1]},${data[0]},"${data[2]}");`);
+            const set = await sql(`INSERT INTO server_speak(guildid,speakid,speakport,speakname) VALUES ("${interaction.user.id}",${data[1]},"${data[0]}","${data[2]}");`);
             if (!set) return await interaction.reply({ embeds: [db_error], ephemeral: true });
         };
     } else {
         const getdata = await sql(`select * from user_speak where userid="${interaction.user.id}";`);
         if (getdata[0]?.userid) {
-            const set = await sql(`update user_speak set speakid=${data[1]},speakport=${data[0]},speakname="${data[2]}" where userid="${interaction.user.id}";`);
+            const set = await sql(`update user_speak set speakid=${data[1]},speakport="${data[0]}",speakname="${data[2]}" where userid="${interaction.user.id}";`);
             if (!set) return interaction.reply({ embeds: [db_error], ephemeral: true });
         } else {
-            const set = await sql(`INSERT INTO user_speak(userid,speakid,speakport,speakname) VALUES ("${interaction.user.id}",${data[1]},${data[0]},"${data[2]}");`);
+            const set = await sql(`INSERT INTO user_speak(userid,speakid,speakport,speakname) VALUES ("${interaction.user.id}",${data[1]},"${data[0]}","${data[2]}");`);
             if (!set) return await interaction.reply({ embeds: [db_error], ephemeral: true });
         };
     };
