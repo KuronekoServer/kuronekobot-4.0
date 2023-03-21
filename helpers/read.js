@@ -10,7 +10,7 @@ fs.readdirSync(`${process.env.exvoice}`).map(data => {
 const max_message = process.env.max_message;
 
 module.exports = {
-    async read(message, user, live_content, skip) {
+    async read(message, user, live_content, skip, tmp) {
         const get_server_data = await sql(`select * from server_speak where guildid="${message.guild.id}";`);
         const getdata = await sql(`select * from user_speak where userid="${message.member.id}";`);
         const dictionary = await sql(`select * from dictionary where guildid="${message.guild.id}";`);
@@ -22,7 +22,7 @@ module.exports = {
         const intonation = (get_server_data[0]?.force_args) ? get_server_data[0]?.intonation || getdata[0]?.intonation || 1 : getdata[0]?.intonation || get_server_data[0]?.intonation || 1;
         const not_exvoice = (await sql(`select * from exvoiceword where guildid="${message.guild.id}" and speakname="${name}";`)).map(data => data.word);
         const exvoice = (exvoice_list[name]) ? exvoice_list[name].filter(item => !not_exvoice.includes(item)) : null
-        const before_msg = (get_server_data[0]?.read_username && !get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${live_content}` : live_content;
+        const before_msg = (get_server_data[0]?.read_username && !get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${tmp ? "添付ファイル" : ""}${live_content}` : tmp ? "添付ファイル" : "" + live_content;
         const romajimsg = before_msg.split(/((http|https):\/\/[^\s]+)/g)?.join("リンク省略");
         const code = romajimsg.split(/```[\s\S]*?```/g)?.join("コード省略");
         const wara = code.split(/w|ｗ|W|Ｗ/g)?.join("笑");
@@ -53,7 +53,7 @@ module.exports = {
                 (string_array.join("").length >= max_message) ? `${string_array[1].slice(0, (max_message - string_array[0].length <= 0) ? 0 : max_message - string_array[0].length)}以下省略` : string_array[1];
             const start_content = (string_array.length === 0) ? splitResult[0] : string_array[0];
             const audio_query_response_start = await fetch(
-                `${host}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${start_content}` : start_content}&speaker=${speaker}`,
+                `${host}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ ${tmp ? "添付ファイル" : ""}　${start_content}` : tmp ? "添付ファイル" : "" + start_content}&speaker=${speaker}`,
                 {
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' }
@@ -131,7 +131,7 @@ module.exports = {
                 (msg.length >= max_message) ? `${msg.slice(0, max_message)}以下省略` : msg :
                 (newString.length >= max_message) ? `${newString.slice(0, max_message)}以下省略` : newString;
             const audio_query_response = await fetch(
-                `${host}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${content}` : content}&speaker=${speaker}`,
+                `${host}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${tmp ? "添付ファイル" : ""}　${content}` : tmp ? "添付ファイル" : "" + content}&speaker=${speaker}`,
                 {
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' }

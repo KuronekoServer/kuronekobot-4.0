@@ -13,11 +13,12 @@ module.exports = {
         const get_server_data = await sql(`select * from server_speak where guildid="${message.guild.id}";`);
         if (get_server_data[0]?.read_through) return;
         if (message.member?.voice?.channel?.id !== message?.guild?.members?.me?.voice?.channel?.id && get_server_data[0]?.only_tts !== 1) return;
-        if (user_read[0]?.readmsg) return await read(message, message.author.username, message.content);
+        const tmp = message?.attachments?.size > 0;
+        if (user_read[0]?.readmsg) return await read(message, message.author.username, message.content, false, tmp);
         if (user_read[0]?.readmsg === 0) return;
         if (!get_server_data[0]?.bot_read) {
             if (message.author.bot) return;
         };
-        await read(message, message.author.username, message.content);
+        await read(message, message.author.username, message.content, false, tmp);
     }
 }
