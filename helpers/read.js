@@ -7,7 +7,7 @@ const exvoice_list = {};
 fs.readdirSync(`${process.env.exvoice}`).map(data => {
     exvoice_list[data] = fs.readdirSync(`${process.env.exvoice}/${data}`).map(name => name.replace(".wav", ""));
 });
-const max_message = 50;
+const max_message = process.env.max_message;
 
 module.exports = {
     async read(message, user, live_content, skip) {
@@ -27,9 +27,9 @@ module.exports = {
         const romajimsg = before_msg.replace(new RegExp(reg, 'g'), "リンク省略");
         const format_msg = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${romajimsg}`).catch((ex) => { });
         const msg = (format_msg.data) ? format_msg.data : romajimsg;
-        const check = exvoice.find(str => msg.includes(str));
+        const check = exvoice?.find(str => msg.includes(str));
         if (exvoice && check && !get_server_data[0]?.exvoice) {
-            const matchStr = exvoice.find(str => msg.includes(str)); // 配列内に一致する要素を検索する
+            const matchStr = exvoice?.find(str => msg.includes(str)); // 配列内に一致する要素を検索する
             const result = msg.substring(msg.indexOf(matchStr), msg.indexOf(matchStr) + matchStr.length);
             const array = msg.split(result)//result を基準に文字列を分割する
             const splitResult = [array.shift(), array.join(result)];
@@ -52,14 +52,14 @@ module.exports = {
                 (string_array.join("").length >= max_message) ? `${string_array[1].slice(0, (max_message - string_array[0].length <= 0) ? 0 : max_message - string_array[0].length)}以下省略` : string_array[1];
             const start_content = (string_array.length === 0) ? splitResult[0] : string_array[0];
             const audio_query_response_start = await fetch(
-                `http://127.0.0.1:${port}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${start_content}` : start_content}&speaker=${speaker}`,
+                `${port}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${start_content}` : start_content}&speaker=${speaker}`,
                 {
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' }
                 }
             );
             const audio_query_response_last = await fetch(
-                `http://127.0.0.1:${port}/audio_query?text=${last_content}&speaker=${speaker}`,
+                `${port}/audio_query?text=${last_content}&speaker=${speaker}`,
                 {
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' }
@@ -72,7 +72,7 @@ module.exports = {
                 audio_query_json["pitchScale"] = pitch;
                 audio_query_json["intonationScale"] = intonation;
                 const synthesis_response = await fetch(
-                    `http://127.0.0.1:${port}/synthesis?speaker=${speaker}`,
+                    `${port}/synthesis?speaker=${speaker}`,
                     {
                         method: 'post',
                         body: JSON.stringify(audio_query_json),
@@ -87,7 +87,7 @@ module.exports = {
             const exvoice_file = fs.readFileSync(`${process.env.exvoice}/${name}/${result}.wav`).toString("base64");
             buffer_array.splice(1, 0, exvoice_file);
             const response = await axios.post(
-                `http://127.0.0.1:${port}/connect_waves`,
+                `${port}/connect_waves`,
                 buffer_array,
                 {
                     headers: {
@@ -130,7 +130,7 @@ module.exports = {
                 (msg.length >= max_message) ? `${msg.slice(0, max_message)}以下省略` : msg :
                 (newString.length >= max_message) ? `${newString.slice(0, max_message)}以下省略` : newString;
             const audio_query_response = await fetch(
-                `http://127.0.0.1:${port}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${content}` : content}&speaker=${speaker}`,
+                `${port}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${content}` : content}&speaker=${speaker}`,
                 {
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' }
@@ -141,7 +141,7 @@ module.exports = {
             audio_query_json["pitchScale"] = pitch;
             audio_query_json["intonationScale"] = intonation;
             const synthesis_response = await fetch(
-                `http://127.0.0.1:${port}/synthesis?speaker=${speaker}`,
+                `${port}/synthesis?speaker=${speaker}`,
                 {
                     method: 'post',
                     body: JSON.stringify(audio_query_json),
