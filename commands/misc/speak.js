@@ -110,7 +110,7 @@ module.exports = {
         ),
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply();
         //join
         if (sub === "join") {
             response = await join(interaction);

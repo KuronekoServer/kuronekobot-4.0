@@ -17,12 +17,12 @@ const quotation = new EmbedBuilder()
     .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });
 module.exports = async (interaction) => {
     const delete_text = interaction.options.getString("delete");
-    if (delete_text?.includes('"')) return ({ embeds: [quotation], ephemeral: true });
+    if (delete_text?.includes('"')) return ({ embeds: [quotation] });
     const getdata = await sql(`select * from dictionary where guildid="${interaction.guild.id}" and before_text="${delete_text}";`);
     if (getdata[0]?.guildid) {
         const set = await sql(`DELETE FROM dictionary WHERE guildid="${interaction.guild.id}" and before_text="${delete_text}";`);
-        if (!set) return ({ embeds: [db_error], ephemeral: true });
-    } else return ({ embeds: [error], ephemeral: true });
+        if (!set) return ({ embeds: [db_error] });
+    } else return ({ embeds: [error] });
     const success = new EmbedBuilder()
         .setTitle(`✅完了`)
         .setDescription(`辞書を削除しました！\n単語:${delete_text}`)

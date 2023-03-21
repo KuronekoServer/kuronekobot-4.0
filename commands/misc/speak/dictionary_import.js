@@ -35,16 +35,16 @@ module.exports = async (interaction) => {
         await Promise.all(json.map(async value => {
             if (!value?.before_text) return ({ embeds: [error] });
             if (!value?.after_text) return ({ embeds: [error] });
-            if (value.after_text.includes('"')) return ({ embeds: [quotation], ephemeral: true });
-            if (value.before_text.includes('"')) return ({ embeds: [quotation], ephemeral: true });
-            if (value.before_text.length + value.after_text.length > 20) return ({ embeds: [size_error], ephemeral: true });
+            if (value.after_text.includes('"')) return ({ embeds: [quotation] });
+            if (value.before_text.includes('"')) return ({ embeds: [quotation] });
+            if (value.before_text.length + value.after_text.length > 20) return ({ embeds: [size_error] });
             const getdata = await sql(`select * from dictionary where guildid="${interaction.guild.id}" and before_text="${value.before_text}";`);
             if (getdata[0]?.guildid) {
                 const set = await sql(`update dictionary set after_text="${value.after_text}" where guildid="${interaction.guild.id}" and before_text="${value.before_text}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO dictionary(guildid,before_text,after_text) VALUES ("${interaction.guild.id}","${value.before_text}","${value.after_text}");`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
         }));
         return ({ embeds: [success] });

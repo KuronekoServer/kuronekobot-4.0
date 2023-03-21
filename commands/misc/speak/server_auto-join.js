@@ -23,15 +23,15 @@ module.exports = async (interaction) => {
     if (remove === "削除") {
         if (!getdata[0]?.guildid) return ({ embeds: [undefiend_error] });
         const set = await sql(`update server_speak set auto_text_channel=null,auto_voice_channel=null where guildid="${interaction.guild.id}";`);
-        if (!set) return ({ embeds: [db_error], ephemeral: true });
+        if (!set) return ({ embeds: [db_error] });
         return ({ embeds: [remove_success] });
     };
     if (getdata[0]?.guildid) {
         const set = await sql(`update server_speak set auto_text_channel="${text.id}",auto_voice_channel="${voice.id}" where guildid="${interaction.guild.id}";`);
-        if (!set) return ({ embeds: [db_error], ephemeral: true });
+        if (!set) return ({ embeds: [db_error] });
     } else {
         const set = await sql(`INSERT INTO server_speak(guildid,auto_text_channel,auto_voice_channel) VALUES ("${interaction.guild.id}","${text.id}","${voice.id}");`);
-        if (!set) return ({ embeds: [db_error], ephemeral: true });
+        if (!set) return ({ embeds: [db_error] });
     };
     const success = new EmbedBuilder()
         .setTitle(`✅完了`)

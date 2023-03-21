@@ -34,9 +34,9 @@ module.exports = async (interaction) => {
         const getdata = await sql(`select * from exvoiceword where guildid="${interaction.guild.id}" and speakname="${name.split(",")[1]}" and word="${name.split(",")[0]}";`);
         if (!getdata[0]?.word) {
             const set = await sql(`INSERT INTO exvoiceword(guildid,word,speakname) VALUES ("${interaction.guild.id}","${name.split(",")[0]}","${name.split(",")[1]}");`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         };
-        return ({ embeds: [success], ephemeral: true });
+        return ({ embeds: [success] });
     };
     if (select === "remove") {
         const success = new EmbedBuilder()
@@ -47,9 +47,9 @@ module.exports = async (interaction) => {
         const getdata = await sql(`select * from exvoiceword where guildid="${interaction.guild.id}" and speakname="${name.split(",")[1]}" and word="${name.split(",")[0]}";`);
         if (getdata[0]?.word) {
             const set = await sql(`DELETE FROM exvoiceword where guildid="${interaction.guild.id}" and speakname="${name.split(",")[1]}" and word="${name.split(",")[0]}";`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         }
-        return ({ embeds: [success], ephemeral: true });
+        return ({ embeds: [success] });
     };
     if (select === "removelist") {
         const getdata = await sql(`select * from exvoiceword where guildid="${interaction.guild.id}" and speakname="${name}";`);

@@ -13,10 +13,10 @@ module.exports = async (interaction) => {
         if (boolean === "true") {
             if (getdata[0]?.guildid) {
                 const set = await sql(`update server_speak set force_voice=true where guildid="${interaction.guild.id}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO server_speak(guildid,force_voice) VALUES ("${interaction.guild.id}",true);`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
             const success = new EmbedBuilder()
                 .setTitle(`✅完了`)
@@ -28,10 +28,10 @@ module.exports = async (interaction) => {
         if (boolean === "false") {
             if (getdata[0]?.guildid) {
                 const set = await sql(`update server_speak set force_voice=null where guildid="${interaction.guild.id}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO server_speak(guildid,force_voice) VALUES ("${interaction.guild.id}",null);`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
             const success = new EmbedBuilder()
                 .setTitle(`✅完了`)
@@ -45,10 +45,10 @@ module.exports = async (interaction) => {
         if (boolean === "true") {
             if (getdata[0]?.guildid) {
                 const set = await sql(`update server_speak set force_args=true where guildid="${interaction.guild.id}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO server_speak(guildid,force_args) VALUES ("${interaction.guild.id}",true);`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
             const success = new EmbedBuilder()
                 .setTitle(`✅完了`)
@@ -60,10 +60,10 @@ module.exports = async (interaction) => {
         if (boolean === "false") {
             if (getdata[0]?.guildid) {
                 const set = await sql(`update server_speak set force_args=null where guildid="${interaction.guild.id}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO server_speak(guildid,force_args) VALUES ("${interaction.guild.id}",null);`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
             const success = new EmbedBuilder()
                 .setTitle(`✅完了`)

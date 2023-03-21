@@ -23,9 +23,10 @@ module.exports = {
         const not_exvoice = (await sql(`select * from exvoiceword where guildid="${message.guild.id}" and speakname="${name}";`)).map(data => data.word);
         const exvoice = (exvoice_list[name]) ? exvoice_list[name].filter(item => !not_exvoice.includes(item)) : null
         const before_msg = (get_server_data[0]?.read_username && !get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${live_content}` : live_content;
-        const reg = before_msg.match(/((http|https):\/\/[^\s]+)/g);
-        const romajimsg = before_msg.replace(new RegExp(reg, 'g'), "リンク省略");
-        const format_msg = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${romajimsg}`).catch((ex) => { });
+        const romajimsg = before_msg.split(/((http|https):\/\/[^\s]+)/g)?.join("リンク省略");
+        const code = romajimsg.split(/```[\s\S]*?```/g)?.join("コード省略");
+        const wara = code.split(/w|ｗ|W|Ｗ/g)?.join("笑");
+        const format_msg = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${wara}`).catch((ex) => { });
         const msg = (format_msg.data) ? format_msg.data : romajimsg;
         const check = exvoice?.find(str => msg.includes(str));
         if (exvoice && check && !get_server_data[0]?.exvoice) {

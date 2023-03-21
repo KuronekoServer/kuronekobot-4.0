@@ -11,10 +11,10 @@ module.exports = async (interaction) => {
     if (boolean === "true") {
         if (getdata[0]?.guildid) {
             const set = await sql(`update server_speak set bot_read=true where guildid="${interaction.guild.id}";`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         } else {
             const set = await sql(`INSERT INTO server_speak(guildid,bot_read) VALUES ("${interaction.guild.id}",true);`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         };
         const success = new EmbedBuilder()
             .setTitle(`✅完了`)
@@ -26,10 +26,10 @@ module.exports = async (interaction) => {
     if (boolean === "false") {
         if (getdata[0]?.guildid) {
             const set = await sql(`update server_speak set bot_read=null where guildid="${interaction.guild.id}";`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         } else {
             const set = await sql(`INSERT INTO server_speak(guildid,bot_read) VALUES ("${interaction.guild.id}",null);`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         };
         const success = new EmbedBuilder()
             .setTitle(`✅完了`)

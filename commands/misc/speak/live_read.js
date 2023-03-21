@@ -67,8 +67,8 @@ module.exports = async (interaction) => {
                 return ({ embeds: [vi_undefined_error] });
             } else {
                 globalThis.ylivechat[interaction.guild.id]?.on("chat", async (chatItem) => {
-                    if (!chatItem.message[0]?.text) return;
-                    await read(interaction, chatItem.author.name || "取得できませんでした", chatItem.message[0]?.text || "取得できませんでした");
+                    if (!chatItem.message?.join("")?.text) return;
+                    await read(interaction, chatItem.author.name || "取得できませんでした", chatItem.message?.join("")?.text || "取得できませんでした");
                 });
                 return ({ embeds: [success] });
             };
