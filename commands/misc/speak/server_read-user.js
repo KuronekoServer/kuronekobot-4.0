@@ -22,20 +22,20 @@ module.exports = async (interaction) => {
     if (boolean === "true") {
         if (getdata[0]?.userid === user.id) {
             const set = await sql(`update read_user set readmsg=true where guildid="${interaction.guild.id}" and userid="${user.id}";`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         } else {
             const set = await sql(`INSERT INTO read_user(guildid,userid,readmsg) VALUES ("${interaction.guild.id}","${user.id}",true);`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         };
         return ({ embeds: [success] });
     };
     if (boolean === "false") {
         if (getdata[0]?.userid === user.id) {
             const set = await sql(`update read_user set readmsg=false where guildid="${interaction.guild.id}" and userid="${user.id}";`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         } else {
             const set = await sql(`INSERT INTO read_user(guildid,userid,readmsg) VALUES ("${interaction.guild.id}","${user.id}",false);`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         };
         return ({ embeds: [remove_success] });
     };

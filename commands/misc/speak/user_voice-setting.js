@@ -25,18 +25,18 @@ module.exports = async (interaction) => {
             if (intonation < 0) return ({ embeds: [sizemin_error] });
             if (getdata[0]?.userid) {
                 const set = await sql(`update user_speak set intonation=${intonation} where userid="${interaction.user.id}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO user_speak(userid,intonation) VALUES ("${interaction.user.id}",${intonation});`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
         } else {
             if (getdata[0]?.userid) {
                 const set = await sql(`update user_speak set intonation=null where userid="${interaction.user.id}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO user_speak(userid,intonation) VALUES ("${interaction.user.id}",null);`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
         };
         const success = new EmbedBuilder()
@@ -63,18 +63,18 @@ module.exports = async (interaction) => {
             if (speed < 0.5) return ({ embeds: [sizemin_error] });
             if (getdata[0]?.userid) {
                 const set = await sql(`update user_speak set speed=${speed} where userid="${interaction.user.id}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO user_speak(userid,speed) VALUES ("${interaction.user.id}",${speed});`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
         } else {
             if (getdata[0]?.userid) {
                 const set = await sql(`update user_speak set speed=null where userid="${interaction.user.id}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO user_speak(userid,speed) VALUES ("${interaction.user.id}",null);`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
         };
         const success = new EmbedBuilder()
@@ -101,18 +101,18 @@ module.exports = async (interaction) => {
             if (pitch < -0.15) return ({ embeds: [sizemin_error] });
             if (getdata[0]?.userid) {
                 const set = await sql(`update user_speak set pitch=${pitch} where userid="${interaction.user.id}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO user_speak(userid,pitch) VALUES ("${interaction.user.id}",${pitch});`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
         } else {
             if (getdata[0]?.userid) {
                 const set = await sql(`update user_speak set pitch=null where userid="${interaction.user.id}";`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             } else {
                 const set = await sql(`INSERT INTO user_speak(userid,pitch) VALUES ("${interaction.user.id}",null);`);
-                if (!set) return ({ embeds: [db_error], ephemeral: true });
+                if (!set) return ({ embeds: [db_error] });
             };
         };
         const success = new EmbedBuilder()

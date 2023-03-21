@@ -21,20 +21,20 @@ module.exports = async (interaction) => {
     if (boolean === "true") {
         if (getdata[0]?.guildid) {
             const set = await sql(`update server_speak set only_tts=true where guildid="${interaction.guild.id}";`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         } else {
             const set = await sql(`INSERT INTO server_speak(guildid,only_tts) VALUES ("${interaction.guild.id}",true);`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         };
         return ({ embeds: [success] });
     };
     if (boolean === "false") {
         if (getdata[0]?.guildid) {
             const set = await sql(`update server_speak set only_tts=null where guildid="${interaction.guild.id}";`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         } else {
             const set = await sql(`INSERT INTO server_speak(guildid,only_tts) VALUES ("${interaction.guild.id}",null);`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         };
         return ({ embeds: [success_delete] });
     };

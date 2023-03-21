@@ -13,7 +13,7 @@ const undefined_channel = new EmbedBuilder()
 
 module.exports = async (interaction) => {
     const voiceChannel = getVoiceConnection(interaction.guildId);
-    if (!voiceChannel) return ({ embeds: [undefined_channel], ephemeral: true });
+    if (!voiceChannel) return ({ embeds: [undefined_channel] });
     voiceChannel.destroy();
     delete globalThis.voice_channel[interaction.guild.id];
     if (globalThis.ylivechat[interaction.guild.id]) delete globalThis.ylivechat[interaction.guild.id];

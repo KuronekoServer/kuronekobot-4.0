@@ -14,7 +14,7 @@ module.exports = async (interaction) => {
         const getdata = await sql(`select * from user_speak where userid="${interaction.user.id}";`);
         if (getdata[0]?.userid) {
             const set = await sql(`DELETE FROM user_speak WHERE userid="${interaction.user.id}";`);
-            if (!set) return ({ embeds: [db_error], ephemeral: true });
+            if (!set) return ({ embeds: [db_error] });
         };
         return ({ embeds: [success] });
 };

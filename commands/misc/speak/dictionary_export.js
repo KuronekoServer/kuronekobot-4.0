@@ -7,7 +7,7 @@ const error = new EmbedBuilder()
     .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });
 module.exports = async (interaction) => {
     const getdata = await sql(`select * from dictionary where guildid="${interaction.guild.id}"`);
-    if (!getdata[0]?.guildid) return ({ embeds: [error], ephemeral: true });
+    if (!getdata[0]?.guildid) return ({ embeds: [error] });
     const format = interaction.options.getString("format") || "csv";
     const text = (format === "json") ? JSON.stringify(getdata) : getdata.map(data => `${data.before_text}${(format === "csv") ? "," : ":"}${data.after_text}`).join("\n")
     const success = new EmbedBuilder()
