@@ -14,7 +14,7 @@ module.exports = {
                 delete globalThis.ylivechat[oldState.guild.id];
             };
             if (globalThis.tlivechat[oldState.guild.id]) {
-                await globalThis.tlivechat[oldState.guild.id].kill().catch(() => { });
+                await globalThis.tlivechat[interaction.guild.id]?.disconnect().catch(() => { });
                 delete globalThis.tlivechat[oldState.guild.id];
             };
         };
@@ -32,7 +32,7 @@ module.exports = {
             delete globalThis.ylivechat[oldState.guild.id];
         };
         if (globalThis.tlivechat[oldState.guild.id]) {
-            await globalThis.tlivechat[oldState.guild.id].kill().catch(() => { });
+            await globalThis.tlivechat[interaction.guild.id]?.disconnect().catch(() => { });
             delete globalThis.tlivechat[oldState.guild.id];
         };
     }

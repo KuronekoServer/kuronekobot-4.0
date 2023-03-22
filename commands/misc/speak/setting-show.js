@@ -22,6 +22,7 @@ module.exports = async (interaction) => {
                 { name: 'ユーザー名への辞書適応', value: data[0]?.dictionary_username ? "はい" : "いいえ", inline: true },
                 { name: '未参加のユーザー読み上げ', value: data[0]?.only_tts ? "はい" : "いいえ", inline: true },
                 { name: 'Discordメッセージの読み上げない', value: data[0]?.read_through ? "はい" : "いいえ", inline: true },
+                { name: '自動入室チャンネル', value: data[0]?.auto_voice_channel ? `${data[0]?.auto_voice_channel}=>${data[0]?.auto_text_channel}` : "なし", inline: true },
             )
             .setTimestamp(new Date())
             .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });

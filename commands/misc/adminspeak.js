@@ -4,6 +4,7 @@
 const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
 const fs = require("node:fs");
 const server_auto_join = require("./speak/server_auto-join");
+const server_auto_join_delete = require("./speak/server_auto-join-delete");
 const server_force_guild = require("./speak/server_force-guild");
 const server_read_bot = require("./speak/server_read-bot");
 const server_read = require("./speak/server_read");
@@ -33,7 +34,6 @@ module.exports = {
                 .setDescription("読み上げを行うユーザーの設定をします(ほかの物より優先されます)")
                 .addUserOption(option => option.setName("user").setDescription("読み上げるユーザーの設定").setRequired(true))
                 .addStringOption(option => option.setName("toggle").setDescription("操作を選んでください").addChoices({ name: "読み上げる", value: "true" }, { name: "読み上げない", value: "false" }).setRequired(true))
-
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -78,11 +78,14 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('server_auto-join')
-                .setDescription('自動で読み上げを行う。')
+                .setDescription('自動で読み上げチャンネルに入室する。')
                 .addChannelOption(option => option.addChannelTypes(ChannelType.GuildText).setName("textchannel").setDescription("読み上げを行うチャンネル").setRequired(true))
                 .addChannelOption(option => option.addChannelTypes(ChannelType.GuildVoice).setName("voicechannel").setDescription("読み上げを行うチャンネル").setRequired(true))
-                .addStringOption(option => option.setName("toggle").setDescription("削除したい場合は選択してください").addChoices({ name: "削除", value: "削除" }))
-
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('server_auto-join-delete')
+                .setDescription('自動で読み上げチャンネルに入室しない。')
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -127,7 +130,12 @@ module.exports = {
         ),
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
-        await interaction.deferReply({ ephemeral: true });
+        //server_voice
+        if (sub === "server_voice") {
+            response = await server_voice(interaction);
+            return await interaction.reply(response);
+        };
+        await interaction.deferReply();
         //server_read-user
         if (sub === "server_read-user") {
             response = await server_read_user(interaction);
@@ -135,10 +143,6 @@ module.exports = {
         //server_read-bot
         if (sub === "server_read-bot") {
             response = await server_read_bot(interaction);
-        };
-        //server_voice
-        if (sub === "server_voice") {
-            response = await server_voice(interaction);
         };
         //server_voice-setting
         if (sub === "server_voice-setting") {
@@ -179,7 +183,11 @@ module.exports = {
         //read_through
         if (sub === "read_through") {
             response = await read_through(interaction);
-        }
+        };
+        //server_auto-join-delete
+        if (sub === "server_auto-join-delete") {
+            response = await server_auto_join_delete(interaction);
+        };
         if (response === "exception") return;
         if (response) return await interaction.followUp(response);
         await interaction.deleteReply();
