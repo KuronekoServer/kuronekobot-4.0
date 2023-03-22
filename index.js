@@ -54,9 +54,9 @@ setInterval(() => {
 }, 10000);
 
 // エラー後も処理継続
-process.on("uncaughtException", (reason, promise) => {
-    if (reason === "TypeError: fetch failed") return;
-    console.log(chalk.red(`[エラー] ${reason}`));
-});
+// process.on("uncaughtException", (reason, promise) => {
+//     if (reason === "TypeError: fetch failed") return;
+//     console.log(chalk.red(`[エラー] ${reason}`));
+// });
 
 client.login(process.env.TOKEN);

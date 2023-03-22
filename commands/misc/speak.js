@@ -1,7 +1,4 @@
-//voicevox:http://127.0.0.1:50021/docs#/
-//COEIROINK:http://127.0.0.1:50031/docs#/
-//SHAREVOX:http://127.0.0.1:50025/docs#/
-const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const fs = require("node:fs");
 const join = require("./speak/join");
 const disconnect = require("./speak/disconnect");
@@ -17,7 +14,7 @@ const user_reset = require("./speak/user_reset");
 const live_read = require("./speak/live_read");
 const skip = require("./speak/skip");
 const setting_show = require("./speak/setting-show");
-
+const live_read_stop = require("./speak/live_read_stop");
 let response;
 let exvoice_list = [];
 fs.readdirSync(`${process.env.exvoice}`).map(data => {
@@ -104,12 +101,22 @@ module.exports = {
             subcommand
                 .setName('live_read')
                 .addStringOption(option => option.setName("select").setDescription("選択してください").addChoices({ name: "youtube", value: "youtube" }, { name: "twitch", value: "twitch" }).setRequired(true))
-                .addStringOption(option => option.setName("操作").setDescription("選択してください").addChoices({ name: "スタート", value: "start" }, { name: "ストップ", value: "stop" }).setRequired(true))
                 .addStringOption(option => option.setName("url").setDescription("LIVEのURLを入力").setRequired(true))
                 .setDescription('ライブの読み上げ。')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('live_read-stop')
+                .addStringOption(option => option.setName("select").setDescription("選択してください").addChoices({ name: "youtube", value: "youtube" }, { name: "twitch", value: "twitch" }).setRequired(true))
+                .setDescription('ライブの読み上げを停止します。')
         ),
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
+        //user_voice
+        if (sub === "user_voice") {
+            response = await user_voice(interaction);
+            return await interaction.reply(response);
+        };
         await interaction.deferReply();
         //join
         if (sub === "join") {
@@ -143,10 +150,6 @@ module.exports = {
         if (sub === "user_voice-setting") {
             response = await user_voice_setting(interaction);
         };
-        //user_voice
-        if (sub === "user_voice") {
-            response = await user_voice(interaction);
-        };
         //server_user-dictionary-list
         if (sub === "server_user-dictionary-list") {
             response = await server_user_dictionary_list(interaction);
@@ -166,6 +169,10 @@ module.exports = {
         //setting_show
         if (sub === "setting_show") {
             response = await setting_show(interaction);
+        };
+        //live_read-stop
+        if (sub === "live_read-stop") {
+            response = await live_read_stop(interaction);
         };
         if (response === "exception") return;
         if (response) return await interaction.followUp(response);

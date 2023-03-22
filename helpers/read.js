@@ -22,11 +22,12 @@ module.exports = {
         const intonation = (get_server_data[0]?.force_args) ? get_server_data[0]?.intonation || getdata[0]?.intonation || 1 : getdata[0]?.intonation || get_server_data[0]?.intonation || 1;
         const not_exvoice = (await sql(`select * from exvoiceword where guildid="${message.guild.id}" and speakname="${name}";`)).map(data => data.word);
         const exvoice = (exvoice_list[name]) ? exvoice_list[name].filter(item => !not_exvoice.includes(item)) : null
-        const before_msg = (get_server_data[0]?.read_username && !get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${tmp ? "添付ファイル" : ""}${live_content}` : tmp ? "添付ファイル" : "" + live_content;
-        const romajimsg = before_msg.split(/((http|https):\/\/[^\s]+)/g)?.join("リンク省略");
-        const code = romajimsg.split(/```[\s\S]*?```/g)?.join("コード省略");
-        const wara = code.split(/w|ｗ|W|Ｗ/g)?.join("笑");
-        const format_msg = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${wara}`).catch((ex) => { });
+        const before_msg = (get_server_data[0]?.read_username && !get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${live_content}` : live_content;
+        const romajimsg = before_msg.replace(/((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi, 'リンク省略');
+        const code = romajimsg.replace(/```[\s\S]*?```/gi, "コード省略");
+        const wara = code.replace(/w|ｗ|W|Ｗ/g, "わら");
+        const tmpfile = tmp ? "添付ファイル" + wara : wara;
+        const format_msg = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${tmpfile}`).catch((ex) => { });
         const msg = (format_msg.data) ? format_msg.data : romajimsg;
         const check = exvoice?.find(str => msg.includes(str));
         if (exvoice && check && !get_server_data[0]?.exvoice) {
@@ -52,37 +53,33 @@ module.exports = {
                 (splitResult.join("").length >= max_message) ? `${splitResult[1].slice(0, (max_message - splitResult[0].length <= 0) ? 0 : max_message - splitResult[0].length)}以下省略` : splitResult[1] :
                 (string_array.join("").length >= max_message) ? `${string_array[1].slice(0, (max_message - string_array[0].length <= 0) ? 0 : max_message - string_array[0].length)}以下省略` : string_array[1];
             const start_content = (string_array.length === 0) ? splitResult[0] : string_array[0];
-            const audio_query_response_start = await fetch(
-                `${host}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ ${tmp ? "添付ファイル" : ""}　${start_content}` : tmp ? "添付ファイル" : "" + start_content}&speaker=${speaker}`,
-                {
-                    method: 'post',
-                    headers: { 'Content-Type': 'application/json' }
+            const text = (get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ?
+                `${user}さんのメッセージ　${start_content}` : start_content;
+            const audio_query_response_start = await axios.post(`${host}/audio_query?text=${text}&speaker=${speaker}`, {
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            );
-            const audio_query_response_last = await fetch(
-                `${host}/audio_query?text=${last_content}&speaker=${speaker}`,
-                {
-                    method: 'post',
-                    headers: { 'Content-Type': 'application/json' }
+            });
+            const audio_query_response_last = await axios.post(`${host}/audio_query?text=${last_content}&speaker=${speaker}`, {
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            );
+            });
             const buffer_array = [];
             await Promise.all([...Array(2)].map(async (_, index) => {
-                const audio_query_json = (index === 0) ? await audio_query_response_start.json() : await audio_query_response_last.json();
+                const audio_query_json = (index === 0) ? await audio_query_response_start?.data : await audio_query_response_last?.data;
                 audio_query_json["speedScale"] = speed;
                 audio_query_json["pitchScale"] = pitch;
                 audio_query_json["intonationScale"] = intonation;
-                const synthesis_response = await fetch(
-                    `${host}/synthesis?speaker=${speaker}`,
-                    {
-                        method: 'post',
-                        body: JSON.stringify(audio_query_json),
-                        responseType: "arrayBuffer",
-                        headers: { "accept": "audio/wav", 'Content-Type': 'application/json' },
-                    }
-                ).catch((ex) => { });
-                if (!synthesis_response) return;
-                const synthesis_response_buf = await synthesis_response.arrayBuffer();
+                const synthesis_response = await axios.post(`${host}/synthesis?speaker=${speaker}`, audio_query_json, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'audio/wav'
+                    },
+                    responseType: 'arraybuffer'
+                });
+                if (!synthesis_response?.data) return;
+                const synthesis_response_buf = await synthesis_response.data;
                 buffer_array.push(Buffer.from(synthesis_response_buf, "base64").toString("base64"));
             }));
             const exvoice_file = fs.readFileSync(`${process.env.exvoice}/${name}/${result}.wav`).toString("base64");
@@ -130,28 +127,26 @@ module.exports = {
             const content = (newString === "") ?
                 (msg.length >= max_message) ? `${msg.slice(0, max_message)}以下省略` : msg :
                 (newString.length >= max_message) ? `${newString.slice(0, max_message)}以下省略` : newString;
-            const audio_query_response = await fetch(
-                `${host}/audio_query?text=${(get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ? `${user}さんのメッセージ　${tmp ? "添付ファイル" : ""}　${content}` : tmp ? "添付ファイル" : "" + content}&speaker=${speaker}`,
-                {
-                    method: 'post',
-                    headers: { 'Content-Type': 'application/json' }
+            const text = (get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ?
+                `${user}さんのメッセージ　${content}` : content;
+            const audio_query_response = await axios.post(`${host}/audio_query?text=${text}&speaker=${speaker}`, {
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            );
-            const audio_query_json = await audio_query_response.json();
+            });
+            const audio_query_json = await audio_query_response.data;
             audio_query_json["speedScale"] = speed;
             audio_query_json["pitchScale"] = pitch;
             audio_query_json["intonationScale"] = intonation;
-            const synthesis_response = await fetch(
-                `${host}/synthesis?speaker=${speaker}`,
-                {
-                    method: 'post',
-                    body: JSON.stringify(audio_query_json),
-                    responseType: "arrayBuffer",
-                    headers: { "accept": "audio/wav", 'Content-Type': 'application/json' },
-                }
-            ).catch((ex) => { });
-            if (!synthesis_response) return;
-            const synthesis_response_buf = Buffer.from(await synthesis_response.arrayBuffer(), "base64");
+            const synthesis_response = await axios.post(`${host}/synthesis?speaker=${speaker}`, audio_query_json, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'accept': 'audio/wav'
+                },
+                responseType: 'arraybuffer'
+            });
+            if (!synthesis_response.data) return;
+            const synthesis_response_buf = Buffer.from(await synthesis_response.data, "base64");
             const bufferStream = new Readable();
             bufferStream.push(synthesis_response_buf);
             bufferStream.push(null);

@@ -171,7 +171,7 @@ module.exports = class Utils {
       console.error(chalk.red("[警告]"), "SQLでエラーが発生しました。");
       console.error("エラー内容:", ex);
       console.error(chalk.yellow("[注意]"), "SQLを自動再接続を行います。");
-      if (pool) await pool.closed();
+      if (conn) await conn.end();
       conn = await pool.getConnection();
     } finally {
       if (conn) await conn.release();
