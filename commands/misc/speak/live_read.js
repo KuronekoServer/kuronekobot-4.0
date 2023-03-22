@@ -1,6 +1,6 @@
 const { EmbedBuilder, Colors } = require("discord.js");
 const { read } = require("../../../helpers/read");
-const tw = require('twitch-webchat');
+const tmi = require('tmi.js');
 const { LiveChat } = require("youtube-chat")
 const nojoin_error = new EmbedBuilder()
     .setTitle("⚠️エラー")
@@ -50,7 +50,7 @@ module.exports = async (interaction) => {
         const check = await globalThis.ylivechat[interaction.guild.id]?.start().catch(ex => { });
         if (!check) {
             await read(interaction, "system", "youtubeのデータ取得中にエラーが発生しました　取得を停止します");
-            await globalThis.ylivechat[interaction.guild.id]?.stop();
+            await globalThis.ylivechat[interaction.guild.id]?.stop().catch((ex) => { });
             delete globalThis.ylivechat[interaction.guild.id];
             return ({ embeds: [vi_undefined_error] });
         } else {
@@ -64,14 +64,25 @@ module.exports = async (interaction) => {
     if (select === "twitch") {
         if (!id) return ({ embeds: [nourl_error] });
         if (globalThis.tlivechat[interaction.guild.id]) return ({ embeds: [already_error] });
-        globalThis.tlivechat[interaction.guild.id] = tw.start(id, async (err, message) => {
-            if (err) {
+        globalThis.tlivechat[interaction.guild.id] = new tmi.Client({
+            connection: {
+                secure: false,
+                reconnect: false
+            }, channels: [id]
+        }).connect;
+        await globalThis.tlivechat[interaction.guild.id].connect()
+            .catch(async (ex) => {
                 await read(interaction, "system", "ツイッチのデータ取得中にエラーが発生しました　取得を停止します");
+                await globalThis.tlivechat[interaction.guild.id]?.disconnect();
                 delete globalThis.tlivechat[interaction.guild.id];
                 return;
-            };
-            if (message.type === "chat") await read(interaction, message.from || "取得できませんでした", message.text || "取得できませんでした");
+            });
+        globalThis.tlivechat[interaction.guild.id].on('message', (_, tags, message, self) => {
+            if (self) return;
+            read(interaction, tags.username || "取得できませんでした", message || "取得できませんでした");
         });
+        const status = await globalThis.tlivechat[interaction.guild.id].readyState();
+        console.log(status)
         return ({ embeds: [success] });
     };
 };

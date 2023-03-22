@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Collection, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, Partials, Colors } = require('discord.js');
 const client = new Client({
     intents: Object.values(GatewayIntentBits),
     partials: [Partials.Message, Partials.Channel, Partials.Reaction]
@@ -8,7 +8,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-
+const { send } = require("./helpers/sendwebhook");
 require('./deploy-commands.js');
 globalThis.voice_channel = [];
 globalThis.ylivechat = {};
@@ -50,13 +50,14 @@ setInterval(() => {
         })
         .catch(error => {
             console.log(chalk.red(`[GETリクエストエラー] ${error.config.url} - ${error.message}`));
+            send({ title: "GETリクエストエラー", description: `${error.config.url} - ${error.message}`, time: new Date(), color: Colors.DarkRed })
         });
 }, 10000);
 
 // エラー後も処理継続
-// process.on("uncaughtException", (reason, promise) => {
-//     if (reason === "TypeError: fetch failed") return;
-//     console.log(chalk.red(`[エラー] ${reason}`));
-// });
+process.on("uncaughtException", (reason, promise) => {
+    console.log(chalk.red(`[エラー] ${reason}\n`) + chalk.yellow(`日時:${new Date()}`));
+    send({ title: "その他のエラー", description: `[エラー] ${reason}`, time: new Date(), color: Colors.DarkRed })
+});
 
 client.login(process.env.TOKEN);

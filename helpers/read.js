@@ -1,9 +1,12 @@
+const http = require('http');
+const https = require('https');
 const { sql } = require("./utils");
 const { createAudioPlayer, createAudioResource, getVoiceConnection, AudioPlayerStatus } = require('@discordjs/voice');
 const { Readable } = require('node:stream');
 const fs = require("node:fs");
 const axios = require("axios");
 const exvoice_list = {};
+const timeout = process.env.timeout
 fs.readdirSync(`${process.env.exvoice}`).map(data => {
     exvoice_list[data] = fs.readdirSync(`${process.env.exvoice}/${data}`).map(name => name.replace(".wav", ""));
 });
@@ -27,7 +30,9 @@ module.exports = {
         const code = romajimsg.replace(/```[\s\S]*?```/gi, "コード省略");
         const wara = code.replace(/w|ｗ|W|Ｗ/g, "わら");
         const tmpfile = tmp ? "添付ファイル" + wara : wara;
-        const format_msg = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${tmpfile}`).catch((ex) => { });
+        const format_msg = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${tmpfile}`, {
+            httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
+        }).catch((ex) => { });
         const msg = (format_msg.data) ? format_msg.data : romajimsg;
         const check = exvoice?.find(str => msg.includes(str));
         if (exvoice && check && !get_server_data[0]?.exvoice) {
@@ -56,11 +61,13 @@ module.exports = {
             const text = (get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ?
                 `${user}さんのメッセージ　${start_content}` : start_content;
             const audio_query_response_start = await axios.post(`${host}/audio_query?text=${text}&speaker=${speaker}`, {
+                httpAgent: new http.Agent({ keepAlive: true , timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets)}),
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
             const audio_query_response_last = await axios.post(`${host}/audio_query?text=${last_content}&speaker=${speaker}`, {
+                httpAgent: new http.Agent({ keepAlive: true , timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets)}),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -72,6 +79,7 @@ module.exports = {
                 audio_query_json["pitchScale"] = pitch;
                 audio_query_json["intonationScale"] = intonation;
                 const synthesis_response = await axios.post(`${host}/synthesis?speaker=${speaker}`, audio_query_json, {
+                    httpAgent: new http.Agent({ keepAlive: true , timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets)}),
                     headers: {
                         'Content-Type': 'application/json',
                         'accept': 'audio/wav'
@@ -88,6 +96,7 @@ module.exports = {
                 `${host}/connect_waves`,
                 buffer_array,
                 {
+                    httpAgent: new http.Agent({ keepAlive: true , timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets)}),
                     headers: {
                         "accept": "audio/wav",
                         'Content-Type': 'application/json',
@@ -100,7 +109,6 @@ module.exports = {
             bufferStream.push(null);
             const voiceChannel = getVoiceConnection(message.guild.id);
             if (!voiceChannel) return;
-            const player = createAudioPlayer();
             if (skip) {
                 player.stop();
             };
@@ -130,6 +138,8 @@ module.exports = {
             const text = (get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ?
                 `${user}さんのメッセージ　${content}` : content;
             const audio_query_response = await axios.post(`${host}/audio_query?text=${text}&speaker=${speaker}`, {
+                timeout: timeout * 1000,
+                httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -139,6 +149,7 @@ module.exports = {
             audio_query_json["pitchScale"] = pitch;
             audio_query_json["intonationScale"] = intonation;
             const synthesis_response = await axios.post(`${host}/synthesis?speaker=${speaker}`, audio_query_json, {
+                httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
                 headers: {
                     'Content-Type': 'application/json',
                     'accept': 'audio/wav'

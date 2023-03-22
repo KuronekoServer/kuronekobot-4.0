@@ -21,7 +21,7 @@ module.exports = async (interaction) => {
         delete globalThis.ylivechat[interaction.guild.id];
     };
     if (globalThis.tlivechat[interaction.guild.id]) {
-        await globalThis.tlivechat[interaction.guild.id].kill().catch(() => { });
+        await globalThis.tlivechat[interaction.guild.id]?.disconnect().catch(() => { });
         delete globalThis.tlivechat[interaction.guild.id];
     };
     return ({ embeds: [success] });
