@@ -42,7 +42,7 @@ module.exports = async (interaction) => {
     if (!globalThis.voice_channel[interaction.guild.id]) return ({ embeds: [undefined_error] });
     if (interaction.member?.voice?.channel?.id !== interaction?.guild?.members?.me?.voice?.channel?.id) return ({ embeds: [error] });
     const select = interaction.options.getString("select");
-    const id = interaction.options.getString("url")?.replace("https://www.twitch.tv/", "")?.replace("https://youtu.be/", "")?.replace("https://www.youtube.com/watch?v=", "");
+    const id = interaction.options.getString("url")?.replace(/(https:\/\/www.twitch.tv\/|https:\/\/youtu.be\/|https:\/\/www.youtube.com\/watch\?v=|https:\/\/www.youtube.com\/live\/)|\?feature=share/g, "");
     if (select === "youtube") {
         if (!id) return ({ embeds: [nourl_error] });
         if (globalThis.ylivechat[interaction.guild.id]) return ({ embeds: [already_error] });
@@ -50,13 +50,13 @@ module.exports = async (interaction) => {
         const check = await globalThis.ylivechat[interaction.guild.id]?.start().catch(ex => { });
         if (!check) {
             await read(interaction, "system", "youtubeのデータ取得中にエラーが発生しました　取得を停止します");
-            await globalThis.ylivechat[interaction.guild.id]?.stop().catch((ex) => { });
+            await globalThis.ylivechat[interaction.guild.id]?.stop();
             delete globalThis.ylivechat[interaction.guild.id];
             return ({ embeds: [vi_undefined_error] });
         } else {
             globalThis.ylivechat[interaction.guild.id]?.on("chat", async (chatItem) => {
-                if (!chatItem.message?.join("")?.text) return;
-                await read(interaction, chatItem.author.name || "取得できませんでした", chatItem.message?.join("")?.text || "取得できませんでした");
+                if (!chatItem.message.map(data => data.text)?.join("")) return;
+                await read(interaction, chatItem.author.name || "取得できませんでした", chatItem.message.map(data => data.text)?.join("") || "取得できませんでした");
             });
             return ({ embeds: [success] });
         };

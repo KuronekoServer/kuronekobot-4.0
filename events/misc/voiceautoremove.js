@@ -10,12 +10,18 @@ module.exports = {
             if (connection?.state?.status) connection.destroy();
             if (globalThis.voice_channel[oldState.guild.id]) delete globalThis.voice_channel[oldState.guild.id];
             if (globalThis.ylivechat[oldState.guild.id]) {
-                await globalThis.ylivechat[oldState.guild.id]?.stop().catch(() => { });
-                delete globalThis.ylivechat[oldState.guild.id];
+                try {
+                    await globalThis.ylivechat[oldState.guild.id]?.stop();
+                } catch (ex) { } finally {
+                    delete globalThis.ylivechat[oldState.guild.id];
+                };
             };
             if (globalThis.tlivechat[oldState.guild.id]) {
-                await globalThis.tlivechat[interaction.guild.id]?.disconnect().catch(() => { });
-                delete globalThis.tlivechat[oldState.guild.id];
+                try {
+                    await globalThis.tlivechat[interaction.guild.id]?.disconnect().catch(() => { });
+                } catch (ex) { } finally {
+                    delete globalThis.tlivechat[oldState.guild.id];
+                };
             };
         };
         //メンバーがいなくなった場合
@@ -28,7 +34,7 @@ module.exports = {
         connection.destroy();
         if (globalThis.voice_channel[oldState.guild.id]) delete globalThis.voice_channel[oldState.guild.id];
         if (globalThis.ylivechat[oldState.guild.id]) {
-            await globalThis.ylivechat[oldState.guild.id]?.stop().catch(() => { });
+            await globalThis.ylivechat[oldState.guild.id]?.stop();
             delete globalThis.ylivechat[oldState.guild.id];
         };
         if (globalThis.tlivechat[oldState.guild.id]) {

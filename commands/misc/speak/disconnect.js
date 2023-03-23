@@ -17,12 +17,18 @@ module.exports = async (interaction) => {
     voiceChannel.destroy();
     delete globalThis.voice_channel[interaction.guild.id];
     if (globalThis.ylivechat[interaction.guild.id]) {
-        await globalThis.ylivechat[interaction.guild.id]?.stop().catch(() => { });
-        delete globalThis.ylivechat[interaction.guild.id];
+        try {
+            await globalThis.ylivechat[interaction.guild.id]?.stop();
+        } catch (ex) { } finally {
+            delete globalThis.ylivechat[interaction.guild.id];
+        };
     };
     if (globalThis.tlivechat[interaction.guild.id]) {
-        await globalThis.tlivechat[interaction.guild.id]?.disconnect().catch(() => { });
-        delete globalThis.tlivechat[interaction.guild.id];
+        try {
+            await globalThis.tlivechat[interaction.guild.id]?.disconnect();
+        } catch (ex) { } finally {
+            delete globalThis.tlivechat[interaction.guild.id];
+        };
     };
     return ({ embeds: [success] });
 };

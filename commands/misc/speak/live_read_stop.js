@@ -31,14 +31,20 @@ module.exports = async (interaction) => {
     const select = interaction.options.getString("select");
     if (select === "youtube") {
         if (!globalThis.ylivechat[interaction.guild.id]) return ({ embeds: [noalready_error] });
-        await globalThis.ylivechat[interaction.guild.id]?.stop().catch(() => { });
-        delete globalThis.ylivechat[interaction.guild.id];
-        return ({ embeds: [stop_success] });
+        try {
+            await globalThis.ylivechat[interaction.guild.id]?.stop();
+        } catch (ex) { } finally {
+            delete globalThis.ylivechat[interaction.guild.id];
+            return ({ embeds: [stop_success] });
+        };
     };
     if (select === "twitch") {
         if (!globalThis.tlivechat[interaction.guild.id]) return ({ embeds: [noalready_error] });
-        await globalThis.tlivechat[interaction.guild.id]?.disconnect().catch(() => { });
-        delete globalThis.tlivechat[interaction.guild.id];
-        return ({ embeds: [stop_success] });
+        try {
+            await globalThis.tlivechat[interaction.guild.id]?.disconnect();
+        } catch (ex) { } finally {
+            delete globalThis.tlivechat[interaction.guild.id];
+            return ({ embeds: [stop_success] });
+        };
     };
 };
