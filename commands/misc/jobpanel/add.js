@@ -1,7 +1,6 @@
 const { EmbedBuilder, Colors } = require("discord.js");
 const { sql } = require("../../../helpers/utils");
 const basic_emojis = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', '🇵', '🇶', '🇷'];
-const lang = ["🇺🇸", "🇺🇲", "🇯🇵", "🇨🇳", "🇪🇦", "🇪🇸", "🇸🇦", "🇲🇫", "🇮🇳", "🇩🇪"]
 const error = new EmbedBuilder()
     .setTitle("⚠️エラー")
     .setDescription("パネルが選択されていません。")
@@ -38,7 +37,6 @@ module.exports = async (interaction) => {
     if (old_emojis.some(emoji => new_emojis.includes(emoji))) return ({ embeds: [react_error], ephemeral: true });
     const roles = old_roles.concat(new_roles);
     let emojis = ((new_emojis.length == 0) ? [...new Set(old_emojis.concat(basic_emojis))] : [...new Set(old_emojis.concat(new_emojis).concat(basic_emojis))]).slice(0, roles.length);
-    if (emojis.some(emoji => lang.includes(emoji))) return ({ embeds: [react_error], ephemeral: true });
     if (roles.length > basic_emojis.length) {
         for (const emoji of emojis.slice(0, basic_emojis.length)) {
             const check = await msg.react(emoji).catch(ex => { });
