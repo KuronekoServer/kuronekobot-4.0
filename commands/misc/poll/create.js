@@ -35,7 +35,7 @@ module.exports = async (interaction) => {
     };
     const poll_embed = new EmbedBuilder()
         .setTitle(interaction.options.getString("title"))
-        .setDescription(data.filter(x => x).map((c, i) => `${emojis[i]} ${c}`).join('\n') + `\n\n \`\`\`/poll sum messageid:${msg.id} channelid:${msg.channel.id}\`\`\``)
+        .setDescription(data.filter(x => x).map((c, i) => `${emojis[i]} ${c}`).join('\n') + `\n\n 📊 \`/poll sum messageid:${msg.id} channelid:${msg.channel.id}\``)
         .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | poll" })
         .setColor(Colors[color || "Green"])
         .setImage(image);
