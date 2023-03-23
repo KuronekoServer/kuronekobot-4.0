@@ -19,7 +19,7 @@ module.exports = async (interaction) => {
         if (!(check?.footer?.text !== "©️ 2023 KURONEKOSERVER | poll" || check?.footer?.text !== "©️ 2023 KURONEKOSERVER | expoll")) return await interaction.reply({ embeds: [msg_error], ephemeral: true });;
         const reactions = message.reactions.cache;
         let i = 0;
-        const text = reactions.map(reaction => `**${check.description.split("\n")[i++]}(${reaction.count}票)**\n${((reaction.count / reactions.size) * 100).toFixed(1)}%　${bar.substr(0, ((reaction.count / reactions.size) * 100) / 4)}`)
+        const text = reactions.map(reaction => `**${check.description.split("\n")[i++]}(${reaction.count}票)**\n\`${((reaction.count / reactions.size) * 100).toFixed(1)}%\`　${bar.substr(0, ((reaction.count / reactions.size) * 100) / 4)}`)
         const success_embed = new EmbedBuilder()
             .setTitle(check.title)
             .setDescription(`${text.join("\n")}\n\n[アンケートへ戻る](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id})`)
