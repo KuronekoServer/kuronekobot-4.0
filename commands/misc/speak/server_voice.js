@@ -25,7 +25,7 @@ module.exports = async (interaction) => {
                         .map(option => ({ label: option.name, description: `${option.name}を選択します`, value: `${process.env.voicevox},${option.id},${interaction.options.getString("voicevox話者名")},${interaction.guild.id}` }))
                     ),
             );
-        return ({ embeds: [success], components: [select] });
+        return ({ embeds: [success], components: [select], ephemeral: true  });
     } else if (interaction.options.getString("coeiroink話者名")) {
         const success = new EmbedBuilder()
             .setTitle(`✅完了`)
@@ -43,7 +43,7 @@ module.exports = async (interaction) => {
                         .map(option => ({ label: option.name, description: `${option.name}を選択します`, value: `${process.env.COEIROINK},${option.id},${interaction.options.getString("coeiroink話者名")},${interaction.guild.id}` }))
                     ),
             );
-        return ({ embeds: [success], components: [select] });
+        return ({ embeds: [success], components: [select], ephemeral: true  });
     } else if (interaction.options.getString("sharevox話者名")) {
         const success = new EmbedBuilder()
             .setTitle(`✅完了`)
@@ -61,7 +61,7 @@ module.exports = async (interaction) => {
                         .map(option => ({ label: option.name, description: `${option.name}を選択します`, value: `${process.env.SHAREVOX},${option.id},${interaction.options.getString("sharevox話者名")},${interaction.guild.id}` }))
                     ),
             );
-        return ({ embeds: [success], components: [select] });
+        return ({ embeds: [success], components: [select], ephemeral: true  });
     } else {
         return ({ embeds: [undefined_choice] });
     };

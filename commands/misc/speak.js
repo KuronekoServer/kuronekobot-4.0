@@ -1,35 +1,25 @@
-//voicevox:http://127.0.0.1:50021/docs#/
-//COEIROINK:http://127.0.0.1:50031/docs#/
-//SHAREVOX:http://127.0.0.1:50025/docs#/
-const { SlashCommandBuilder, ChannelType } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const fs = require("node:fs");
 const join = require("./speak/join");
 const disconnect = require("./speak/disconnect");
 const dictionary_add = require("./speak/dictionary_add");
 const dictionary_export = require("./speak/dictionary_export");
 const dictionary_import = require("./speak/dictionary_import");
-const dictionary_list = require("./speak/dictionary_list");
 const dictionary_remove = require("./speak/dictionary_remove");
 const dictionary_reset = require("./speak/dictionary_reset");
 const user_voice = require("./speak/setvoice");
-const user_intonation = require("./speak/user_intonation");
-const user_pitch = require("./speak/user_pitch");
-const user_speed = require("./speak/user_speed");
-const server_auto_join = require("./speak/server_auto-join");
-const server_force_guild_args = require("./speak/server_force-guild-args");
-const server_force_guild_voice = require("./speak/server_force-guild-voice");
-const server_intonation = require("./speak/server_intonation");
-const server_pitch = require("./speak/server_pitch");
-const server_read_bot = require("./speak/server_read-bot");
-const server_read = require("./speak/server_read");
-const server_read_user = require("./speak/server_read-user");
-const server_read_user_list = require("./speak/server_read-user-list");
-const reset = require("./speak/reset");
-const server_speed = require("./speak/server_speed");
-const server_voice = require("./speak/server_voice");
-const server_exvoice = require("./speak/server_exvoice");
-const server_exvoice_word = require("./speak/server_exvoice-word");
+const user_voice_setting = require("./speak/user_voice-setting");
+const server_user_dictionary_list = require("./speak/server_user-dictionary-list");
+const user_reset = require("./speak/user_reset");
+const live_read = require("./speak/live_read");
+const skip = require("./speak/skip");
+const setting_show = require("./speak/setting-show");
+const live_read_stop = require("./speak/live_read_stop");
 let response;
+let exvoice_list = [];
+fs.readdirSync(`${process.env.exvoice}`).map(data => {
+    exvoice_list.push(...fs.readdirSync(`${process.env.exvoice}/${data}`).map(name => ({ name: `${name.replace(".wav", "")}(${data})`, value: `${name.replace(".wav", "")},${data}` })));
+});
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('speak')
@@ -39,6 +29,11 @@ module.exports = {
             subcommand
                 .setName('join')
                 .setDescription('ボイスチャンネルに参加します。')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('skip')
+                .setDescription('読み上げをスキップします。')
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -55,21 +50,10 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('user_pitch')
-                .setDescription('ピッチを設定します。')
-                .addNumberOption(option => option.setName("pitch").setDescription("-0.15~0.15の間の数字を入力"))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('user_intonation')
-                .setDescription('イントネーションを設定します。')
-                .addNumberOption(option => option.setName("intonation").setDescription("0.0～2.0の間の数字を入力"))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('user_speed')
-                .setDescription('スピードを設定します。')
-                .addNumberOption(option => option.setName("speed").setDescription("0.5～4.0の間の数字を入力"))
+                .setName('user_voice-setting')
+                .setDescription('ユーザーの各種voice設定をします。')
+                .addStringOption(option => option.setName("args").setDescription("設定する項目を選択").addChoices({ name: "pitch", value: "pitch" }, { name: "speed", value: "speed" }, { name: "intonation", value: "intonation" }).setRequired(true))
+                .addNumberOption(option => option.setName("number").setDescription("数値を入力"))
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -98,102 +82,42 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('dictionary_list')
-                .setDescription('辞書の一覧を表示します。')
+                .setName('server_user-dictionary-list')
+                .addStringOption(option => option.setName("select").setDescription("選択してください").addChoices({ name: "user-read", value: "user" }, { name: "dictionary", value: "dictionary" }).setRequired(true))
+                .setDescription("辞書の一覧又は読み上げないユーザーを表示します")
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('server_read-user')
-                .setDescription("読み上げを行うユーザーの設定をします(ほかの物より優先されます)")
-                .addUserOption(option => option.setName("user").setDescription("読み上げるユーザーの設定").setRequired(true))
-                .addStringOption(option => option.setName("toggle").setDescription("操作を選んでください").addChoices({ name: "読み上げる", value: "true" }, { name: "読み上げない", value: "false" }).setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_read-user-list')
-                .setDescription("読み上げないユーザーを表示します")
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_read-bot')
-                .setDescription("BOTの読み上げを許可するか決めます")
-                .addStringOption(option => option.setName("toggle").setDescription("BOTの読み上げを許可するか").addChoices({ name: "許可", value: "true" }, { name: "禁止", value: "false" }).setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_voice')
-                .addStringOption(option => option.setName("voicevox話者名").setDescription("話者を選択してください").addChoices(...require("../../helpers/voicelist/voicevoxlist.json")))
-                .addStringOption(option => option.setName("coeiroink話者名").setDescription("話者を選択してください").addChoices(...require("../../helpers/voicelist/coeiroinklist.json")))
-                .addStringOption(option => option.setName("sharevox話者名").setDescription("話者を選択してください").addChoices(...require("../../helpers/voicelist/sharevoxlist.json")))
-                .setDescription('サーバー話者を変更します。')
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_pitch')
-                .setDescription('サーバーピッチを設定します。')
-                .addNumberOption(option => option.setName("pitch").setDescription("-0.15~0.15の間の数字を入力"))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_intonation')
-                .setDescription('サーバーイントネーションを設定します。')
-                .addNumberOption(option => option.setName("intonation").setDescription("0.0～2.0の間の数字を入力"))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_speed')
-                .setDescription('サーバースピードを設定します。')
-                .addNumberOption(option => option.setName("speed").setDescription("0.5～4.0の間の数字を入力"))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_force-guild-args')
-                .setDescription('サーバー設定を強制するかどうか。')
-                .addStringOption(option => option.setName("toggle").setDescription("選択してください").addChoices({ name: "強制する", value: "true" }, { name: "強制しない", value: "false" }).setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_force-guild-voice')
-                .setDescription('サーバーの読み上げボイスを強制するかどうか。')
-                .addStringOption(option => option.setName("toggle").setDescription("選択してください").addChoices({ name: "強制する", value: "true" }, { name: "強制しない", value: "false" }).setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_read')
-                .setDescription('入退室時にユーザーを読み上げるか。')
-                .addStringOption(option => option.setName("操作").setDescription("入退出時かメッセージユーザー名を読み上げるか").addChoices({ name: "メッセージユーザー名を読み上げる", value: "message" }, { name: "入退出時にユーザーを読み上げる", value: "join" }).setRequired(true))
-                .addStringOption(option => option.setName("toggle").setDescription("選択してください").addChoices({ name: "読み上げる", value: "true" }, { name: "読み上げない", value: "false" }).setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_auto-join')
-                .setDescription('自動で読み上げを行う。')
-                .addChannelOption(option => option.addChannelTypes(ChannelType.GuildText).setName("textchannel").setDescription("読み上げを行うチャンネル").setRequired(true))
-                .addChannelOption(option => option.addChannelTypes(ChannelType.GuildVoice).setName("voicechannel").setDescription("読み上げを行うチャンネル").setRequired(true))
-                .addStringOption(option => option.setName("toggle").setDescription("削除したい場合は選択してください").addChoices({ name: "削除", value: "削除" }))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('server_exvoice')
-                .setDescription('exvoiceの操作。')
-                .addStringOption(option => option.setName("toggle").setDescription("選択してください").addChoices({ name: "読み上げる", value: "true" }, { name: "読み上げない", value: "false" }).setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('reset')
-                .addStringOption(option => option.setName("操作").setDescription("対象を選択してください").addChoices({ name: "serverを初期化", value: "server" }, { name: "userを初期化", value: "user" }).setRequired(true))
+                .setName('user_reset')
                 .setDescription('初期化')
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('server_exvoice-word')
-                .addStringOption(option => option.setName("select").setDescription("単語の操作").addChoices({ name: "追加", value: "add" }, { name: "削除", value: "remove" },{name:"リスト",value:"list"}).setRequired(true))
-                .addStringOption(option => option.setName("話者").setDescription("話者の選択").addChoices(...fs.readdirSync(`${process.env.exvoice}`).map(name => ({ name: name, value: name }))).setRequired(true))
-                .setDescription('ユーザー設定の初期化。')
+                .setName('setting_show')
+                .addStringOption(option => option.setName("select").setDescription("対象の選択").addChoices({ name: "server", value: "server" }, { name: "user", value: "user" }).setRequired(true))
+                .setDescription('設定の表示。')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('live_read')
+                .addStringOption(option => option.setName("select").setDescription("選択してください").addChoices({ name: "youtube", value: "youtube" }, { name: "twitch", value: "twitch" }).setRequired(true))
+                .addStringOption(option => option.setName("url").setDescription("LIVEのURLを入力").setRequired(true))
+                .setDescription('ライブの読み上げ。')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('live_read-stop')
+                .addStringOption(option => option.setName("select").setDescription("選択してください").addChoices({ name: "youtube", value: "youtube" }, { name: "twitch", value: "twitch" }).setRequired(true))
+                .setDescription('ライブの読み上げを停止します。')
         ),
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
-        await interaction.deferReply({ ephemeral: true });
+        //user_voice
+        if (sub === "user_voice") {
+            response = await user_voice(interaction);
+            return await interaction.reply(response);
+        };
+        await interaction.deferReply();
         //join
         if (sub === "join") {
             response = await join(interaction);
@@ -218,85 +142,37 @@ module.exports = {
         if (sub === "dictionary_export") {
             response = await dictionary_export(interaction);
         };
-        //dictionary_list
-        if (sub === "dictionary_list") {
-            response = await dictionary_list(interaction);
-        };
         //dictionary_reset
         if (sub === "dictionary_reset") {
             response = await dictionary_reset(interaction);
         };
-        //user_speed 
-        if (sub === "user_speed") {
-            response = await user_speed(interaction);
+        //user_voice-setting
+        if (sub === "user_voice-setting") {
+            response = await user_voice_setting(interaction);
         };
-        //user_pitch  
-        if (sub === "user_pitch") {
-            response = await user_pitch(interaction);
+        //server_user-dictionary-list
+        if (sub === "server_user-dictionary-list") {
+            response = await server_user_dictionary_list(interaction);
         };
-        //user_intonation
-        if (sub === "user_intonation") {
-            response = await user_intonation(interaction);
+        //user_reset
+        if (sub === "user_reset") {
+            response = await user_reset(interaction);
         };
-        //user_voice
-        if (sub === "user_voice") {
-            response = await user_voice(interaction);
+        //live_read
+        if (sub === "live_read") {
+            response = await live_read(interaction);
         };
-        //server_read-user
-        if (sub === "server_read-user") {
-            response = await server_read_user(interaction);
+        //skip
+        if (sub === "skip") {
+            response = await skip(interaction);
         };
-        //server_read-user-list
-        if (sub === "server_read-user-list") {
-            response = await server_read_user_list(interaction);
+        //setting_show
+        if (sub === "setting_show") {
+            response = await setting_show(interaction);
         };
-        //server_read-bot
-        if (sub === "server_read-bot") {
-            response = await server_read_bot(interaction);
-        };
-        //server_voice
-        if (sub === "server_voice") {
-            response = await server_voice(interaction);
-        };
-        //server_pitch
-        if (sub === "server_pitch") {
-            response = await server_pitch(interaction);
-        };
-        //server_intonation
-        if (sub === "server_intonation") {
-            response = await server_intonation(interaction);
-        };
-        //server_speed
-        if (sub === "server_speed") {
-            response = await server_speed(interaction);
-        };
-        //server_force-guild-args
-        if (sub === "server_force-guild-args") {
-            response = await server_force_guild_args(interaction);
-        };
-        //server_force-guild-voice
-        if (sub === "server_force-guild-voice") {
-            response = await server_force_guild_voice(interaction);
-        };
-        //server_read
-        if (sub === "server_read") {
-            response = await server_read(interaction);
-        };
-        //server_auto-join
-        if (sub === "server_auto-join") {
-            response = await server_auto_join(interaction);
-        };
-        //server_exvoice
-        if (sub === "server_exvoice") {
-            response = await server_exvoice(interaction);
-        };
-        //reset
-        if (sub === "reset") {
-            response = await reset(interaction);
-        };
-        //server_exvoice-word
-        if (sub === "server_exvoice-word") {
-            response = await server_exvoice_word(interaction);
+        //live_read-stop
+        if (sub === "live_read-stop") {
+            response = await live_read_stop(interaction);
         };
         if (response === "exception") return;
         if (response) return await interaction.followUp(response);

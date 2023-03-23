@@ -14,7 +14,7 @@ const undefined_channel = new EmbedBuilder()
 
 module.exports = async (interaction) => {
     const voiceChannel = interaction.member.voice.channel;
-    if (!voiceChannel) return ({ embeds: [undefined_channel], ephemeral: true });
+    if (!voiceChannel) return ({ embeds: [undefined_channel] });
      joinVoiceChannel({
         channelId: voiceChannel.id,
         guildId: voiceChannel.guild.id,

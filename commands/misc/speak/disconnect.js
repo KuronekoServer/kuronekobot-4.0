@@ -13,8 +13,22 @@ const undefined_channel = new EmbedBuilder()
 
 module.exports = async (interaction) => {
     const voiceChannel = getVoiceConnection(interaction.guildId);
-    if (!voiceChannel) return ({ embeds: [undefined_channel], ephemeral: true });
+    if (!voiceChannel) return ({ embeds: [undefined_channel] });
     voiceChannel.destroy();
     delete globalThis.voice_channel[interaction.guild.id];
+    if (globalThis.ylivechat[interaction.guild.id]) {
+        try {
+            await globalThis.ylivechat[interaction.guild.id]?.stop();
+        } catch (ex) { } finally {
+            delete globalThis.ylivechat[interaction.guild.id];
+        };
+    };
+    if (globalThis.tlivechat[interaction.guild.id]) {
+        try {
+            await globalThis.tlivechat[interaction.guild.id]?.disconnect();
+        } catch (ex) { } finally {
+            delete globalThis.tlivechat[interaction.guild.id];
+        };
+    };
     return ({ embeds: [success] });
 };

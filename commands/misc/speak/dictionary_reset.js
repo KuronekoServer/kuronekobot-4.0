@@ -14,8 +14,8 @@ module.exports = async (interaction) => {
     const getdata = await sql(`select * from dictionary where guildid="${interaction.guild.id}";`);
     if (getdata[0]?.guildid) {
         const set = await sql(`DELETE FROM dictionary WHERE guildid="${interaction.guild.id}";`);
-        if (!set) return ({ embeds: [db_error], ephemeral: true });
-    } else return ({ embeds: [error], ephemeral: true });
+        if (!set) return ({ embeds: [db_error] });
+    } else return ({ embeds: [error] });
     const success = new EmbedBuilder()
         .setTitle(`✅完了`)
         .setDescription(`辞書を削除しました！`)
