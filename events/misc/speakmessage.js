@@ -1,9 +1,10 @@
-const { Events } = require('discord.js');
+const { Events, ChannelType } = require('discord.js');
 const { sql } = require("../../helpers/utils");
 const { read } = require("../../helpers/read");
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
+        if (message.channel.type === ChannelType.DM) return;
         if (message.author.username.startsWith(";")) return;
         if (message.content.startsWith(";")) return;
         const user_read = await sql(`select * from read_user where guildid="${message.guild.id}" and userid="${message.author.id}";`);

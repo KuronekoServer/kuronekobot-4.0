@@ -1,8 +1,9 @@
-const { EmbedBuilder, Events } = require('discord.js');
+const { EmbedBuilder, Events, ChannelType } = require('discord.js');
 
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
+        if (message.channel.type === ChannelType.DM) return;
         const re = /https:\/\/(ptb.)?discord\.com\/channels\/(\d{16,19})\/(\d{16,19})\/(\d{16,19})/
         const results = message.content.match(re)
         if (!results) return;

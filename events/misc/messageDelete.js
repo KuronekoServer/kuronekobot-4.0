@@ -1,8 +1,9 @@
-const { Events, EmbedBuilder, Colors } = require('discord.js');
+const { Events, EmbedBuilder, Colors, ChannelType } = require('discord.js');
 const { sql } = require("../../helpers/utils");
 module.exports = {
     name: Events.MessageDelete,
     async execute(message) {
+        if (message.channel.type === ChannelType.DM) return;
         const getdata = await sql(`select * from log_channel where guildid="${message.guild.id}";`);
         if (!getdata[0]?.guildid) return;//もっときれいな書き方あったら書き直しといて(これだとレスポンス悪そう)
         try {
