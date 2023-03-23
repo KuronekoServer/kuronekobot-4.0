@@ -11,8 +11,8 @@ const axios = require('axios');
 const { send } = require("./helpers/sendwebhook");
 require('./deploy-commands.js');
 globalThis.voice_channel = [];
-globalThis.ylivechat = {};
-globalThis.tlivechat = {};
+globalThis.ylivechat = [];
+globalThis.tlivechat = [];
 // イベントハンドラー
 client.events = new Collection();
 fs.readdirSync('./events/').forEach(async dir => {

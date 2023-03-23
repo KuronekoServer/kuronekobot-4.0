@@ -14,13 +14,9 @@ const discordTranscripts = require('discord-html-transcripts');
 const chalk = require('chalk');
 const { send } = require("../helpers/sendwebhook");
 const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.db_user, connectionLimit: process.env.db_limit, password: process.env.db_password, port: process.env.db_port, database: process.env.db_name });
-const ftp_option = { host: process.env.core_host, port: process.env.core_port, user: process.env.core_account, password: process.env.core_password, keepalive: 250 }
+const ftp_option = { host: process.env.core_host, port: process.env.core_port, user: process.env.core_account, password: process.env.core_password }
 let conn;
 
-ftp.connect(ftp_option);
-ftp.on("ready", () => {
-  console.log(chalk.green("[成功]"), `FTP接続しました。`);
-})
 ftp.on("error", (e) => {
   send({ title: "ftpエラー", description: `${e}`, time: new Date(), color: Colors.Purple })
   ftp.connect(ftp_option);
@@ -197,27 +193,30 @@ module.exports = class Utils {
         poweredBy: false
       });
       const date = new Date();
-      ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => {
-        if (err.message.includes("No such file or directory")) {
-          ftp.mkdir(`./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`, (err) => { });
-          ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => { });
-        };
-      });
-      const create_embed = new EmbedBuilder()
-        .setTitle("チケットが削除されました")
-        .setDescription(`チャンネル:${data.action.channel.name}\nユーザー:${data.action.user}\n日時:${new Date()}\n詳細:https://kuronekobot.kuroneko6423.com/${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`)
-        .setColor(Colors.Green);
-      await data.action.channel.delete().catch(() => { });
-      const getdata = await conn.query(`select * from ticket_channel where guildid="${data.action.guild.id}";`);
-      if (getdata[0]?.guildid) {
-        try {
-          const channel = await data.action.guild.channels.fetch(getdata[0].channelid)
-          await channel.send({ embeds: [create_embed] });
-        } catch (error) {
-          await sql(`DELETE FROM ticket_channel WHERE guildid = "${data.action.guild.id}";`);
+      ftp.connect(ftp_option);
+      ftp.on("ready", async() => {
+        ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => {
+          if (err.message.includes("No such file or directory")) {
+            ftp.mkdir(`./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`, (err) => { });
+            ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => { });
+          };
+        });
+        const create_embed = new EmbedBuilder()
+          .setTitle("チケットが削除されました")
+          .setDescription(`チャンネル:${data.action.channel.name}\nユーザー:${data.action.user}\n日時:${new Date()}\n詳細:https://kuronekobot.kuroneko6423.com/${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`)
+          .setColor(Colors.Green);
+        await data.action.channel.delete().catch(() => { });
+        const getdata = await conn.query(`select * from ticket_channel where guildid="${data.action.guild.id}";`);
+        if (getdata[0]?.guildid) {
+          try {
+            const channel = await data.action.guild.channels.fetch(getdata[0].channelid)
+            await channel.send({ embeds: [create_embed] });
+          } catch (error) {
+            await sql(`DELETE FROM ticket_channel WHERE guildid = "${data.action.guild.id}";`);
+          }
         }
-      }
-      await data.action.user.send({ embeds: [create_embed] }).catch(() => { });
+        await data.action.user.send({ embeds: [create_embed] }).catch(() => { });
+      })
     }, 5 * 1000);
     if (data.type === "cancel") return tmp.add(data.action.channel.id);
   };

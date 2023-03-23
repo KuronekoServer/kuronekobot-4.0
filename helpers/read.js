@@ -61,13 +61,13 @@ module.exports = {
             const text = (get_server_data[0]?.read_username && get_server_data[0]?.dictionary_username) ?
                 `${user}さんのメッセージ　${start_content}` : start_content;
             const audio_query_response_start = await axios.post(`${host}/audio_query?text=${text}&speaker=${speaker}`, {
-                httpAgent: new http.Agent({ keepAlive: true , timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets)}),
+                httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
             const audio_query_response_last = await axios.post(`${host}/audio_query?text=${last_content}&speaker=${speaker}`, {
-                httpAgent: new http.Agent({ keepAlive: true , timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets)}),
+                httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -79,16 +79,15 @@ module.exports = {
                 audio_query_json["pitchScale"] = pitch;
                 audio_query_json["intonationScale"] = intonation;
                 const synthesis_response = await axios.post(`${host}/synthesis?speaker=${speaker}`, audio_query_json, {
-                    httpAgent: new http.Agent({ keepAlive: true , timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets)}),
+                    httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
                     headers: {
                         'Content-Type': 'application/json',
                         'accept': 'audio/wav'
                     },
-                    responseType: 'arraybuffer'
+                    'responseType': "arraybuffer",
                 });
                 if (!synthesis_response?.data) return;
-                const synthesis_response_buf = await synthesis_response.data;
-                buffer_array.push(Buffer.from(synthesis_response_buf, "base64").toString("base64"));
+                buffer_array.push(synthesis_response?.data.toString("base64"));
             }));
             const exvoice_file = fs.readFileSync(`${process.env.exvoice}/${name}/${result}.wav`).toString("base64");
             buffer_array.splice(1, 0, exvoice_file);
@@ -96,18 +95,17 @@ module.exports = {
                 `${host}/connect_waves`,
                 buffer_array,
                 {
-                    httpAgent: new http.Agent({ keepAlive: true , timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets)}),
+                    httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
                     headers: {
                         "accept": "audio/wav",
                         'Content-Type': 'application/json',
                     },
-                    responseType: "arraybuffer",
+                    'responseType': "stream",
                 }
             );
-            const bufferStream = new Readable();
-            bufferStream.push(response.data);
-            bufferStream.push(null);
+            if (!response.data) return;
             const voiceChannel = getVoiceConnection(message.guild.id);
+            const player = createAudioPlayer();
             if (!voiceChannel) return;
             if (skip) {
                 player.stop();
@@ -118,7 +116,7 @@ module.exports = {
                     subscription.player.once('idle', () => resolve());
                 } else resolve();
             });
-            const resource = createAudioResource(bufferStream);
+            const resource = createAudioResource(response.data);
             player.play(resource);
             voiceChannel.subscribe(player);
         } else {
@@ -154,13 +152,9 @@ module.exports = {
                     'Content-Type': 'application/json',
                     'accept': 'audio/wav'
                 },
-                responseType: 'arraybuffer'
+                'responseType': "stream"
             });
             if (!synthesis_response.data) return;
-            const synthesis_response_buf = Buffer.from(await synthesis_response.data, "base64");
-            const bufferStream = new Readable();
-            bufferStream.push(synthesis_response_buf);
-            bufferStream.push(null);
             const voiceChannel = getVoiceConnection(message.guild.id);
             if (!voiceChannel) return;
             const player = createAudioPlayer();
@@ -174,7 +168,7 @@ module.exports = {
                     subscription.player.once('idle', () => resolve());
                 } else resolve();
             });
-            const resource = createAudioResource(bufferStream);
+            const resource = createAudioResource(synthesis_response.data);
             player.play(resource);
             voiceChannel.subscribe(player);
         };
