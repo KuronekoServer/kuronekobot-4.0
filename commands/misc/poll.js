@@ -5,6 +5,7 @@ const sum = require("./poll/sum");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("poll")
+        .setDMPermission(false)
         .setDescription("アンケートを実施する")
         .addSubcommand(subcommand =>
             subcommand

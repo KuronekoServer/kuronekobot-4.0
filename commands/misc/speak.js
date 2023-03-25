@@ -84,18 +84,18 @@ module.exports = {
             subcommand
                 .setName('server_user-dictionary-list')
                 .addStringOption(option => option.setName("select").setDescription("選択してください").addChoices({ name: "user-read", value: "user" }, { name: "dictionary", value: "dictionary" }).setRequired(true))
-                .setDescription("辞書の一覧又は読み上げないユーザーを表示します")
+                .setDescription("辞書の一覧又は読み上げないユーザーを表示します。")
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('user_reset')
-                .setDescription('初期化')
+                .setDescription('ユーザー設定初期化')
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('setting_show')
                 .addStringOption(option => option.setName("select").setDescription("対象の選択").addChoices({ name: "server", value: "server" }, { name: "user", value: "user" }).setRequired(true))
-                .setDescription('設定の表示。')
+                .setDescription('読み上げ関連設定の表示')
         )
         .addSubcommand(subcommand =>
             subcommand

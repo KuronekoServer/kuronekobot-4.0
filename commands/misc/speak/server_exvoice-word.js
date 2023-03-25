@@ -12,11 +12,6 @@ const url = new EmbedBuilder()
     .setDescription(`https://kuroneko6423.com/exvoice`)
     .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
     .setColor(Colors.Green);
-const reset_embed = new EmbedBuilder()
-    .setTitle(`✅完了`)
-    .setDescription(`リセットしました。`)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
-    .setColor(Colors.Green);
 const undefined_error = new EmbedBuilder()
     .setTitle("⚠️エラー")
     .setDescription("データが見つかりません。")
