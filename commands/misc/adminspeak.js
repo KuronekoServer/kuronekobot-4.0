@@ -31,7 +31,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('server_read-user')
-                .setDescription("読み上げを行うユーザーの設定をします(ほかの物より優先されます)")
+                .setDescription("読み上げを行うユーザーの設定をします")
                 .addUserOption(option => option.setName("user").setDescription("読み上げるユーザーの設定").setRequired(true))
                 .addStringOption(option => option.setName("toggle").setDescription("操作を選んでください").addChoices({ name: "読み上げる", value: "true" }, { name: "読み上げない", value: "false" }).setRequired(true))
         )
@@ -97,7 +97,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('server_reset')
-                .setDescription('初期化')
+                .setDescription('サーバー設定初期化')
 
         )
         .addSubcommand(subcommand =>

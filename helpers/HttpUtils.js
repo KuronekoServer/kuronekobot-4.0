@@ -60,6 +60,9 @@ module.exports = class HttpUtils {
         output: response.text
       };
     } catch (ex) {
+      return {
+        output: "too many request"
+      };
     }
   }
 

@@ -10,7 +10,7 @@ module.exports = {
             const channel = await message.guild.channels.fetch(getdata[0]?.channelid);
             const Embed = new EmbedBuilder()
                 .setTitle("✅メッセージの削除")
-                .setDescription(`メッセージユーザー:${message.author || message.author.tag}\n**削除したメッセージ**\n${message.content}`)
+                .setDescription(`メッセージユーザー:${message.author || message.author.tag}\n**対象チャンネル**${message.channel}**\n削除したメッセージ**\n${message.content}`)
                 .setColor(Colors.Red)
                 .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | messagedelete" });
             await channel.send({ embeds: [Embed] });
