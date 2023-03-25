@@ -5,7 +5,7 @@ module.exports = {
     name: Events.ClientReady,
     async execute(client) {
         setInterval(() => {
-            client.user.setPresence({ activities: [{ name: `βテスト中...`, type: ActivityType.Streaming }] });
+            client.user.setPresence({ activities: [{ name: `/help`, type: ActivityType.Streaming }] });
         }, 300 * 1000);
         console.log(chalk.green('[成功]'), `${client.user.tag}にログインしました。`)
     }
