@@ -66,6 +66,7 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
      * @property {string} guildid - サーバーID
      * @property {string} word - 単語
      * @property {string} speakname - 対象話者名前
+     * 
      */
     await conn.query("create table ticket_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table log_channel (guildid text,channelid text);").catch(() => { });
@@ -75,6 +76,7 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
     await conn.query("create table server_speak (guildid text,auto_voice_channel text,auto_text_channel text,speakname text,pitch decimal,intonation decimal,speed decimal,speakid int,speakhost text,bot_read boolean,read_username boolean,read_joinremove boolean,force_args boolean,force_voice boolean,exvoice boolean,dictionary_username boolean,only_tts boolean,read_through boolean);").catch(() => { });
     await conn.query("create table read_user (guildid text,userid text,readmsg boolean);").catch(() => { });
     await conn.query("create table exvoiceword (guildid text,word text,speakname text);").catch(() => { });
+    await conn.query("create table globaldictionary (before_text text,after_text text);").catch(() => { });
 
     console.log("処理が終了しました。");
     process.exit(1);

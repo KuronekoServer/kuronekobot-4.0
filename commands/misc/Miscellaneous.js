@@ -4,6 +4,9 @@ const screenshot = require("./miscellaneous/screenshot");
 const serverinfo = require("./miscellaneous/serverinfo");
 const userinfo = require("./miscellaneous/userinfo");
 const wikipedia = require("./miscellaneous/wikipedia");
+const role = require("./miscellaneous/role");
+const channel = require("./miscellaneous/channel");
+const translate = require("./miscellaneous/translate");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('miscellaneous')
@@ -43,28 +46,62 @@ module.exports = {
                 .addStringOption(option =>
                     option.setName("query")
                         .setDescription('検索項目')
-                        .setRequired(true))),
+                        .setRequired(true)))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('role')
+                .addRoleOption(option =>
+                    option
+                        .setName("role")
+                        .setDescription('ロールの指定'))
+                .setDescription('ロールの情報を表示'))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('channel')
+                .addChannelOption(option =>
+                    option
+                        .setName("channel")
+                        .setDescription('チャンネルの指定'))
+                .setDescription('チャンネルの情報を表示'))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('translate')
+                .setDescription('コンテンツの言語を翻訳')
+                .addStringOption(option => option.setName("content").setDescription("コンテンツを入力").setRequired(true))
+                .addStringOption(option => option.setName("to").setDescription('言語の指定'))),
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
         //reserve
         if (sub === "reserve") {
-            response = await reserve(interaction);
+            await reserve(interaction);
         };
         //screenshot
         if (sub === "screenshot") {
-            response = await screenshot(interaction);
+            await screenshot(interaction);
         };
         //server-info
         if (sub === "server-info") {
-            response = await serverinfo(interaction);
+            await serverinfo(interaction);
         };
         //user-info
         if (sub === "user-info") {
-            response = await userinfo(interaction);
+            await userinfo(interaction);
         };
         //wikipedia
         if (sub === "wikipedia") {
-            response = await wikipedia(interaction);
+            await wikipedia(interaction);
+        };
+        //role
+        if (sub === "role") {
+            await role(interaction);
+        };
+        //channel
+        if (sub === "channel") {
+            await channel(interaction);
+        };
+        //translate
+        if (sub === "translate") {
+            await translate(interaction);
         };
     },
 };

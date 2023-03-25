@@ -1,8 +1,6 @@
 const http = require('http');
-const https = require('https');
 const { sql } = require("./utils");
 const { createAudioPlayer, createAudioResource, getVoiceConnection, AudioPlayerStatus } = require('@discordjs/voice');
-const { Readable } = require('node:stream');
 const fs = require("node:fs");
 const axios = require("axios");
 const exvoice_list = {};
@@ -16,7 +14,7 @@ module.exports = {
     async read(message, user, live_content, skip, tmp) {
         const get_server_data = await sql(`select * from server_speak where guildid="${message.guild.id}";`);
         const getdata = await sql(`select * from user_speak where userid="${message.member.id}";`);
-        const dictionary = await sql(`select * from dictionary where guildid="${message.guild.id}";`);
+        const dictionary = (await sql(`select * from dictionary where guildid="${message.guild.id}";`))?.map(c => c).concat((await sql(`select * from globaldictionary;`)).map(a => a));
         const speaker = (get_server_data[0]?.force_voice) ? get_server_data[0]?.speakid || getdata[0]?.speakid || 3 : getdata[0]?.speakid || get_server_data[0]?.speakid || 3;
         const host = (get_server_data[0]?.force_voice) ? get_server_data[0]?.speakhost || getdata[0]?.speakhost || process.env.voicevox : getdata[0]?.speakphost || get_server_data[0]?.speakhost || process.env.voicevox;
         const name = (get_server_data[0]?.force_voice) ? get_server_data[0]?.speakname || getdata[0]?.speakname || "ずんだもん" : getdata[0]?.speakname || get_server_data[0]?.speakname || "ずんだもん";
@@ -42,14 +40,16 @@ module.exports = {
             const splitResult = [array.shift(), array.join(result)];
             let newString = "";
             let string_array = [];
-            await Promise.all(splitResult.map(async content => {
-                if (JSON.parse(JSON.stringify(dictionary)).length !== 0) {
-                    const mapObj = {};
-                    await Promise.all(JSON.parse(JSON.stringify(dictionary)).map(({ before_text, after_text }) => mapObj[before_text] = after_text));
-                    for (let i = 0; i < content.length; i++) {
-                        const char = content[i];
-                        const mappedChar = mapObj[char];
-                        newString += mappedChar ? mappedChar : char;//ハッシュ
+            await Promise.all(splitResult?.map(async content => {
+                if (dictionary.length !== 0) {
+                    let newString = content;
+                    if (dictionary?.length !== 0) {
+                        for (let i = 0; i < dictionary.length; i++) {
+                            const before = dictionary[i].before_text;
+                            const after = dictionary[i].after_text;
+                            const regex = new RegExp(before, 'g');
+                            newString = newString.replace(regex, after);
+                        };
                     };
                     string_array.push(newString.replace(string_array[0], ""));
                 };
@@ -120,14 +120,13 @@ module.exports = {
             player.play(resource);
             voiceChannel.subscribe(player);
         } else {
-            let newString = "";
-            if (JSON.parse(JSON.stringify(dictionary)).length !== 0) {
-                const mapObj = {};
-                await Promise.all(JSON.parse(JSON.stringify(dictionary)).map(({ before_text, after_text }) => mapObj[before_text] = after_text));
-                for (let i = 0; i < msg.length; i++) {
-                    const char = msg[i];
-                    const mappedChar = mapObj[char];
-                    newString += mappedChar ? mappedChar : char;//ハッシュ
+            let newString = message.content;
+            if (dictionary?.length !== 0) {
+                for (let i = 0; i < dictionary.length; i++) {
+                    const before = dictionary[i].before_text;
+                    const after = dictionary[i].after_text;
+                    const regex = new RegExp(before, 'g');
+                    newString = newString.replace(regex, after);
                 };
             };
             const content = (newString === "") ?
