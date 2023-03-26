@@ -2,7 +2,7 @@ const { EmbedBuilder, Colors } = require('discord.js');
 const { translate } = require("../../../helpers/HttpUtils");
 
 module.exports = async (interaction) => {
-    const to = interaction.options.getString("language");
+    const to = interaction.options.getString("to");
     const content = interaction.options.getString("content");
     if (to) {
         //言語指定
