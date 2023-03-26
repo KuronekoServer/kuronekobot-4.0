@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits, Collection, Partials, Colors } = require('discord.js');
 const client = new Client({
     intents: Object.values(GatewayIntentBits),
-    partials: [Partials.Message, Partials.Channel, Partials.Reaction]
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction], rest: 60000
 });
 const chalk = require('chalk');
 require('dotenv').config();
