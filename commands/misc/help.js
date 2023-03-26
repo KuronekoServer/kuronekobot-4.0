@@ -82,6 +82,7 @@ module.exports = {
                         { name:'\`poll create\`', value: `アンケートを作成します`, inline: true },
                         { name:'\`poll excreate\`', value: `一人一つの投票にします`, inline: true },
                         { name:'\`poll sum\`', value: `集計します`, inline: true },
+                        { name:'\`genshin build\`', value: `原神のビルドカードを作成します`, inline: true },
                     ),
                     new EmbedBuilder()
                     .setTitle("サーバー管理コマンド(管理者)")

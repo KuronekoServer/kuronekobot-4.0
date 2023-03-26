@@ -1,4 +1,4 @@
-const { EmbedBuilder, Colors, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const {  ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
 const modal = new ModalBuilder()
     .setCustomId('report')
     .setTitle('レポート');

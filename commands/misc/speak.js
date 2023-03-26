@@ -16,10 +16,6 @@ const skip = require("./speak/skip");
 const setting_show = require("./speak/setting-show");
 const live_read_stop = require("./speak/live_read_stop");
 let response;
-let exvoice_list = [];
-fs.readdirSync(`${process.env.exvoice}`).map(data => {
-    exvoice_list.push(...fs.readdirSync(`${process.env.exvoice}/${data}`).map(name => ({ name: `${name.replace(".wav", "")}(${data})`, value: `${name.replace(".wav", "")},${data}` })));
-});
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('speak')

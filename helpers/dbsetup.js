@@ -67,6 +67,11 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
      * @property {string} word - 単語
      * @property {string} speakname - 対象話者名前
      * 
+     * 原神
+     * @typedef {Object} genshin
+     * @property {string} userid - ユーザーID
+     * @property {string} uid - 原神のUID
+     * 
      */
     await conn.query("create table ticket_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table log_channel (guildid text,channelid text);").catch(() => { });
@@ -77,6 +82,7 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
     await conn.query("create table read_user (guildid text,userid text,readmsg boolean);").catch(() => { });
     await conn.query("create table exvoiceword (guildid text,word text,speakname text);").catch(() => { });
     await conn.query("create table globaldictionary (before_text text,after_text text);").catch(() => { });
+    await conn.query("create table genshin (userid text,uid text);").catch(() => { });
 
     console.log("処理が終了しました。");
     process.exit(1);

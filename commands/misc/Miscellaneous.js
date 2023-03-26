@@ -68,7 +68,7 @@ module.exports = {
                 .setName('translate')
                 .setDescription('コンテンツの言語を翻訳')
                 .addStringOption(option => option.setName("content").setDescription("コンテンツを入力").setRequired(true))
-                .addStringOption(option => option.setName("to").setDescription('言語の指定'))),
+                .addStringOption(option => option.setName("to").setDescription('言語の指定').addChoices(...Object.keys(require("../../data.json").GOOGLE_TRANSLATE).map((value, index) => ({ name: Object.values(require("../../data.json").GOOGLE_TRANSLATE)[index], value: value })).slice(0, 25)))),
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
         //reserve
