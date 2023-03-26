@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('discord.js');
-const fs = require("node:fs");
 const join = require("./speak/join");
 const disconnect = require("./speak/disconnect");
 const dictionary_add = require("./speak/dictionary_add");
