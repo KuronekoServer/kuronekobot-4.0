@@ -104,7 +104,7 @@ module.exports = {
             subcommand
                 .setName('server_exvoice-word')
                 .addStringOption(option => option.setName("select").setDescription("単語の操作").addChoices({ name: "追加", value: "add" }, { name: "削除", value: "remove" }, { name: "除外リスト", value: "removelist" }, { name: "一覧", value: "list" }).setRequired(true))
-                .addStringOption(option => option.setName("話者").setDescription("話者の選択").addChoices(...exvoice_list).setRequired(true))
+                .addStringOption(option => option.setName("話者").setDescription("話者の選択").setAutocomplete(true).setRequired(true))
                 .setDescription('読み上げないexvoiceの追加。')
 
         )
@@ -128,6 +128,10 @@ module.exports = {
                 .addStringOption(option => option.setName("toggle").setDescription("読み上げるかどうか").addChoices({ name: "読み上げる", value: "false" }, { name: "読み上げない", value: "true" }).setRequired(true))
                 .setDescription('Discordのメッセージを読み上げるかどうか。')
         ),
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused();
+        await interaction.respond(exvoice_list.filter(data => data.name.startsWith(focusedValue))).catch(() => { });
+    },
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
         //server_voice
