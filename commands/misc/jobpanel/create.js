@@ -1,5 +1,7 @@
 const { EmbedBuilder, Colors } = require("discord.js");
 const { sql } = require("../../../helpers/utils");
+const { escape } = require("mysql2")
+
 const success = new EmbedBuilder()
     .setTitle(`✅完了`)
     .setDescription("正常にパネルが作成されました。")
@@ -33,12 +35,12 @@ module.exports = async (interaction) => {
         await msg.delete()
         return ({ embeds: [error], ephemeral: true });
     } else {
-        const getdata = await sql(`select * from job_message where guildid="${interaction.guild.id}";`);
-        if (getdata[0]?.guildid) {
-            const set = await sql(`update job_message set messageid="${msg.id}",channelid="${msg.channel.id}" where guildid="${interaction.guild.id}";`);
+        const getdata = await sql(`select * from job_message where guildid=${escape(interaction.guild.id)};`);
+        if (getdata[0][0]?.guildid) {
+            const set = await sql(`update job_message set messageid=${escape(msg.id)},channelid=${escape(msg.channel.id)} where guildid=${escape(interaction.guild.id)};`);
             if (!set) return ({ embeds: [db_error], ephemeral: true });
         } else {
-            const set = await sql(`insert into job_message values ("${interaction.guild.id}","${msg.channel.id}","${msg.id}");`);
+            const set = await sql(`insert into job_message values (${escape(interaction.guild.id)},${escape(msg.channel.id)},${escape(msg.id)});`);
             if (!set) return ({ embeds: [db_error], ephemeral: true });
         };
         return ({ embeds: [success], ephemeral: true });

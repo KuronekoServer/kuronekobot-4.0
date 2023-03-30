@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, Colors, ChannelType } = require('discord.js');
 const { sql } = require("../../helpers/utils");
+const { escape } = require("mysql2")
+
 const success_embed = new EmbedBuilder()
     .setTitle("✅成功")
     .setDescription("チケットの作成に成功しました!")
@@ -73,7 +75,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDescription('チケットを作成します'),
     async execute(interaction) {
-        const getdata = await sql(`select * from ticket_channel where guildid="${interaction.guild.id}";`);
+        const getdata = await sql(`select * from ticket_channel where guildid=${escape(interaction.guild.id)};`);
         const sub = interaction.options.getSubcommand();
         if (sub === "create") {
             const options = interaction.options;
@@ -91,11 +93,11 @@ module.exports = {
                 .setImage(options.getAttachment("image")?.attachment)
                 .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | ticket" });
             if (interaction.options.getChannel("log")?.id) {
-                if (getdata[0]?.guildid) {
-                    const update = await sql(`update ticket_channel set channelid="${interaction.options.getChannel("log").id}" where guildid="${interaction.guild.id}";`);
+                if (getdata[0][0]?.guildid) {
+                    const update = await sql(`update ticket_channel set channelid=${escape(interaction.options.getChannel("log").id)} where guildid=${escape(interaction.guild.id)};`);
                     if (!update) return await interaction.reply({ embeds: [ERROREmbed], ephemeral: true })
                 } else {
-                    const add = await sql(`insert into ticket_channel values ("${interaction.guild.id}","${interaction.options.getChannel("log").id}");`);
+                    const add = await sql(`insert into ticket_channel values (${escape(interaction.guild.id)},${escape(interaction.options.getChannel("log").id)});`);
                     if (!add) return await interaction.reply({ embeds: [ERROREmbed], ephemeral: true })
                 };
             };
@@ -103,8 +105,8 @@ module.exports = {
             await interaction.reply({ embeds: [success_embed], ephemeral: true });
         };
         if (sub === "delete") {
-            if (!getdata[0]?.guildid) return await interaction.reply({ embeds: [undefined_embed], ephemeral: true });
-            const sql_delete = await sql(`DELETE FROM ticket_channel WHERE guildid = "${interaction.guild.id}";`);
+            if (!getdata[0][0]?.guildid) return await interaction.reply({ embeds: [undefined_embed], ephemeral: true });
+            const sql_delete = await sql(`DELETE FROM ticket_channel WHERE guildid = ${escape(interaction.guild.id)};`);
             if (!sql_delete) return await interaction.reply({ embeds: [delete_error], ephemeral: true });
             await interaction.reply({ embeds: [delete_embed], ephemeral: true });
         }

@@ -1,5 +1,7 @@
 const { EmbedBuilder, Colors } = require("discord.js");
 const { sql } = require("../../../helpers/utils");
+const { escape } = require("mysql2")
+
 const basic_emojis = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', '🇵', '🇶', '🇷'];
 const error = new EmbedBuilder()
     .setTitle("⚠️エラー")
@@ -23,11 +25,11 @@ const db_error = new EmbedBuilder()
     .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" });
 module.exports = async (interaction) => {
     //可読性皆無(すまん)
-    const getdata = await sql(`select * from job_message where guildid="${interaction.guild.id}";`);
-    if (!getdata[0]?.guildid) return ({ embeds: [error], ephemeral: true });
-    const channel = await interaction.guild.channels.fetch(getdata[0].channelid).catch((ex) => { });
+    const getdata = await sql(`select * from job_message where guildid=${escape(interaction.guild.id)};`);
+    if (!getdata[0][0]?.guildid) return ({ embeds: [error], ephemeral: true });
+    const channel = await interaction.guild.channels.fetch(getdata[0][0].channelid).catch((ex) => { });
     if (!channel) return ({ embeds: [error], ephemeral: true });
-    const msg = await channel.messages.fetch(getdata[0].messageid).catch((ex) => { });
+    const msg = await channel.messages.fetch(getdata[0][0].messageid).catch((ex) => { });
     if (!msg) return ({ embeds: [error], ephemeral: true });
     const option = interaction.options;
     const old_roles = msg.embeds[0]?.data?.description.split("\n").map(content => (content.split(/:<@&(.+)>/)[1]?.match(/\d+/g)[0]) ? content.split(/:<@&(.+)>/)[1]?.match(/\d+/g)[0] : content.split(":")[1]);
@@ -67,7 +69,7 @@ module.exports = async (interaction) => {
                 await new_msg.delete();
                 return ({ embeds: [react_error], ephemeral: true });
             };
-            const update = await sql(`update job_message set messageid="${new_msg.id}",channelid="${new_msg.channel.id}" where guildid="${interaction.guild.id}";`);
+            const update = await sql(`update job_message set messageid=${escape(new_msg.id)},channelid=${escape(new_msg.channel.id)} where guildid=${escape(interaction.guild.id)};`);
             if (!update) return ({ embeds: [db_error], ephemeral: true });
         };
     } else {

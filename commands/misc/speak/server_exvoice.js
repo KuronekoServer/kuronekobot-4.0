@@ -1,5 +1,7 @@
 const { EmbedBuilder, Colors } = require("discord.js");
 const { sql } = require("../../../helpers/utils");
+const { escape } = require("mysql2")
+
 const db_error = new EmbedBuilder()
     .setTitle("⚠️エラー")
     .setDescription("データ更新に失敗しました。")
@@ -9,11 +11,11 @@ module.exports = async (interaction) => {
     const getdata = await sql(`select * from server_speak where guildid="${interaction.guild.id}";`);
     const boolean = interaction.options.getString("toggle");
     if (boolean === "true") {
-        if (getdata[0]?.guildid) {
-            const set = await sql(`update server_speak set exvoice=null where guildid="${interaction.guild.id}";`);
+        if (getdata[0][0]?.guildid) {
+            const set = await sql(`update server_speak set exvoice=null where guildid=${escape(interaction.guild.id)};`);
             if (!set) return ({ embeds: [db_error] });
         } else {
-            const set = await sql(`INSERT INTO server_speak(guildid,exvoice) VALUES ("${interaction.guild.id}",null);`);
+            const set = await sql(`INSERT INTO server_speak(guildid,exvoice) VALUES (${escape(interaction.guild.id)},null);`);
             if (!set) return ({ embeds: [db_error] });
         };
         const success = new EmbedBuilder()
@@ -24,11 +26,11 @@ module.exports = async (interaction) => {
         return ({ embeds: [success] });
     };
     if (boolean === "false") {
-        if (getdata[0]?.guildid) {
-            const set = await sql(`update server_speak set exvoice=true where guildid="${interaction.guild.id}";`);
+        if (getdata[0][0]?.guildid) {
+            const set = await sql(`update server_speak set exvoice=true where guildid=${escape(interaction.guild.id)};`);
             if (!set) return ({ embeds: [db_error] });
         } else {
-            const set = await sql(`INSERT INTO server_speak(guildid,exvoice) VALUES ("${interaction.guild.id}",true);`);
+            const set = await sql(`INSERT INTO server_speak(guildid,exvoice) VALUES (${escape(interaction.guild.id)},true);`);
             if (!set) return ({ embeds: [db_error] });
         };
         const success = new EmbedBuilder()

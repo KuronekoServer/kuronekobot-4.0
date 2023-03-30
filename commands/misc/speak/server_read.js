@@ -1,5 +1,7 @@
 const { EmbedBuilder, Colors } = require("discord.js");
 const { sql } = require("../../../helpers/utils");
+const { escape } = require("mysql2")
+
 const db_error = new EmbedBuilder()
     .setTitle("⚠️エラー")
     .setDescription("データ更新に失敗しました。")
@@ -8,14 +10,14 @@ const db_error = new EmbedBuilder()
 module.exports = async (interaction) => {
     const boolean = interaction.options.getString("toggle");
     const ope = interaction.options.getString("操作");
-    const getdata = await sql(`select * from server_speak where guildid="${interaction.guild.id}";`);
+    const getdata = await sql(`select * from server_speak where guildid=${escape(interaction.guild.id)};`);
     if (ope === "message") {
         if (boolean === "true") {
-            if (getdata[0]?.guildid) {
-                const set = await sql(`update server_speak set read_username=true where guildid="${interaction.guild.id}";`);
+            if (getdata[0][0]?.guildid) {
+                const set = await sql(`update server_speak set read_username=true where guildid=${escape(interaction.guild.id)};`);
                 if (!set) return ({ embeds: [db_error] });
             } else {
-                const set = await sql(`INSERT INTO server_speak(guildid,read_username) VALUES ("${interaction.guild.id}",true);`);
+                const set = await sql(`INSERT INTO server_speak(guildid,read_username) VALUES (${escape(interaction.guild.id)},true);`);
                 if (!set) return ({ embeds: [db_error] });
             };
             const success = new EmbedBuilder()
@@ -26,11 +28,11 @@ module.exports = async (interaction) => {
             return ({ embeds: [success] });
         };
         if (boolean === "false") {
-            if (getdata[0]?.guildid) {
-                const set = await sql(`update server_speak set read_username=null where guildid="${interaction.guild.id}";`);
+            if (getdata[0][0]?.guildid) {
+                const set = await sql(`update server_speak set read_username=null where guildid=${escape(interaction.guild.id)};`);
                 if (!set) return ({ embeds: [db_error] });
             } else {
-                const set = await sql(`INSERT INTO server_speak(guildid,read_username) VALUES ("${interaction.guild.id}",null);`);
+                const set = await sql(`INSERT INTO server_speak(guildid,read_username) VALUES (${escape(interaction.guild.id)},null);`);
                 if (!set) return ({ embeds: [db_error] });
             };
             const success = new EmbedBuilder()
@@ -48,11 +50,11 @@ module.exports = async (interaction) => {
                 .setDescription(`入退出時にユーザー名を読み上げるようにしました！`)
                 .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
                 .setColor(Colors.Green);
-            if (getdata[0]?.guildid) {
-                const set = await sql(`update server_speak set read_joinremove=true where guildid="${interaction.guild.id}";`);
+            if (getdata[0][0]?.guildid) {
+                const set = await sql(`update server_speak set read_joinremove=true where guildid=${escape(interaction.guild.id)};`);
                 if (!set) return ({ embeds: [db_error] });
             } else {
-                const set = await sql(`INSERT INTO server_speak(guildid,read_joinremove) VALUES ("${interaction.guild.id}",true);`);
+                const set = await sql(`INSERT INTO server_speak(guildid,read_joinremove) VALUES (${escape(interaction.guild.id)},true);`);
                 if (!set) return ({ embeds: [db_error] });
             };
             return ({ embeds: [success] });
@@ -63,11 +65,11 @@ module.exports = async (interaction) => {
                 .setDescription(`入退出時にユーザー名を読み上げないようにしました！`)
                 .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
                 .setColor(Colors.Green);
-            if (getdata[0]?.guildid) {
-                const set = await sql(`update server_speak set read_joinremove=null where guildid="${interaction.guild.id}";`);
+            if (getdata[0][0]?.guildid) {
+                const set = await sql(`update server_speak set read_joinremove=null where guildid=${escape(interaction.guild.id)};`);
                 if (!set) return ({ embeds: [db_error] });
             } else {
-                const set = await sql(`INSERT INTO server_speak(guildid,read_joinremove) VALUES ("${interaction.guild.id}",null);`);
+                const set = await sql(`INSERT INTO server_speak(guildid,read_joinremove) VALUES (${escape(interaction.guild.id)},null);`);
                 if (!set) return ({ embeds: [db_error] });
             };
             return ({ embeds: [success_delete] });

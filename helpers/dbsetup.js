@@ -1,8 +1,14 @@
-const mariadb = require('mariadb');
 require('dotenv').config();
-const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.db_user, connectionLimit: process.env.db_limit, password: process.env.db_password, port: process.env.db_port, database: process.env.db_name });
+const mysql = require('mysql2/promise');
+
 (async () => {
-    const conn = await pool.getConnection();
+    const conn = await mysql.createConnection({
+        host: process.env.db_host,
+        user: process.env.db_user,
+        password: process.env.db_password,
+        database: process.env.db_name,
+        port: process.env.db_port,
+    });
     /**
      * サーバーIDとチャンネルIDを含むテーブルを自動生成する。
      *
@@ -25,9 +31,9 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
      * @property {string} speakname - 対象話者名前
      * @property {int} speakid - 話者ID
      * @property {string} speakhost - 対象話者のhost
-     * @property {decimal} pitch - 話者のピッチ
-     * @property {decimal} intonation - 話者のイントネーション
-     * @property {decimal} speed - 話者スピード
+     * @property {double} pitch - 話者のピッチ
+     * @property {double} intonation - 話者のイントネーション
+     * @property {double} speed - 話者スピード
      * 
      * サーバー設定
      * @typedef {Object} dictionary
@@ -40,9 +46,9 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
      * @property {string} auto_voice_channel - 読み上げるボイスチャンネルID
      * @property {string} auto_text_channel - 読み上げるテキストチャンネルID
      * @property {string} speakname - 対象話者名前
-     * @property {decimal} pitch - 話者のピッチ
-     * @property {decimal} intonation - 話者のイントネーション
-     * @property {decimal} speed - 話者のスピード
+     * @property {double} pitch - 話者のピッチ
+     * @property {double} intonation - 話者のイントネーション
+     * @property {double} speed - 話者のスピード
      * @property {int} speakid - 話者ID
      * @property {string} speakhost - 対象話者のhost
      * @property {boolean} bot_read - BOTのメッセージを読み上げるかどうか
@@ -76,9 +82,9 @@ const pool = mariadb.createPool({ host: process.env.db_host, user: process.env.d
     await conn.query("create table ticket_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table log_channel (guildid text,channelid text);").catch(() => { });
     await conn.query("create table job_message (guildid text,channelid text,messageid text);").catch(() => { });
-    await conn.query("create table user_speak (userid text,speakname text,speakid int,speakhost text,pitch decimal,intonation decimal,speed decimal);").catch(() => { });
+    await conn.query("create table user_speak (userid text,speakname text,speakid int,speakhost text,pitch double,intonation double,speed double);").catch(() => { });
     await conn.query("create table dictionary (guildid text,before_text text,after_text text);").catch(() => { });
-    await conn.query("create table server_speak (guildid text,auto_voice_channel text,auto_text_channel text,speakname text,pitch decimal,intonation decimal,speed decimal,speakid int,speakhost text,bot_read boolean,read_username boolean,read_joinremove boolean,force_args boolean,force_voice boolean,exvoice boolean,dictionary_username boolean,only_tts boolean,read_through boolean);").catch(() => { });
+    await conn.query("create table server_speak (guildid text,auto_voice_channel text,auto_text_channel text,speakname text,pitch double,intonation double,speed double,speakid int,speakhost text,bot_read boolean,read_username boolean,read_joinremove boolean,force_args boolean,force_voice boolean,exvoice boolean,dictionary_username boolean,only_tts boolean,read_through boolean);").catch(() => { });
     await conn.query("create table read_user (guildid text,userid text,readmsg boolean);").catch(() => { });
     await conn.query("create table exvoiceword (guildid text,word text,speakname text);").catch(() => { });
     await conn.query("create table globaldictionary (before_text text,after_text text);").catch(() => { });

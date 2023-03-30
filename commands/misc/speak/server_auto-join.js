@@ -1,5 +1,7 @@
 const { EmbedBuilder, Colors } = require("discord.js");
 const { sql } = require("../../../helpers/utils");
+const { escape } = require("mysql2")
+
 const db_error = new EmbedBuilder()
     .setTitle("⚠️エラー")
     .setDescription("データ更新に失敗しました。")
@@ -8,12 +10,12 @@ const db_error = new EmbedBuilder()
 module.exports = async (interaction) => {
     const text = interaction.options.getChannel("textchannel");
     const voice = interaction.options.getChannel("voicechannel");
-    const getdata = await sql(`select * from server_speak where guildid="${interaction.guild.id}";`);
-    if (getdata[0]?.guildid) {
-        const set = await sql(`update server_speak set auto_text_channel="${text.id}",auto_voice_channel="${voice.id}" where guildid="${interaction.guild.id}";`);
+    const getdata = await sql(`select * from server_speak where guildid=${escape(interaction.guild.id)};`);
+    if (getdata[0][0]?.guildid) {
+        const set = await sql(`update server_speak set auto_text_channel=${escape(text.id)},auto_voice_channel=${escape(voice.id)} where guildid=${escape(interaction.guild.id)};`);
         if (!set) return ({ embeds: [db_error] });
     } else {
-        const set = await sql(`INSERT INTO server_speak(guildid,auto_text_channel,auto_voice_channel) VALUES ("${interaction.guild.id}","${text.id}","${voice.id}");`);
+        const set = await sql(`INSERT INTO server_speak(guildid,auto_text_channel,auto_voice_channel) VALUES (${escape(interaction.guild.id)},${escape(text.id)},${escape(voice.id)});`);
         if (!set) return ({ embeds: [db_error] });
     };
     const success = new EmbedBuilder()

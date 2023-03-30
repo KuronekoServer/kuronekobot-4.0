@@ -1,5 +1,6 @@
 const { Events, Colors, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const { ticket_timer, sql } = require("../../helpers/utils");
+const { escape } = require("mysql2")
 
 /*  
    embed
@@ -83,8 +84,8 @@ module.exports = {
                         .setDescription(`チャンネル:${new_channel.name}\nユーザー:${interaction.user}\n日時:${new Date()}`)
                         .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | ticket" })
                         .setColor(Colors.Green);
-                    const getdata = await sql(`select * from ticket_channel where guildid="${interaction.guild.id}";`);
-                    if (getdata[0]?.guildid) await (await interaction.guild.channels.fetch(getdata[0].channelid)).send({ embeds: [create_embed] });
+                    const getdata = await sql(`select * from ticket_channel where guildid=${escape(interaction.guild.id)};`);
+                    if (getdata[0][0]?.guildid) await (await interaction.guild.channels.fetch(getdata[0][0].channelid)).send({ embeds: [create_embed] });
                 };
                 if (interaction.customId === "ticket_close") {
                     const channel = await interaction.channel.messages.fetch({ after: '0', limit: 1 });
@@ -101,7 +102,7 @@ module.exports = {
                     await interaction.reply({ embeds: [cancel_embed], ephemeral: true });
                 };
                 if (interaction.customId === "ticket_log") {
-                    await sql(`DELETE FROM ticket_channel where guildid="${interaction.guild.id}";`);
+                    await sql(`DELETE FROM ticket_channel where guildid=${escape(interaction.guild.id)};`);
                     await interaction.reply({ embeds: [sql_embed], ephemeral: true });
                 };
             } catch (error) {
