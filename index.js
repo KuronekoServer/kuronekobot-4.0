@@ -55,9 +55,9 @@ setInterval(() => {
 }, 10000);
 
 // エラー後も処理継続
-// process.on("uncaughtException", (reason, promise) => {
-//     console.log(chalk.red(`[エラー] ${reason}\n`) + chalk.yellow(`日時:${new Date()}`));
-//     send({ title: "その他のエラー", description: `[エラー] ${reason}`, time: new Date(), color: Colors.DarkRed })
-// });
+process.on("uncaughtException", (reason, promise) => {
+    console.log(chalk.red(`[エラー] ${reason}\n`) + chalk.yellow(`日時:${new Date()}`));
+    send({ title: "その他のエラー", description: `[エラー] ${reason}`, time: new Date(), color: Colors.DarkRed })
+});
 
 client.login(process.env.TOKEN);
