@@ -169,6 +169,7 @@ module.exports = class Utils {
         port: process.env.db_port,
       });
       const result = await connection.query(command);
+      await connection.end();
       return result;
     } catch (ex) {
       send({ title: "mariadbエラー", description: `${ex}`, time: new Date(), color: Colors.Yellow })
