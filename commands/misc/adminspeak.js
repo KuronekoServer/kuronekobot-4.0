@@ -103,10 +103,9 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('server_exvoice-word')
-                .addStringOption(option => option.setName("select").setDescription("単語の操作").addChoices({ name: "追加", value: "add" }, { name: "削除", value: "remove" }, { name: "除外リスト", value: "removelist" }, { name: "一覧", value: "list" }).setRequired(true))
+                .addStringOption(option => option.setName("select").setDescription("単語の操作").addChoices({ name: "追加", value: "add" }, { name: "削除", value: "remove" }).setRequired(true))
                 .addStringOption(option => option.setName("話者").setDescription("話者の選択").setAutocomplete(true).setRequired(true))
                 .setDescription('読み上げないexvoiceの追加。')
-
         )
         .addSubcommand(subcommand =>
             subcommand
