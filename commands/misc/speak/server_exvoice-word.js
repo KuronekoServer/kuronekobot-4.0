@@ -1,5 +1,6 @@
 const { EmbedBuilder, Colors } = require("discord.js");
 const { sql } = require("../../../helpers/utils");
+const { escape } = require("mysql2")
 const { PagesManager } = require('discord.js-pages');
 const pagesManager = new PagesManager();
 const db_error = new EmbedBuilder()
@@ -26,9 +27,9 @@ module.exports = async (interaction) => {
             .setDescription(`${name.split(",").join("(")})を追加しました！`)
             .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
             .setColor(Colors.Green);
-        const getdata = await sql(`select * from exvoiceword where guildid="${interaction.guild.id}" and speakname="${name.split(",")[1]}" and word="${name.split(",")[0]}";`);
-        if (!getdata[0]?.word) {
-            const set = await sql(`INSERT INTO exvoiceword(guildid,word,speakname) VALUES ("${interaction.guild.id}","${name.split(",")[0]}","${name.split(",")[1]}");`);
+        const getdata = await sql(`select * from exvoiceword where guildid=${escape(interaction.guild.id)} and speakname=${escape(name.split(",")[1])} and word=${escape(name.split(",")[0])};`);
+        if (!getdata[0][0]?.word) {
+            const set = await sql(`INSERT INTO exvoiceword(guildid,word,speakname) VALUES (${escape(interaction.guild.id)},${escape(name.split(",")[0])},${escape(name.split(",")[1])});`);
             if (!set) return ({ embeds: [db_error] });
         };
         return ({ embeds: [success] });
@@ -39,17 +40,17 @@ module.exports = async (interaction) => {
             .setDescription(`${name.split(",").join("(")})を削除しました！`)
             .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
             .setColor(Colors.Green);
-        const getdata = await sql(`select * from exvoiceword where guildid="${interaction.guild.id}" and speakname="${name.split(",")[1]}" and word="${name.split(",")[0]}";`);
-        if (getdata[0]?.word) {
-            const set = await sql(`DELETE FROM exvoiceword where guildid="${interaction.guild.id}" and speakname="${name.split(",")[1]}" and word="${name.split(",")[0]}";`);
+        const getdata = await sql(`select * from exvoiceword where guildid=${escape(interaction.guild.id)} and speakname=${escape(name.split(",")[1])} and word=${escape(name.split(",")[0])};`);
+        if (getdata[0][0]?.word) {
+            const set = await sql(`DELETE FROM exvoiceword where guildid=${escape(interaction.guild.id)} and speakname=${escape(name.split(",")[1])} and word=${escape(name.split(",")[0])};`);
             if (!set) return ({ embeds: [db_error] });
         }
         return ({ embeds: [success] });
     };
     if (select === "removelist") {
-        const getdata = await sql(`select * from exvoiceword where guildid="${interaction.guild.id}" and speakname="${name}";`);
-        if (getdata[0]?.guildid) {
-            const list = getdata.map(data => "```" + `${data.word}(${data.speakname})` + "```");
+        const getdata = await sql(`select * from exvoiceword where guildid=${escape(interaction.guild.id)} and speakname=${escape(name)};`);
+        if (getdata[0][0]?.guildid) {
+            const list = getdata[0].map(data => "```" + `${data.word}(${data.speakname})` + "```");
             const maxcontent = 10;
             const pages = Math.ceil(list.length / maxcontent);
             const content = [...Array(pages)].map((_, index) => new EmbedBuilder().setDescription(list.slice(maxcontent * ((index + 1) - 1), maxcontent * (index + 1)).join("\n")));

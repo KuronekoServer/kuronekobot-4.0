@@ -1,5 +1,7 @@
 const { EmbedBuilder, Colors, ActionRowBuilder, StringSelectMenuBuilder, ButtonStyle, ButtonBuilder,Events } = require('discord.js');
 const { sql } = require("../../helpers/utils");
+const { escape } = require("mysql2")
+
 const { EnkaClient } = require("enka-network-api");
 const types = ["攻撃力換算", "HP換算", "防御力換算", "元素チャージ効率換算", "元素熟知換算"];
 const enka = new EnkaClient();
@@ -28,7 +30,7 @@ module.exports = {
         const id = interaction.fields.getTextInputValue('uid');
         const user = await enka.fetchUser(id).catch((ex) => { });
         if (!user) return await interaction.editReply({ embeds: [db_error] });
-        const set = await sql(`INSERT INTO genshin(userid,uid) VALUES ("${interaction.user.id}","${id}");`);
+        const set = await sql(`INSERT INTO genshin(userid,uid) VALUES (${escape(interaction.user.id)},${escape(id)});`);
         if (!set) return await interaction.editReply({ embeds: [db_error] });
         const characters = new ActionRowBuilder()
             .addComponents(

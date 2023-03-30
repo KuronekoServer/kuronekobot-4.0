@@ -41,6 +41,8 @@
     "mariadb": "^3.0.2",
     "module-alias": "^2.2.2",
     "moment": "^2.29.4",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.2.0",
     "node-fetch": "^2.6.9",
     "os": "^0.1.2",
     "os-utils": "^0.0.14",

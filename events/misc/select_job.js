@@ -1,5 +1,7 @@
 const { Events, Colors, EmbedBuilder } = require('discord.js');
 const { sql } = require("../../helpers/utils");
+const { escape } = require("mysql2")
+
 const db_error = new EmbedBuilder()
     .setTitle("⚠️エラー")
     .setDescription("パネルの選択更新に失敗しました。")
@@ -22,12 +24,12 @@ module.exports = {
             const msg = await interaction.channel.messages.fetch(interaction.targetId);
             if (msg.author.id === interaction.client.user.id) {
                 if (msg.embeds[0]?.data.footer.text === "©️ 2023 KURONEKOSERVER | jobpanel") {
-                    const getdata = await sql(`select * from job_message where guildid="${interaction.guild.id}";`);
-                    if (getdata[0]?.guildid) {
-                        const set = await sql(`update job_message set messageid="${msg.id}",channelid="${msg.channel.id}" where guildid="${interaction.guild.id}";`);
+                    const getdata = await sql(`select * from job_message where guildid=${escape(interaction.guild.id)};`);
+                    if (getdata[0][0]?.guildid) {
+                        const set = await sql(`update job_message set messageid=${escape(msg.id)},channelid=${escape(msg.channel.id)} where guildid=${escape(interaction.guild.id)};`);
                         if (!set) return ({ embeds: [db_error], ephemeral: true });
                     } else {
-                        const set = await sql(`insert into job_message values ("${interaction.guild.id}","${msg.channel.id}","${msg.id}");`);
+                        const set = await sql(`insert into job_message values (${escape(interaction.guild.id)},${escape(msg.channel.id)},${escape(msg.id)});`);
                         if (!set) return ({ embeds: [db_error], ephemeral: true });
                     };
                     await interaction.reply({ embeds: [success], ephemeral: true });

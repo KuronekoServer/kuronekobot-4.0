@@ -1,6 +1,8 @@
 const { EmbedBuilder, Colors } = require("discord.js");
 const { sql } = require("../../../helpers/utils");
 const { getJson } = require("../../../helpers/HttpUtils");
+const { escape } = require("mysql2")
+
 const success = new EmbedBuilder()
     .setTitle(`✅完了`)
     .setDescription(`インポートが完了しました!`)
@@ -14,11 +16,6 @@ const db_error = new EmbedBuilder()
 const error = new EmbedBuilder()
     .setTitle("⚠️エラー")
     .setDescription("ファイルフォーマットが無効です。")
-    .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });
-const quotation = new EmbedBuilder()
-    .setTitle("⚠️エラー")
-    .setDescription("単語削除にダブルクォーテーションがは使えません。")
     .setColor(Colors.Red)
     .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });
 const size_error = new EmbedBuilder()
@@ -35,15 +32,13 @@ module.exports = async (interaction) => {
         await Promise.all(json.map(async value => {
             if (!value?.before_text) return ({ embeds: [error] });
             if (!value?.after_text) return ({ embeds: [error] });
-            if (value.after_text.includes('"')) return ({ embeds: [quotation] });
-            if (value.before_text.includes('"')) return ({ embeds: [quotation] });
             if (value.before_text.length + value.after_text.length > 20) return ({ embeds: [size_error] });
-            const getdata = await sql(`select * from dictionary where guildid="${interaction.guild.id}" and before_text="${value.before_text}";`);
-            if (getdata[0]?.guildid) {
-                const set = await sql(`update dictionary set after_text="${value.after_text}" where guildid="${interaction.guild.id}" and before_text="${value.before_text}";`);
+            const getdata = await sql(`select * from dictionary where guildid=${escape(interaction.guild.id)} and before_text=${escape(value.before_text)};`);
+            if (getdata[0][0]?.guildid) {
+                const set = await sql(`update dictionary set after_text=${escape(value.after_text)} where guildid=${escape(interaction.guild.id)} and before_text=${escape(value.before_text)};`);
                 if (!set) return ({ embeds: [db_error] });
             } else {
-                const set = await sql(`INSERT INTO dictionary(guildid,before_text,after_text) VALUES ("${interaction.guild.id}","${value.before_text}","${value.after_text}");`);
+                const set = await sql(`INSERT INTO dictionary(guildid,before_text,after_text) VALUES (${escape(interaction.guild.id)},${escape(value.before_text)},${escape(value.after_text)});`);
                 if (!set) return ({ embeds: [db_error] });
             };
         }));
