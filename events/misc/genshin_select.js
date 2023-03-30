@@ -3,7 +3,7 @@ const { PythonShell } = require('python-shell');
 const { EnkaClient } = require("enka-network-api");
 const moment = require("moment");
 const enka = new EnkaClient();
-const makeJson = require('GenshinDataJsonCreator');
+const makeJson = require('genshindatajsoncreator');
 const delete_button = new ActionRowBuilder()
     .addComponents(
         new ButtonBuilder()
