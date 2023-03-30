@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, ChannelType, EmbedBuilder, Colors, PermissionFlagsBits } = require('discord.js');
 const { sql } = require("../../helpers/utils");
+const { escape } = require("mysql2")
+
 const ERROREmbed = new EmbedBuilder()
     .setTitle("⚠️エラー")
     .setDescription("データの保存に失敗しました。")
@@ -33,11 +35,11 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDescription('logを残します'),
     async execute(interaction) {
-        const getdata = await sql(`select * from log_channel where guildid="${interaction.guild.id}";`);
+        const getdata = await sql(`select * from log_channel where guildid=${escape(interaction.guild.id)};`);
         const sub = interaction.options.getSubcommand();
         if (sub === "create") {
-            if (getdata[0]?.guildid) {
-                const update = await sql(`update log_channel set channelid="${interaction.options.getChannel("channel").id}" where guildid="${interaction.guild.id}";`);
+            if (getdata[0][0]?.guildid) {
+                const update = await sql(`update log_channel set channelid=${escape(interaction.options.getChannel("channel").id)} where guildid=${escape(interaction.guild.id)};`);
                 const update_embed = new EmbedBuilder()
                     .setTitle(`✅logチャンネル`)
                     .setDescription(`logチャンネルを${interaction.options.getChannel("channel")}に変更しました。`)
@@ -46,7 +48,7 @@ module.exports = {
                 if (!update) return await interaction.reply({ embeds: [ERROREmbed], ephemeral: true })
                 await interaction.reply({ embeds: [update_embed], ephemeral: true });
             } else {
-                const add = await sql(`insert into log_channel values ("${interaction.guild.id}", "${interaction.options.getChannel("channel").id}");`);
+                const add = await sql(`insert into log_channel values (${escape(interaction.guild.id)}, ${escape(interaction.options.getChannel("channel").id)});`);
                 const add_embed = new EmbedBuilder()
                     .setTitle(`✅logチャンネル`)
                     .setDescription(`logチャンネルを${interaction.options.getChannel("channel")}に設定しました。`)
@@ -57,8 +59,8 @@ module.exports = {
             };
         };
         if (sub === "delete") {
-            if (!getdata[0]?.guildid) return await interaction.reply({ embeds: [undefined_embed], ephemeral: true });
-            const sql_delete = await sql(`DELETE FROM log_channel WHERE guildid = "${interaction.guild.id}";`);
+            if (!getdata[0][0]?.guildid) return await interaction.reply({ embeds: [undefined_embed], ephemeral: true });
+            const sql_delete = await sql(`DELETE FROM log_channel WHERE guildid = ${escape(interaction.guild.id)};`);
             if (!sql_delete) return await interaction.reply({ embeds: [delete_error], ephemeral: true });
             await interaction.reply({ embeds: [delete_embed], ephemeral: true });
         };

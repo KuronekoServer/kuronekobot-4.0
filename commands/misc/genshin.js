@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, Colors, ActionRowBuilder, StringSelectMenuBuilder, ButtonStyle, ButtonBuilder, TextInputBuilder, TextInputStyle, ModalBuilder } = require('discord.js');
 const { sql } = require("../../helpers/utils");
+const { escape } = require("mysql2")
 const { EnkaClient } = require("enka-network-api");
 const enka = new EnkaClient();
 const types = ["攻撃力換算", "HP換算", "防御力換算", "元素チャージ効率換算", "元素熟知換算"];
@@ -36,7 +37,7 @@ module.exports = {
         .setDescription('原神のビルドカードを作成します'),
     async execute(interaction) {
         const option = interaction.options;
-        const id = option.getString("uid") || (await sql(`select * from genshin where userid="${option.getString("ユーザー") || interaction.user.id}";`))[0]?.uid;
+        const id = option.getString("uid") || (await sql(`select * from genshin where userid=${escape(option.getString("ユーザー") || interaction.user.id)};`))[0][0]?.uid;
         if (!id) return await interaction.showModal(modal);
         await interaction.deferReply();
         const sub = interaction.options.getSubcommand();
