@@ -14,6 +14,7 @@ const live_read = require("./speak/live_read");
 const skip = require("./speak/skip");
 const setting_show = require("./speak/setting-show");
 const live_read_stop = require("./speak/live_read_stop");
+const all_voice_list = require("../../helpers/voicelist/allvoicelist.json");
 let response;
 module.exports = {
     data: new SlashCommandBuilder()
@@ -104,7 +105,18 @@ module.exports = {
                 .setName('live_read-stop')
                 .addStringOption(option => option.setName("select").setDescription("選択してください").addChoices({ name: "youtube", value: "youtube" }, { name: "twitch", value: "twitch" }).setRequired(true))
                 .setDescription('ライブの読み上げを停止します。')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('exvoice-word')
+                .addStringOption(option => option.setName("select").setDescription("単語の操作").addChoices({ name: "除外リスト", value: "removelist" }, { name: "一覧", value: "list" }).setRequired(true))
+                .addStringOption(option => option.setName("話者").setDescription("話者の選択").setAutocomplete(true).setRequired(true))
+                .setDescription('読み上げないexvoiceの追加。')
         ),
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused();
+        await interaction.respond(all_voice_list.filter(data => data.name.startsWith(focusedValue))).catch(() => { });
+    },
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
         //user_voice
