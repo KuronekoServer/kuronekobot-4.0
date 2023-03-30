@@ -1,5 +1,5 @@
 const { WebhookClient, Colors } = require('discord.js');
-const webhookClient = new WebhookClient({ url: process.env.reportwebhook });
+const webhookClient = new WebhookClient({ id: process.env.reportwebhook_id, token: process.env.reportwebhook_token });
 
 
 module.exports = {
