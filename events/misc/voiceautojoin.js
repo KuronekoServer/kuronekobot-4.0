@@ -17,6 +17,8 @@ module.exports = {
                         channelId: newState.channel?.id,
                         guildId: newState.guild.id,
                         adapterCreator: newState.channel.guild.voiceAdapterCreator,
+                        selfMute:true,
+                        selfDeaf:true,
                     });
                     if (!globalThis.voice_channel[newState.guild.id]) delete globalThis.voice_channel[newState.guild.id];
                     globalThis.voice_channel[newState.guild.id] = getdata[0][0]?.auto_text_channel;

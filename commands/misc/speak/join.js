@@ -19,6 +19,8 @@ module.exports = async (interaction) => {
         channelId: voiceChannel.id,
         guildId: voiceChannel.guild.id,
         adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+        selfMute:true,
+        selfDeaf:true,
     });
     if (!globalThis.voice_channel[interaction.guild.id]) delete globalThis.voice_channel[interaction.guild.id];
     globalThis.voice_channel[interaction.guild.id] = interaction.channel.id;

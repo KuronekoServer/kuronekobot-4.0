@@ -69,7 +69,7 @@ module.exports = async (interaction) => {
                 secure: false,
                 reconnect: false
             }, channels: [id]
-        }).connect;
+        });
         await globalThis.tlivechat[interaction.guild.id].connect()
             .catch(async (ex) => {
                 await read(interaction, "system", "ツイッチのデータ取得中にエラーが発生しました　取得を停止します");
@@ -81,8 +81,6 @@ module.exports = async (interaction) => {
             if (self) return;
             read(interaction, tags.username || "取得できませんでした", message || "取得できませんでした");
         });
-        const status = await globalThis.tlivechat[interaction.guild.id].readyState();
-        console.log(status)
         return ({ embeds: [success] });
     };
 };
