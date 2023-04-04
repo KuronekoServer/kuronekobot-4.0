@@ -73,8 +73,7 @@ module.exports = {
                 }
             });
             const buffer_array = [];
-            await Promise.all([...Array(2)].map(async (_, index) => {
-                const audio_query_json = (index === 0) ? await audio_query_response_start?.data : await audio_query_response_last?.data;
+            const readmsg = async (audio_query_json) => {
                 audio_query_json["speedScale"] = speed;
                 audio_query_json["pitchScale"] = pitch;
                 audio_query_json["intonationScale"] = intonation;
@@ -88,7 +87,9 @@ module.exports = {
                 });
                 if (!synthesis_response?.data) return;
                 buffer_array.push(synthesis_response?.data.toString("base64"));
-            }));
+            };
+            await readmsg(audio_query_response_start?.data);
+            await readmsg(audio_query_response_last?.data);
             const exvoice_file = fs.readFileSync(`${process.env.exvoice}/${name}/${result}.wav`).toString("base64");
             buffer_array.splice(1, 0, exvoice_file);
             const response = await axios.post(
@@ -120,7 +121,7 @@ module.exports = {
             player.play(resource);
             voiceChannel.subscribe(player);
         } else {
-            let newString = message.content;
+            let newString = msg;
             if (dictionary?.length !== 0) {
                 for (let i = 0; i < dictionary.length; i++) {
                     const before = dictionary[i].before_text;
