@@ -16,7 +16,7 @@ module.exports = async (interaction) => {
     const after = interaction.options.getString("after");
     if (before.length + after.length > 20) return ({ embeds: [size_error] });
     const getdata = await sql(`select * from dictionary where guildid=${escape(interaction.guild.id)} and before_text=${escape(before)};`);
-    if (getdata[0][0].guildid) {
+    if (getdata[0][0]?.guildid) {
         const set = await sql(`update dictionary set after_text=${escape(after)} where guildid=${escape(interaction.guild.id)} and before_text=${escape(before)};`);
         if (!set) return ({ embeds: [db_error] });
     } else {

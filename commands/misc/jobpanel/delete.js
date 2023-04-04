@@ -21,9 +21,9 @@ const error = new EmbedBuilder()
 module.exports = async (interaction) => {
     const getdata = await sql(`select * from job_message where guildid=${escape(interaction.guild.id)};`);
     if (!getdata[0][0]?.guildid) return ({ embeds: [error], ephemeral: true });
-    const channel = await interaction.guild.channels.fetch(getdata[0][0].channelid).catch((ex) => { });
+    const channel = await interaction.guild.channels.fetch(getdata[0][0]?.channelid).catch((ex) => { });
     if (!channel) return ({ embeds: [error], ephemeral: true });
-    const msg = await channel.messages.fetch(getdata[0][0].messageid).catch((ex) => { });
+    const msg = await channel.messages.fetch(getdata[0][0]?.messageid).catch((ex) => { });
     if (!msg) return ({ embeds: [error], ephemeral: true });
     await msg.delete();
     const db_delete = await sql(`DELETE FROM job_message where guildid=${escape(interaction.guild.id)};`);

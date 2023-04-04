@@ -39,7 +39,6 @@ module.exports = {
             const result = msg.substring(msg.indexOf(matchStr), msg.indexOf(matchStr) + matchStr.length);
             const array = msg.split(result)//result を基準に文字列を分割する
             const splitResult = [array.shift(), array.join(result)];
-
             let string_array = [];
             await Promise.all(splitResult?.map(async content => {
                 if (dictionary.length !== 0) {
