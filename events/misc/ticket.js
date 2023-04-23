@@ -63,14 +63,17 @@ module.exports = {
                 if (interaction.customId === "ticket_button") {
                     const new_channel = await interaction.guild.channels.create({
                         name: `￤🎫-${interaction.user.username}￤`,
-                        permissionOverwrites:
-                            [{
-                                id: interaction.guild.roles.everyone, deny: [PermissionsBitField.Flags.ViewChannel]
+                        permissionOverwrites: [
+                            {
+                                id: interaction.guild.roles.everyone, deny: [PermissionsBitField.FLAGS.VIEW_CHANNEL]
                             },
                             {
-                                id: interaction.user.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
-                                id: process.env.clientId, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
-                            }]
+                                id: interaction.user.id, allow: [PermissionsBitField.FLAGS.VIEW_CHANNEL, PermissionsBitField.FLAGS.SEND_MESSAGES]
+                            },
+                            {
+                                id: process.env.clientId, allow: [PermissionsBitField.FLAGS.VIEW_CHANNEL, PermissionsBitField.FLAGS.SEND_MESSAGES]
+                            }
+                        ]
                     });
                     const success_embed = new EmbedBuilder()
                         .setTitle("Ticket")
