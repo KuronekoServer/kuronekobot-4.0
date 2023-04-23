@@ -14,7 +14,11 @@ module.exports = async (interaction) => {
         .setColor(Colors.Green);
     await interaction.reply({ embeds: [wait], ephemeral: true });
     const url = options.getString("url");
-    const VirtualBrowser = await puppeteer.launch({});
+    const VirtualBrowser = await puppeteer.launch({
+        args: [
+          `--proxy-server=${process.env.Proxy}`
+        ]
+      });
     const page = await VirtualBrowser.newPage();
     await page.goto(url)
         .then(async () => {
