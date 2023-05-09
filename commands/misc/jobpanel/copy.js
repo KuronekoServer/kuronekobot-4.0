@@ -32,7 +32,7 @@ module.exports = async (interaction) => {
         .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
         .setImage(msg.embeds[0]?.data?.image?.url || null)
         .setColor(msg.embeds[0]?.data?.color || Colors.Green);
-    const new_msg = await msg.channel.send({
+    const new_msg = await interaction.channel.send({
         embeds: [edit]
     });
     for (const emoji of old_emojis) {
