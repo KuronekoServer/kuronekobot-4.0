@@ -1,3 +1,4 @@
+const { EnkaClient } = require("enka-network-api");
 const { Client, GatewayIntentBits, Collection, Partials, Colors } = require('discord.js');
 const client = new Client({
     intents: Object.values(GatewayIntentBits),
@@ -24,6 +25,9 @@ fs.readdirSync('./events/').forEach(async dir => {
         client.on(event.name, (...args) => event.execute(...args));
     };
 });
+
+//EnkaNetworkのcacheをアップデートする
+const enka = new EnkaClient({ showFetchCacheLog: true });
 
 // スラッシュコマンドハンドラー
 client.commands = new Collection();

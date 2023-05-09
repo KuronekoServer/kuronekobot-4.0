@@ -53,7 +53,7 @@ module.exports = async (interaction) => {
         await msg.edit({
             embeds: [edit]
         });
-        emojis = [...new Set(emojis.slice(basic_emojis.length).concat(basic_emojis))]
+        emojis = [...new Set(emojis.slice(basic_emojis?.length).concat(basic_emojis))];
         const content = new EmbedBuilder()
             .setTitle(msg.embeds[0]?.data?.title || "役職パネル")
             .setDescription(roles.slice(basic_emojis.length).map((role, index) => `${emojis[index]}:${interaction.guild.roles.cache.get(role) || role}`).join('\n'))

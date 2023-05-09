@@ -197,7 +197,7 @@ module.exports = class Utils {
       ftp.connect(ftp_option);
       ftp.on("ready", async () => {
         ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => {
-          if (err.message.includes("No such file or directory")) {
+          if (err?.message?.includes("No such file or directory")) {
             ftp.mkdir(`./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`, (err) => { });
             ftp.put(attachment, `./${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}/${data.action.channel.id}.html`, (err) => { });
           };
