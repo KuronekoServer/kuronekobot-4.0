@@ -17,13 +17,24 @@ module.exports = {
         const content = react_message.embeds[0]?.data?.description.split("\n")[num];
         const role = await react.message.guild.roles.fetch((content.split(/<@&(.+)>/)[1]?.match(/\d+/g)[0]) ? content.split(/<@&(.+)>/)[1]?.match(/\d+/g)[0] : content.split(":")[1]);
         const member = await react.message.guild.members.fetch(user.id);
-        await member.roles.add(role);
-        const success = new EmbedBuilder()
-            .setTitle(`✅完了`)
-            .setDescription(`ロールを付与しました。\n付与ロール:${role}\n対象ユーザー:${member}`)
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
-            .setColor(Colors.Green);
-        const msg = await react.message.channel.send({ embeds: [success] });
-        setTimeout(async () => await msg.delete(), 3 * 1000);
+        await member.roles.add(role)
+            .then(async () => {
+                const success = new EmbedBuilder()
+                    .setTitle(`✅完了`)
+                    .setDescription(`ロールを付与しました。\n付与ロール:${role}\n対象ユーザー:${member}`)
+                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
+                    .setColor(Colors.Green);
+                const msg = await react.message.channel.send({ embeds: [success] });
+                setTimeout(async () => await msg.delete(), 3 * 1000);
+            })
+            .catch(async ex => {
+                const faild = new EmbedBuilder()
+                    .setTitle(`注意`)
+                    .setDescription(`ロールの付与に失敗しました。\n付与ロール:${role}\n対象ユーザー:${member}`)
+                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
+                    .setColor(Colors.Green);
+                const msg = await react.message.channel.send({ embeds: [faild] });
+                setTimeout(async () => await msg.delete(), 3 * 1000);
+            });
     }
 }
