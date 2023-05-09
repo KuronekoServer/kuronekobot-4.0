@@ -16,7 +16,7 @@ module.exports = {
         const get_server_data = await sql(`select * from server_speak where guildid=${escape(message.guild.id)};`);
         const getdata = await sql(`select * from user_speak where userid=${escape(message.member.id)};`);
         const dictionary = ((await sql(`select * from dictionary where guildid=${escape(message.guild.id)};`))[0]?.map(c => c).concat(((await sql(`select * from globaldictionary;`))[0]).map(a => a)))[0];
-        const speaker = (get_server_data[0][0]?.force_voice) ? get_server_data[0][0]?.speakid || getdata[0][0]?.speakid || 3 : getdata[0][0]?.speakid || get_server_data[0][0]?.speakid || 3;
+        const speaker = (!get_server_data[0][0]?.force_voice) ? get_server_data[0][0]?.speakid || getdata[0][0]?.speakid || 3 : getdata[0][0]?.speakid || get_server_data[0][0]?.speakid || 3;
         const host = (get_server_data[0][0]?.force_voice) ? get_server_data[0][0]?.speakhost || getdata[0][0]?.speakhost || process.env.voicevox : getdata[0][0]?.speakphost || get_server_data[0][0]?.speakhost || process.env.voicevox;
         const name = (get_server_data[0][0]?.force_voice) ? get_server_data[0][0]?.speakname || getdata[0][0]?.speakname || "ずんだもん" : getdata[0][0]?.speakname || get_server_data[0][0]?.speakname || "ずんだもん";
         const speed = (get_server_data[0][0]?.force_args) ? get_server_data[0][0]?.speed || getdata[0][0]?.speed || 1 : getdata[0][0]?.speed || get_server_data[0][0]?.speed || 1;
