@@ -32,7 +32,7 @@
     "dotenv": "^16.0.3",
     "edge": "^7.10.1",
     "edge-py": "^0.1.0",
-    "enka-network-api": "^2.4.2",
+    "enka-network-api": "^2.6.1",
     "ffmpeg-static": "^5.1.0",
     "ftp": "^0.3.10",
     "genshindatajsoncreator": "^3.2.3",
