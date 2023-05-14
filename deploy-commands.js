@@ -1,34 +1,30 @@
-const fs = require('fs');
-const path = require('path');
-const { REST, Routes } = require('discord.js');
-const { TOKEN, clientId } = process.env;
-const chalk = require('chalk');
+const { REST, Routes } = require("discord.js");
+const fs = require("fs");
 const option = require("./helpers/optionslash.json");
 
-const commands = [];
-commands.push(option);
-fs.readdirSync('./commands/').forEach(async dir => {
-    const commandsPath = path.join(__dirname, `./commands/${dir}`);
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+module.exports = async (logger) => {
+    const Log = logger.createChild("dep-cmd");
 
-    for (const file of commandFiles) {
-        const command = require(`./commands/${dir}/${file}`);
-        commands.push(command.data.toJSON());
-    };
-});
+    const commands = [];
+    commands.push(option);
 
-const rest = new REST({ version: '10' }).setToken(TOKEN);
-
-(async () => {
-    try {
-        console.log(chalk.green("[ロード開始]"), `${commands.length} 個のアプリケーション (/) コマンドをロードします。`);
-        const data = await rest.put(
-            Routes.applicationCommands(clientId),
-            { body: commands },
-        );
-
-        console.log(chalk.green("[成功]"), `${data.length} 個のアプリケーション (/) コマンドをロードしました。`);
-    } catch (error) {
-        console.error(error);
-    }
-})();
+    fs.readdirSync("./commands/").forEach(async (dir) => {
+        const commandsPath = `./commands/${dir}`;
+        const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
+        for (const file of commandFiles) {
+            const command = require(`./commands/${dir}/${file}`);
+            commands.push(command.data.toJSON());
+        };
+    });
+    
+    Log.debug(`${commands.length}個のアプリケーションコマンドをロードしています...`);
+    const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
+    rest.put(
+        Routes.applicationCommands(process.env.clientId),
+        { body: commands },
+    ).then((data) => {
+        Log.debug(`${data.length}個のアプリケーションコマンドをロードしました。`);
+    }).catch((error) => {
+        Log.error(error.message);
+    });
+};

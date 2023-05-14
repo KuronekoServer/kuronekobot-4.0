@@ -1,5 +1,4 @@
 const { Events, EmbedBuilder, Colors } = require('discord.js');
-const chalk = require('chalk');
 const permissions_embed = new EmbedBuilder()
     .setTitle("⚠️エラー")
     .setDescription("権限が足りません。\nBOTに権限を与えてください")
@@ -9,6 +8,7 @@ const { send } = require("../../helpers/sendwebhook");
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
+        const Log = interaction.client.logger.createChannel("interaction");
         if (interaction.isAutocomplete()) {
             const command = interaction.client.commands.get(interaction.commandName);
             if (!command) return;
@@ -24,9 +24,8 @@ module.exports = {
             try {
                 await command.execute(interaction);
             } catch (err) {
-                console.log(chalk.red(`[エラー] ${err.message}`));
+                Log.error(err.message + "\n" + err.stack)
                 if (err.message === "Missing Permissions") return await interaction.reply({ embeds: [permissions_embed], ephemeral: true }).catch(() => { });
-                send({ title: "interactionエラー", description: `${err.message}`, time: new Date(), color: Colors.Red });
                 const unknown_embed = new EmbedBuilder()
                     .setTitle("⚠️エラー")
                     .setDescription(`不明なエラーが発生しました。\n詳細:${err.message}\n運営に問い合わせていただけると幸いです。`)
