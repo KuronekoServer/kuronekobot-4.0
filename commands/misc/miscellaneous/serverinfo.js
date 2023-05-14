@@ -38,31 +38,44 @@ module.exports = async (interaction) => {
     const stickers = interaction.guild.stickers.cache;
     const owner = await interaction.guild.fetchOwner();
 
+    const fields = [
+        { name: '基本情報', value: '\u200b' },
+        { name: 'サーバー名・ID', value: `${codeBlock(`${interaction.guild.name} - ${interaction.guild.id}`)}` },
+        { name: 'オーナー名・ID', value: `${codeBlock(`${owner.user.tag} - ${interaction.guild.ownerId}`)}` },
+        { name: '言語', value: `${codeBlock(interaction.guild.preferredLocale)}`, inline: true },
+        { name: 'ブーストレベル', value: `${codeBlock(`レベル-${interaction.guild.premiumTier}`)}`, inline: true },
+        { name: `サーバー作成日[${moment(interaction.guild.createdAt).fromNow()}]`, value: `${codeBlock(moment(interaction.guild.createdAt).format("YYYY年MMMMDodddd"))}` },
+        { name: `カテゴリーとチャンネル`, value: `${codeBlock(`カテゴリー:${channels.filter(channel => channel.type === ChannelType.GuildCategory).size}|テキスト:${channels.filter(channel => channel.type === ChannelType.GuildText).size}|ボイス:${channels.filter(channel => channel.type === ChannelType.GuildVoice).size}`)}` },
+        { name: 'その他のチャンネル', value: `${codeBlock(`アナウンス:${channels.filter(channel => channel.type === ChannelType.GuildAnnouncement).size}|フォーラム:${channels.filter(channel => channel.type === ChannelType.GuildForum).size}|スレッド:${channels.filter(channel => channel.type === ChannelType.PublicThread).size}|ステージ:${channels.filter(channel => channel.type === ChannelType.GuildStageVoice).size}`)}` },
+        { name: `ロール[${roles.size}]`, value: `${codeBlock(roles.filter(r => !r.name.includes('everyone')).sort((a, b) => b.position - a.position).map(r => `${r.name}[${membersRole(members, r)}]`).join(','))}` },
+        { name: '\u200b', value: '\u200b' },
+        { name: '高度な情報', value: '\u200b' },
+        { name: 'メディアコンテンツフィルター', value: `${codeBlock(filterLevel[interaction.guild.explicitContentFilter])}` },
+        { name: '認証レベル', value: `${codeBlock(verificationLevel[interaction.guild.verificationLevel])} ` },
+        { name: '認証サーバー', value: `${codeBlock(verified[interaction.guild.verified])} ` },
+        { name: 'パートナープログラム', value: `${codeBlock(partnered[interaction.guild.partnered])} ` },
+        { name: '\u200b', value: '\u200b' },
+        { name: 'メンバーと絵文字(ステッカー)', value: '\u200b' },
+        { name: `メンバー[${interaction.guild.memberCount}]`, value: `${codeBlock(`ユーザー:${members.filter(member => !member.user.bot).size}\nボット:${members.filter(member => member.user.bot).size}`)}`, inline: true },
+        { name: `絵文字[${emojis.size}]`, value: `${codeBlock(`通常:${emojis.filter(emoji => !emoji.animated).size}\nアニメーション:${emojis.filter(emoji => emoji.animated).size}\nステッカー:${stickers.size}`)}`, inline: true }
+    ];
+
+    function limitString(str, maxLength) {
+        if (str.length >= maxLength) {
+          return str;
+        } else {
+          return str.substring(0, maxLength - 3) + "...";
+        }
+    }
+    const editedFields = fields.map((field) => {
+        return { name: field.name, value: limitString(field.value, 1024) };
+    });
+
     const embed = new EmbedBuilder()
         .setTitle('✅サーバー情報')
         .setColor(Colors.Green)
         .setThumbnail(interaction.guild.iconURL({ dynamic: true, format: 'png', size: 4096 }))
-        .addFields(
-            { name: '基本情報', value: '\u200b' },
-            { name: 'サーバー名・ID', value: `${codeBlock(`${interaction.guild.name} - ${interaction.guild.id}`)}` },
-            { name: 'オーナー名・ID', value: `${codeBlock(`${owner.user.tag} - ${interaction.guild.ownerId}`)}` },
-            { name: '言語', value: `${codeBlock(interaction.guild.preferredLocale)}`, inline: true },
-            { name: 'ブーストレベル', value: `${codeBlock(`レベル-${interaction.guild.premiumTier}`)}`, inline: true },
-            { name: `サーバー作成日[${moment(interaction.guild.createdAt).fromNow()}]`, value: `${codeBlock(moment(interaction.guild.createdAt).format("YYYY年MMMMDodddd"))}` },
-            { name: `カテゴリーとチャンネル`, value: `${codeBlock(`カテゴリー:${channels.filter(channel => channel.type === ChannelType.GuildCategory).size}|テキスト:${channels.filter(channel => channel.type === ChannelType.GuildText).size}|ボイス:${channels.filter(channel => channel.type === ChannelType.GuildVoice).size}`)}` },
-            { name: 'その他のチャンネル', value: `${codeBlock(`アナウンス:${channels.filter(channel => channel.type === ChannelType.GuildAnnouncement).size}|フォーラム:${channels.filter(channel => channel.type === ChannelType.GuildForum).size}|スレッド:${channels.filter(channel => channel.type === ChannelType.PublicThread).size}|ステージ:${channels.filter(channel => channel.type === ChannelType.GuildStageVoice).size}`)}` },
-            { name: `ロール[${roles.size}]`, value: `${codeBlock(roles.filter(r => !r.name.includes('everyone')).sort((a, b) => b.position - a.position).map(r => `${r.name}[${membersRole(members, r)}]`).join(','))}` },
-            { name: '\u200b', value: '\u200b' },
-            { name: '高度な情報', value: '\u200b' },
-            { name: 'メディアコンテンツフィルター', value: `${codeBlock(filterLevel[interaction.guild.explicitContentFilter])}` },
-            { name: '認証レベル', value: `${codeBlock(verificationLevel[interaction.guild.verificationLevel])} ` },
-            { name: '認証サーバー', value: `${codeBlock(verified[interaction.guild.verified])} ` },
-            { name: 'パートナープログラム', value: `${codeBlock(partnered[interaction.guild.partnered])} ` },
-            { name: '\u200b', value: '\u200b' },
-            { name: 'メンバーと絵文字(ステッカー)', value: '\u200b' },
-            { name: `メンバー[${interaction.guild.memberCount}]`, value: `${codeBlock(`ユーザー:${members.filter(member => !member.user.bot).size}\nボット:${members.filter(member => member.user.bot).size}`)}`, inline: true },
-            { name: `絵文字[${emojis.size}]`, value: `${codeBlock(`通常:${emojis.filter(emoji => !emoji.animated).size}\nアニメーション:${emojis.filter(emoji => emoji.animated).size}\nステッカー:${stickers.size}`)}`, inline: true }
-        )
+        .addFields(editedFields)
         .setTimestamp(new Date())
         .setFooter({
             text: `${interaction.guild.name}`,
