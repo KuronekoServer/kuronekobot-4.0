@@ -1,38 +1,37 @@
-const { Events, EmbedBuilder, Colors } = require('discord.js');
-const permissions_embed = new EmbedBuilder()
-    .setTitle("⚠️エラー")
-    .setDescription("権限が足りません。\nBOTに権限を与えてください")
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | SlashCommand" })
-    .setColor(Colors.Red);
-const { send } = require("../../helpers/sendwebhook");
+const { Events, EmbedBuilder, Colors } = require("discord.js");
+
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        const Log = interaction.client.logger.createChannel("interaction");
-        if (interaction.isAutocomplete()) {
-            const command = interaction.client.commands.get(interaction.commandName);
-            if (!command) return;
+        const { client } = interaction;
 
-            try {
-                await command.autocomplete(interaction);
-            } catch (error) {
-                console.error(error);
-            };
-        } else {
-            const command = interaction.client.commands.get(interaction.commandName);
+        if (interaction.isAutocomplete()) {
+            const command = client.commands.get(interaction.commandName);
             if (!command) return;
             try {
-                await command.execute(interaction);
-            } catch (err) {
-                Log.error(err.message + "\n" + err.stack)
-                if (err.message === "Missing Permissions") return await interaction.reply({ embeds: [permissions_embed], ephemeral: true }).catch(() => { });
-                const unknown_embed = new EmbedBuilder()
+                await command.autocomplete(interaction, command.logger);
+            } catch (error) {
+                command.logger.error(`${error.message}\n${error.stack}`);
+            }
+        } else {
+            const command = client.commands.get(interaction.commandName);
+            if (!command) return;
+            try {
+                await command.execute(interaction, command.logger);
+            } catch (error) {
+                command.logger.error(`${error.message}\n${error.stack}`);
+                const embed = new EmbedBuilder()
                     .setTitle("⚠️エラー")
-                    .setDescription(`不明なエラーが発生しました。\n詳細:${err.message}\n運営に問い合わせていただけると幸いです。`)
                     .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | SlashCommand" })
                     .setColor(Colors.Red);
-                await interaction?.reply({ embeds: [unknown_embed], ephemeral: true }).catch(() => { });
-            };
+                if (error.message === "Missing Permissions") {
+                    embed.setDescription("権限が足りません。\nBOTに権限を与えてください")
+                    interaction.reply({ embeds: [embed], ephemeral: true }).catch(() => { });
+                } else {
+                    embed.setDescription(`不明なエラーが発生しました。\n詳細:${error.message}\n運営に問い合わせていただけると幸いです。`)
+                    interaction.reply({ embeds: [embed], ephemeral: true }).catch(() => { });
+                }
+            }
         }
     }
 };

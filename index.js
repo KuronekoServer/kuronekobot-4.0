@@ -1,20 +1,53 @@
-const fs = require("fs");
-const path = require("path");
 
-const { Client, GatewayIntentBits, Collection, Partials, Colors } = require("discord.js");
+const { Client, GatewayIntentBits, Partials, WebhookClient } = require("discord.js");
 const { EnkaClient } = require("enka-network-api");
+const path = require("path");
 const axios = require("axios");
 const chalk = require("chalk");
-const { Logger } = require("dd-logger");
+
+const {
+    Logger,
+    EventHandler,
+    SlashCommandHandler
+} = require("./libs");
 
 require("dotenv").config();
 
-// Loggerのセットアップ
+const client = new Client({
+    intents: Object.values(GatewayIntentBits),
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction],
+    rest: 60000
+});
+
+const errorWebhook = new WebhookClient({ url: process.env.errorwebhook });
+const logQueue = ["接続しました。"];
+setInterval(() => {
+    if (logQueue.length === 0) return;
+    let data = logQueue.shift();
+    if (data.length > 2000) {
+        logQueue.unshift(data.slice(2000));
+        data = data.slice(0, 2000);
+    } else {
+        for (let i = 0;logQueue.length > 0;i++) {
+            if (data.length + logQueue[0].length > 1999) break;
+            data += "\n" + logQueue.shift();
+        }
+    }
+    errorWebhook.send(data).catch((error) => { console.error(error) });
+}, 1000);
 const logger = new Logger({
     levels: ["info", "warn", "error", "debug"],
     writeLog(data) {
-        const { lineText, level: _level, time, location } = data;
+        let { lines, level: _level, time, location } = data;
+        const errors = lines.filter(line => line instanceof Error);
+        if (errors.length > 0) {
+            const lineStr = errors
+                .map(error => error.message + "\n" + error.stack)
+                .join("\n");
+            lines = [ "\n" + lineStr ];
+        }
         let level = `[${_level}]`;
+        logQueue.push(`[${time}][${location.join("][")}] ${level} ${lines}`);
         switch (_level) {
             case "INFO":
                 break;
@@ -23,69 +56,26 @@ const logger = new Logger({
                 break;
             case "ERROR":
                 level = chalk.red(level);
-                send({
-                    title: "エラー",
-                    description: `[${location.join("][")}]\n${lineText}`,
-                    time: new Date(),
-                    color: Colors.DarkRed
-                });
                 break;
             case "DEBUG":
                 level = chalk.yellow(level);
                 break;
         }
-        
-        console.log(`[${time}][${location.join("][")}] ${level} ${lineText}`);
+        console.log(`[${time}][${location.join("][")}] ${level} ${lines}`);
     }
 });
 const Log = logger.createChannel("main");
-
-const client = new Client({
-    intents: Object.values(GatewayIntentBits),
-    partials: [Partials.Message, Partials.Channel, Partials.Reaction],
-    rest: 60000
-});
 client.logger = logger;
 
-const { send } = require("./helpers/sendwebhook");
-require("./deploy-commands")(Log);
+EventHandler(client, path.resolve(__dirname, "./events"));
+client.commands = SlashCommandHandler(client, path.resolve(__dirname, "./commands"));
 
 globalThis.voice_channel = [];
 globalThis.ylivechat = {};
 globalThis.tlivechat = {};
 
-// EnkaNetworkのcacheをアップデートする
 const enka = new EnkaClient({ showFetchCacheLog: true });
 
-// イベントハンドラー
-client.events = new Collection();
-fs.readdirSync("./events/").forEach(async (dir) => {
-    const eventsPath = `./events/${dir}`;
-    const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith(".js"));
-    for (const file of eventFiles) {
-        const event = require(`${eventsPath}/${file}`);
-        client.on(event.name, event.execute);
-    };
-});
-
-// スラッシュコマンドハンドラー
-client.commands = new Collection();
-fs.readdirSync("./commands/").forEach(async (dir) => {
-    const commandsPath = `./commands/${dir}`;
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
-    for (const file of commandFiles) {
-        const filePath = `${commandsPath}/${file}`;
-        const command = require(filePath);
-
-        if ("data" in command && "execute" in command) {
-            client.commands.set(command.data.name, command);
-        } else {
-            Log.warn(`${filePath}はdataかexecuteプロパティが設定されていません。`)
-        };
-    };
-});
-
-// 10秒ごとにURLにGETリクエストを送信する
 setInterval(() => {
     axios.get(process.env.URL)
         .then(response => {
@@ -94,11 +84,10 @@ setInterval(() => {
         .catch(error => {
             Log.warn(`[GETリクエスト] ${error.config.url} - ${error.message}`)
         });
-}, 10000);
+}, 10 * 1000);
 
-// エラー後も処理継続
-process.on("uncaughtException", (reason, promise) => {
-    Log.error(`${reason}`);
+process.on("uncaughtException", (error) => {
+    Log.error(error)
 });
 
 client.login(process.env.TOKEN);

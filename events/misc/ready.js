@@ -3,10 +3,10 @@ const chalk = require('chalk');
 
 module.exports = {
     name: Events.ClientReady,
-    async execute(client) {
+    async execute(client, Log) {
         setInterval(() => {
             client.user.setPresence({ activities: [{ name: `/help`, type: ActivityType.Streaming }] });
         }, 300 * 1000);
-        console.log(chalk.green('[成功]'), `${client.user.tag}にログインしました。`)
+        Log.info(`Logged in as ${client.user.tag}`);
     }
 }
