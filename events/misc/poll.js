@@ -1,23 +1,22 @@
-const { Events } = require('discord.js');
+const { Events } = require("discord.js");
+const { getEmbedName } = require("../../libs");
 
 module.exports = {
     name: Events.MessageReactionAdd,
-    async execute(react, user) {
-        const react_channel = await react.message.guild.channels.fetch(react.message.channel.id);
-        const react_message = await react_channel.messages.fetch(react.message.id);
-        if (react_message.author.id !== process.env.clientId) return;
-        if (!react_message.embeds) return;
-        if (user.id === process.env.clientId) return;
-        const reaction = react_message.reactions.cache.get(react._emoji.name);
-        if (react_message.embeds[0]?.data?.footer?.text === "©️ 2023 KURONEKOSERVER | poll") {
-            if (!reaction) return await react.remove();
-            if (!reaction.me) return await react.remove();
-        };
-        if (react_message.embeds[0]?.data?.footer?.text === "©️ 2023 KURONEKOSERVER | expoll") {
-            if (!reaction) return await react.remove();
-            if (!reaction.me) return await react.remove();
-            const reactions = react_message.reactions.cache.filter(r => r.users.cache.has(user.id));
-            if (reactions.size > 1) return await react.users.remove(user.id);
-        };
+    async execute(react, user, Log) {
+        const { client, message, emoji, users } = react;
+        if (
+            message.author.id !== client.user.id ||
+            user.id === client.user.id ||
+            !message.embeds?.length
+        ) return;
+        const name = getEmbedName(message.embeds[0]) ?? "";
+        if (!name.startsWith("poll")) return;
+        const reactions = message.reactions.cache;
+        const maxCount = name.slice(0, 4);
+        if (!reactions.has(emoji.name)) return react.remove();
+        if (maxCount === "") return;
+        const reacted = reactions.filter(reaction => reaction.users.cache.has(user.id));
+        if (reacted.size > maxCount) return await users.remove();
     }
 }

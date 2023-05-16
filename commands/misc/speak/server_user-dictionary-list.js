@@ -1,14 +1,14 @@
 const { EmbedBuilder, Colors } = require("discord.js");
-const { sql } = require("../../../helpers/utils");
+const { sql } = require("../../../libs/Utils");
 const { escape } = require("mysql2")
 
 const { PagesManager } = require('discord.js-pages');
 const pagesManager = new PagesManager();
 const undefiend_error = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("データが見つかりませんでした。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" });
 module.exports = async (interaction) => {
     const select = interaction.options.getString("select");
     if (select === "user") {
@@ -23,7 +23,7 @@ module.exports = async (interaction) => {
                 .setTitle('読み上げを行わないユーザー一覧')
                 .setPages(content)
                 .setColor('Green')
-                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
+                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" })
                 .setPaginationFormat()
                 .build();
             return "exception";
@@ -41,7 +41,7 @@ module.exports = async (interaction) => {
                 .setTitle('辞書一覧')
                 .setPages(content)
                 .setColor('Green')
-                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
+                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" })
                 .setPaginationFormat()
                 .build();
             return "exception";

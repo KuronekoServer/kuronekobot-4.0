@@ -1,10 +1,11 @@
 const { Collection, REST, Routes } = require("discord.js");
 const fs = require("fs");
 const path = require("path");
+const logger = require("./GetLogger");
 const option = require("../helpers/optionslash.json");
 
-function SlashCommandHandler(client, commandsPath) {
-    const Log = client.logger.createChannel("command");
+function SlashCommandHandler(commandsPath) {
+    const Log = logger.createChannel("command");
     Log.debug("Loading...");
     const commands = new Collection();
     fs.readdirSync(commandsPath).forEach((categoryDir) => {

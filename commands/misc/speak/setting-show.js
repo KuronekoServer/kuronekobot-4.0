@@ -1,5 +1,5 @@
 const { EmbedBuilder, Colors } = require("discord.js");
-const { sql } = require("../../../helpers/utils");
+const { sql } = require("../../../libs/Utils");
 const { escape } = require("mysql2")
 
 module.exports = async (interaction) => {
@@ -27,7 +27,7 @@ module.exports = async (interaction) => {
                 { name: '自動入室チャンネル', value: data[0][0]?.auto_voice_channel ? `${interaction.guild.channels.cache.get(data[0][0]?.auto_voice_channel) || "取得失敗"}=>${interaction.guild.channels.cache.get(data[0][0]?.auto_text_channel) || "取得失敗"}` : "なし", inline: true },
             )
             .setTimestamp(new Date())
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" });
         return ({ embeds: [embed] });
     };
     if (ope === "user") {
@@ -43,7 +43,7 @@ module.exports = async (interaction) => {
                 { name: '標準のイントネーション', value: data[0][0]?.intonation || "1", inline: true },
             )
             .setTimestamp(new Date())
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" });
         return ({ embeds: [embed] });
     };
 };

@@ -16,7 +16,7 @@ module.exports = async (interaction) => {
                 { name: '作成日時', value: `${createdAt.getFullYear()}年${createdAt.getMonth() + 1}月${createdAt.getDate()}日` },
                 { name: `メンバー(${members.size})`, value: `${members.map(member => member.user.username).join("") || "なし"}` },
             )
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | role" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | role" })
             .setColor(Colors.Green);
         await interaction.reply({ embeds: [success], ephemeral: true });
     } else {
@@ -35,7 +35,7 @@ module.exports = async (interaction) => {
             .setTitle('✅役職情報')
             .setPages(content)
             .setColor('Green')
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | role" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | role" })
             .setPaginationFormat()
             .build();
     };

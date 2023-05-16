@@ -21,8 +21,8 @@ module.exports = {
             } catch (error) {
                 command.logger.error(`${error.message}\n${error.stack}`);
                 const embed = new EmbedBuilder()
-                    .setTitle("⚠️エラー")
-                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | SlashCommand" })
+                    .setTitle("⚠エラー")
+                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | SlashCommand" })
                     .setColor(Colors.Red);
                 if (error.message === "Missing Permissions") {
                     embed.setDescription("権限が足りません。\nBOTに権限を与えてください")

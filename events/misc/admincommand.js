@@ -1,24 +1,24 @@
-const { Events, ChannelType } = require('discord.js');
+const { Events, ChannelType, EmbedBuilder, Colors } = require("discord.js");
 const admin = require("../../admin.json");
-const { EmbedBuilder, Colors } = require("discord.js");
-const { sql } = require("../../helpers/utils");
+const { sql } = require("../../libs/Utils");
 const { escape } = require("mysql2")
 
 const db_error = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("データ更新に失敗しました。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" });
 const quotation = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("単語削除にダブルクォーテーションがは使えません。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" });
 const size_error = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("合わせて20文字以内になるようにしてください。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" });
+
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
@@ -41,7 +41,7 @@ module.exports = {
                 const success = new EmbedBuilder()
                     .setTitle(`✅完了`)
                     .setDescription(`global辞書を更新しました！\n単語:${before}\n読み:${after}`)
-                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | admincommand" })
+                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | admincommand" })
                     .setColor(Colors.Green);
                 await message.channel.send({ embeds: [success] });
             };
@@ -56,7 +56,7 @@ module.exports = {
                 const success = new EmbedBuilder()
                     .setTitle(`✅完了`)
                     .setDescription(`辞書を削除しました！\n単語:${delete_text}`)
-                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | admincommand" })
+                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | admincommand" })
                     .setColor(Colors.Green);
                 return message.channel.send({ embeds: [success] });
             }

@@ -1,16 +1,16 @@
 const { Colors, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const puppeteer = require('puppeteer');
 const ERROREmbed = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("URL先のページが見つかりませんでした。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | screenshot" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | screenshot" });
 module.exports = async (interaction) => {
     const { options } = interaction;
     const wait = new EmbedBuilder()
         .setTitle(`✅撮影中...`)
         .setDescription(`${options.getString("url")}\nのページを撮影しています。`)
-        .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | screenshot" })
+        .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | screenshot" })
         .setColor(Colors.Green);
     await interaction.reply({ embeds: [wait], ephemeral: true });
     const url = options.getString("url");
@@ -29,7 +29,7 @@ module.exports = async (interaction) => {
             const success = new EmbedBuilder()
                 .setTitle(`✅完了`)
                 .setDescription(`${options.getString("url")}\nのページを撮影しました。`)
-                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | screenshot" })
+                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | screenshot" })
                 .setImage("attachment://screen.png")
                 .setColor(Colors.Green);
             await interaction.editReply({ embeds: [success], files: [attachment], ephemeral: true })

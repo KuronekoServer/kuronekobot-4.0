@@ -1,265 +1,153 @@
-const { SlashCommandBuilder } = require('discord.js');
-const create = require("./poll/create");
-const excreate = require("./poll/excreate");
-const sum = require("./poll/sum");
+const { Colors } = require("discord.js");
+const { CustomEmbed, getEmbedName, ColorsChoice } = require("../../../libs");
+const poll = require("../../events/misc/poll");
+
 module.exports = {
-    data: new SlashCommandBuilder()
+    subcommands: [pollCreate, pollSum],
+    builder: (builder) => builder
         .setName("poll")
+        .setDescription("アンケートを実施する。")
         .setDMPermission(false)
-        .setDescription("アンケートを実施する")
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("create")
-                .setDescription("アンケートを作成します")
-                .addStringOption(
-                    option => option
-                        .setName("title")
-                        .setDescription("タイトル").setRequired(true))
-                .addStringOption(
-                    option => option
-                        .setName("choice1")
-                        .setDescription("選択肢1").setRequired(true))
-                .addStringOption(
-                    option => option
-                        .setName("emoji1")
-                        .setDescription("絵文字1"))
-                .addStringOption(
-                    option => option
-                        .setName("choice2")
-                        .setDescription("選択肢2"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji2")
-                        .setDescription("絵文字2"))
-                .addStringOption(
-                    option => option
-                        .setName("choice3")
-                        .setDescription("選択肢3"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji3")
-                        .setDescription("絵文字3"))
-                .addStringOption(
-                    option => option
-                        .setName("choice4")
-                        .setDescription("選択肢4"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji4")
-                        .setDescription("絵文字4"))
-                .addStringOption(
-                    option => option
-                        .setName("choice5")
-                        .setDescription("選択肢5"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji5")
-                        .setDescription("絵文字5"))
-                .addStringOption(
-                    option => option
-                        .setName("choice6")
-                        .setDescription("選択肢6"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji6")
-                        .setDescription("絵文字6"))
-                .addStringOption(
-                    option => option
-                        .setName("choice7")
-                        .setDescription("選択肢7"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji7")
-                        .setDescription("絵文字7"))
-                .addStringOption(
-                    option => option
-                        .setName("choice8")
-                        .setDescription("選択肢8"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji8")
-                        .setDescription("絵文字8"))
-                .addStringOption(
-                    option => option
-                        .setName("choice9")
-                        .setDescription("選択肢9"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji9")
-                        .setDescription("絵文字9"))
-                .addStringOption(
-                    option => option
-                        .setName("choice10")
-                        .setDescription("選択肢10"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji10")
-                        .setDescription("絵文字10"))
-                .addAttachmentOption(option => option.setName("image").setDescription("表示したい画像"))
-                .addStringOption(option => option.setName("color").setDescription("色を決められます").setChoices(
-                    { name: "赤色", value: "Red" },
-                    { name: "白色", value: "White" },
-                    { name: "水色", value: "Aqua" },
-                    { name: "緑色", value: "Green" },
-                    { name: "青色", value: "Blue" },
-                    { name: "黄色", value: "Yellow" },
-                    { name: "蛍光ピンク色", value: "LuminousVividPink" },
-                    { name: "紫色", value: "Purple" },
-                    { name: "赤紫色", value: "Fuchsia" },
-                    { name: "金色", value: "Gold" },
-                    { name: "オレンジ色", value: "Orange" },
-                    { name: "灰色", value: "Grey" },
-                    { name: "濃紺色", value: "Navy" },
-                    { name: "濃い水色", value: "DarkAqua" },
-                    { name: "濃い緑色", value: "DarkGreen" },
-                    { name: "濃い青色", value: "DarkBlue" },
-                    { name: "濃い紫色", value: "DarkPurple" },
-                    { name: "濃い蛍光ピンク色", value: "DarkVividPink" },
-                    { name: "濃い金色", value: "DarkGold" },
-                    { name: "濃いオレンジ色", value: "DarkOrange" },
-                    { name: "濃い赤色", value: "DarkRed" },
-                    { name: "濃い灰色", value: "DarkGrey" },
-                    { name: "明るい灰色", value: "LightGrey" },
-                    { name: "濃い紺色", value: "DarkNavy" },
-                    { name: "青紫色", value: "Blurple" }
-                )))
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("excreate")
-                .setDescription("一人一つの投票にします")
-                .addStringOption(
-                    option => option
-                        .setName("title")
-                        .setDescription("タイトル").setRequired(true))
-                .addStringOption(
-                    option => option
-                        .setName("choice1")
-                        .setDescription("選択肢1").setRequired(true))
-                .addStringOption(
-                    option => option
-                        .setName("emoji1")
-                        .setDescription("絵文字1"))
-                .addStringOption(
-                    option => option
-                        .setName("choice2")
-                        .setDescription("選択肢2"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji2")
-                        .setDescription("絵文字2"))
-                .addStringOption(
-                    option => option
-                        .setName("choice3")
-                        .setDescription("選択肢3"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji3")
-                        .setDescription("絵文字3"))
-                .addStringOption(
-                    option => option
-                        .setName("choice4")
-                        .setDescription("選択肢4"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji4")
-                        .setDescription("絵文字4"))
-                .addStringOption(
-                    option => option
-                        .setName("choice5")
-                        .setDescription("選択肢5"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji5")
-                        .setDescription("絵文字5"))
-                .addStringOption(
-                    option => option
-                        .setName("choice6")
-                        .setDescription("選択肢6"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji6")
-                        .setDescription("絵文字6"))
-                .addStringOption(
-                    option => option
-                        .setName("choice7")
-                        .setDescription("選択肢7"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji7")
-                        .setDescription("絵文字7"))
-                .addStringOption(
-                    option => option
-                        .setName("choice8")
-                        .setDescription("選択肢8"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji8")
-                        .setDescription("絵文字8"))
-                .addStringOption(
-                    option => option
-                        .setName("choice9")
-                        .setDescription("選択肢9"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji9")
-                        .setDescription("絵文字9"))
-                .addStringOption(
-                    option => option
-                        .setName("choice10")
-                        .setDescription("選択肢10"))
-                .addStringOption(
-                    option => option
-                        .setName("emoji10")
-                        .setDescription("絵文字10"))
-                .addAttachmentOption(option => option.setName("image").setDescription("表示したい画像"))
-                .addStringOption(option => option.setName("color").setDescription("色を決められます").setChoices(
-                    { name: "赤色", value: "Red" },
-                    { name: "白色", value: "White" },
-                    { name: "水色", value: "Aqua" },
-                    { name: "緑色", value: "Green" },
-                    { name: "青色", value: "Blue" },
-                    { name: "黄色", value: "Yellow" },
-                    { name: "蛍光ピンク色", value: "LuminousVividPink" },
-                    { name: "紫色", value: "Purple" },
-                    { name: "赤紫色", value: "Fuchsia" },
-                    { name: "金色", value: "Gold" },
-                    { name: "オレンジ色", value: "Orange" },
-                    { name: "灰色", value: "Grey" },
-                    { name: "濃紺色", value: "Navy" },
-                    { name: "濃い水色", value: "DarkAqua" },
-                    { name: "濃い緑色", value: "DarkGreen" },
-                    { name: "濃い青色", value: "DarkBlue" },
-                    { name: "濃い紫色", value: "DarkPurple" },
-                    { name: "濃い蛍光ピンク色", value: "DarkVividPink" },
-                    { name: "濃い金色", value: "DarkGold" },
-                    { name: "濃いオレンジ色", value: "DarkOrange" },
-                    { name: "濃い赤色", value: "DarkRed" },
-                    { name: "濃い灰色", value: "DarkGrey" },
-                    { name: "明るい灰色", value: "LightGrey" },
-                    { name: "濃い紺色", value: "DarkNavy" },
-                    { name: "青紫色", value: "Blurple" }
-                ))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("sum")
-                .addStringOption(option => option.setName("messageid").setDescription("対象のメッセージID").setRequired(true))
-                .addStringOption(option => option.setName("channelid").setDescription("対象のチャンネルID"))
-                .setDescription("集計します")
-        ),
-    async execute(interaction) {
-        const sub = interaction.options.getSubcommand();
-        //create
-        if (sub === "create") {
-            await create(interaction);
-        };
-        //excreate
-        if (sub === "excreate") {
-            await excreate(interaction);
-        };
-        //sum
-        if (sub === "sum") {
-            await sum(interaction);
-        };
+    ,
+    execute(...args) {
+        return args;
     }
-}
+};
+
+const maxChoice = 10;
+const ExampleEmojis = ["1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣", "🔟"];
+const bar = "=========================>"; //4% = 1文字
+
+const pollCreate = {
+    builder: (builder) => {
+        builder
+            .setName("create")
+            .setDescription("アンケート画面を作成します。")
+            .addStringOption(option => option
+                .setName("title")
+                .setDescription("アンケート画面のタイトル")
+                .setRequired(true)
+            )
+            .addAttachmentOption(option => option
+                .setName("image")
+                .setDescription("アンケート画面の画像")
+            )
+            .addStringOption(option => option
+                .setName("color")
+                .setDescription("アンケート画面の色")
+                .setChoices(...ColorsChoice)
+            )
+            .addIntegerOption(option => option
+                .setName("maxchoice")
+                .setDescription("アンケートの選択肢の最大数")
+                .setMaxValue(maxChoice)
+                .setMinValue(1)
+                .setRequired(true)
+            );
+        for (let i = 1; i <= maxChoice; i++) {
+            builder
+                .addStringOption(option => option
+                    .setName(`choice${i}`)
+                    .setDescription(`アンケートの${i}番目の選択肢`)
+                )
+                .addStringOption(option => option
+                    .setName(`emoji${i}`)
+                    .setDescription(`アンケートの${i}番目の絵文字`)
+                );
+        }
+        return builder;
+    },
+    async execute(interaction) {
+        const { options } = interaction;
+        const title = options.getString("title");
+        const color = options.getString("color") ?? "Blue";
+        const image = options.getAttachment("image");
+        const maxChoice = options.getInteger("maxchoice");
+        const choices = [];
+        const emojis = [];
+        const nonSelectEmoji = Array.from(ExampleEmojis);
+        for (let i = 1; i <= maxChoice; i++) {
+            const choice = options.getString(`choice${i}`);
+            let emoji = options.getString(`emoji${i}`);
+            if (!choice) break;
+            choices.push(choice);
+            if (!emoji) emoji = nonSelectEmoji.shift();
+            else emoji.trim();
+            emojis.push(emoji);
+        }
+
+        const loadEmbed = new CustomEmbed("poll")
+            .setTitle("処理中...");
+        const message = await interaction.channel.send({ embeds: [loadEmbed] });
+        for (const emoji of emojis) {
+            const check = await message.react(emoji).catch((error) => { });
+            if (!check) {
+                await message.delete();
+                const embed = new CustomEmbed("poll").typeError()
+                    .setDescription("絵文字の追加中にエラーが発生しました。")
+                return interaction.reply({ embeds: [embed], ephemeral: true });
+            }
+        }
+        let description = choices.map((c, i) => `${emojis[i]} ${c}`).join("\n");
+        description += `\n\n 📊 **/poll sum messageid:${message.id} channelid:${message.channel.id}**`;
+        const pollEmbed = new CustomEmbed(`poll${maxChoice ?? ""}`)
+            .setTitle(title)
+            .setDescription(description)
+            .setColor(Colors[color])
+        if (image) pollEmbed.setImage(image.attachment);
+        message.edit({ embeds: [pollEmbed] })
+    }
+};
+
+const pollSum = {
+    builder: (builder) => builder
+        .setName("sum")
+        .setDescription("アンケートの集計を行います。")
+        .addStringOption(option => option
+            .setName("messageid")
+            .setDescription("対象のメッセージID")
+            .setRequired(true)
+        )
+        .addStringOption(option => option
+            .setName("channelid")
+            .setDescription("対象のチャンネルID")
+        )
+    ,
+    async execute(interaction) {
+        const { options, guild } = interaction;
+        const messageId = options.getString("messageid");
+        const channelId = options.getString("channelid");
+        let message, channel;
+        try {
+            channel = channelId ? await guild.channels.fetch(channelId) : interaction.channel;
+            message = await channel.messages.fetch(messageId);
+            if (!message.embeds[0] || getEmbedName(message.embeds[0]).startsWith("poll")) throw new Error();
+        } catch (error) {
+            const embed = new CustomEmbed("poll").typeError()
+                .setDescription("pollメッセージが取得できませんでした。")
+            return interaction.reply({ embeds: [embed], ephemeral: true });
+        }
+        const pollEmbed = message.embeds[0];
+        const reactions = message.reactions.cache;
+        const contents = pollEmbed.description.split("\n").slice(0, -2);
+        let allCount = 0;
+        const data = contents
+            .map((content) => {
+                const [emoji, ...textArr] = content.split(" ");
+                const text = textArr.join(" ");
+                const count = reactions.get(emoji)?.count ?? 0;
+                allCount += count;
+                return { emoji, text, count };
+            })
+            .map((data) => {
+                data.percent = ((data.count / allCount) * 100).toFixed(1);
+                data.bar = bar.slice(0, (bar.length - 1 - Math.floor(data.count / (allCount / (bar.length - 1)))))
+            });
+        const text = data.map(d => `${d.emoji} ${d.text} **${d.percent}% (${d.count}票)**\n${d.bar}`).join("\n");
+        const embed = new CustomEmbed("sumpoll")
+            .setTitle(pollEmbed.title)
+            .setDescription(`${text}\n\n[元のアンケート](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id})`)
+            .setColor(Colors.Green);
+        interaction.reply({ embeds: [embed], ephemeral: true });
+    }
+};

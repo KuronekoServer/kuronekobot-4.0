@@ -10,7 +10,7 @@ module.exports = async (interaction) => {
         const embed = new EmbedBuilder()
             .setTitle(`翻訳(${to})`)
             .setDescription(`${result?.output}`)
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | translate" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | translate" })
             .setColor(Colors.Green);
         await interaction.reply({ embeds: [embed], ephemeral: true });
     } else {
@@ -21,7 +21,7 @@ module.exports = async (interaction) => {
             const embed = new EmbedBuilder()
                 .setTitle(`翻訳(自動英語)`)
                 .setDescription(`${result?.output || "見つかりません"}`)
-                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | translate" })
+                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | translate" })
                 .setColor(Colors.Green);
             await interaction.reply({ embeds: [embed], ephemeral: true });
         } else {
@@ -30,7 +30,7 @@ module.exports = async (interaction) => {
             const embed = new EmbedBuilder()
                 .setTitle(`翻訳(自動日本語)`)
                 .setDescription(`${result?.output || "見つかりません"}`)
-                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | translate" })
+                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | translate" })
                 .setColor(Colors.Green);
             await interaction.reply({ embeds: [embed], ephemeral: true });
         };

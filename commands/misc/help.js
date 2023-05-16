@@ -97,7 +97,7 @@ module.exports = {
                     ),
             ])
             .setColor('Green')
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | help" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | help" })
             .setPaginationFormat()
             .build();
     }

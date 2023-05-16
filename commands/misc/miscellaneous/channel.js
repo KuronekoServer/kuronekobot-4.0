@@ -14,7 +14,7 @@ module.exports = async (interaction) => {
             { name: `スローモード (秒)`, value: `${(channel.rateLimitPerUser == 0) ? `${channel.rateLimitPerUser}秒` : "なし"}` },
             { name: `説明文`, value: `${channel.topic || "なし"}` },
         )
-        .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | role" })
+        .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | role" })
         .setColor(Colors.Green);
     await interaction.reply({ embeds: [success], ephemeral: true });
 };

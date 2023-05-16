@@ -1,8 +1,8 @@
 const { EmbedBuilder, Colors, ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const undefined_choice = new EmbedBuilder()
-    .setTitle(`⚠️エラー`)
+    .setTitle(`⚠エラー`)
     .setDescription("何も選択されていません。")
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" })
     .setColor(Colors.Red);
 const voicevox_array = require("../../../helpers/voicelist/allvoicevoxlist.json");
 const coeiroink_array = require("../../../helpers/voicelist/allcoeiroinklist.json");
@@ -12,7 +12,7 @@ module.exports = async (interaction) => {
         const success = new EmbedBuilder()
             .setTitle(`✅完了`)
             .setDescription(`${interaction.options.getString("voicevox話者名")}のスタイルを選択してください！`)
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" })
             .setColor(Colors.Green);
         const select = new ActionRowBuilder()
             .addComponents(
@@ -30,7 +30,7 @@ module.exports = async (interaction) => {
         const success = new EmbedBuilder()
             .setTitle(`✅完了`)
             .setDescription(`${interaction.options.getString("coeiroink話者名")}のスタイルを選択してください！`)
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" })
             .setColor(Colors.Green);
         const select = new ActionRowBuilder()
             .addComponents(
@@ -48,7 +48,7 @@ module.exports = async (interaction) => {
         const success = new EmbedBuilder()
             .setTitle(`✅完了`)
             .setDescription(`${interaction.options.getString("sharevox話者名")}のスタイルを選択してください！`)
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | speak" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | speak" })
             .setColor(Colors.Green);
         const select = new ActionRowBuilder()
             .addComponents(

@@ -1,28 +1,28 @@
 const { EmbedBuilder, Colors } = require("discord.js");
-const { sql } = require("../../../helpers/utils");
+const { sql } = require("../../../libs/Utils");
 const { escape } = require("mysql2")
 
 const basic_emojis = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', '🇵', '🇶', '🇷'];
 const error = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("パネルが選択されていません。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" });
 const react_error = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("選択されたリアクションはつけることができません。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" });
 const success = new EmbedBuilder()
     .setTitle(`✅完了`)
     .setDescription("正常にパネルが作成されました。")
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" })
     .setColor(Colors.Green);
 const db_error = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("パネルの選択更新に失敗しました。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" });
 module.exports = async (interaction) => {
     //可読性皆無(すまん)
     const getdata = await sql(`select * from job_message where guildid=${escape(interaction.guild.id)};`);
@@ -47,7 +47,7 @@ module.exports = async (interaction) => {
         const edit = new EmbedBuilder()
             .setTitle(msg.embeds[0]?.data?.title || "役職パネル")
             .setDescription(roles.slice(0, basic_emojis.length).map((role, index) => `${emojis[index]}:${interaction.guild.roles.cache.get(role) || role}`).join('\n'))
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" })
             .setImage(msg.embeds[0]?.data?.image?.url || null)
             .setColor(msg.embeds[0]?.data?.color || Colors.Green);
         await msg.edit({
@@ -57,7 +57,7 @@ module.exports = async (interaction) => {
         const content = new EmbedBuilder()
             .setTitle(msg.embeds[0]?.data?.title || "役職パネル")
             .setDescription(roles.slice(basic_emojis.length).map((role, index) => `${emojis[index]}:${interaction.guild.roles.cache.get(role) || role}`).join('\n'))
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" })
             .setImage(msg.embeds[0]?.data?.image?.url || null)
             .setColor(msg.embeds[0]?.data?.color || Colors.Green);
         const new_msg = await msg.channel.send({
@@ -76,7 +76,7 @@ module.exports = async (interaction) => {
         const edit = new EmbedBuilder()
             .setTitle(msg.embeds[0]?.data?.title || "役職パネル")
             .setDescription(roles.map((role, index) => `${emojis[index]}:${interaction.guild.roles.cache.get(role) || role}`).join('\n'))
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" })
             .setImage(msg.embeds[0]?.data?.image?.url || null)
             .setColor(msg.embeds[0]?.data?.color || Colors.Green);
         for (const emoji of emojis) {

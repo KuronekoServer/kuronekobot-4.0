@@ -1,5 +1,5 @@
 const http = require('http');
-const { sql } = require("./utils");
+const { sql } = require("../libs/Utils");
 const { escape } = require("mysql2")
 const { createAudioPlayer, createAudioResource, getVoiceConnection, AudioPlayerStatus } = require('@discordjs/voice');
 const fs = require("node:fs");

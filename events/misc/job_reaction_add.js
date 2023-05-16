@@ -1,5 +1,5 @@
 const { Events, EmbedBuilder, Colors } = require('discord.js');
-const { sql } = require("../../helpers/utils");
+const { sql } = require("../../libs/Utils");
 const { escape } = require("mysql2")
 
 module.exports = {
@@ -22,7 +22,7 @@ module.exports = {
                 const success = new EmbedBuilder()
                     .setTitle(`✅完了`)
                     .setDescription(`ロールを付与しました。\n付与ロール:${role}\n対象ユーザー:${member}`)
-                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
+                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" })
                     .setColor(Colors.Green);
                 const msg = await react.message.channel.send({ embeds: [success] });
                 setTimeout(async () => await msg.delete(), 3 * 1000);
@@ -31,7 +31,7 @@ module.exports = {
                 const faild = new EmbedBuilder()
                     .setTitle(`注意`)
                     .setDescription(`ロールの付与に失敗しました。\n付与ロール:${role}\n対象ユーザー:${member}`)
-                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
+                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" })
                     .setColor(Colors.Green);
                 const msg = await react.message.channel.send({ embeds: [faild] });
                 setTimeout(async () => await msg.delete(), 3 * 1000);

@@ -1,6 +1,6 @@
 const { Events } = require('discord.js');
 const { getVoiceConnection, joinVoiceChannel } = require('@discordjs/voice');
-const { sql } = require("../../helpers/utils");
+const { sql } = require("../../libs/Utils");
 const { escape } = require("mysql2")
 
 module.exports = {

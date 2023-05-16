@@ -4,12 +4,12 @@ const { joinVoiceChannel } = require('@discordjs/voice');
 const success = new EmbedBuilder()
     .setTitle(`✅完了`)
     .setDescription("ボイスチャンネルに参加しました！")
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" })
     .setColor(Colors.Green);
 const undefined_channel = new EmbedBuilder()
-    .setTitle(`⚠️エラー`)
+    .setTitle(`⚠エラー`)
     .setDescription("貴方が参加しているボイスチャンネルを見つけることができませんでした。")
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | jobpanel" })
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | jobpanel" })
     .setColor(Colors.Red);
 
 module.exports = async (interaction) => {

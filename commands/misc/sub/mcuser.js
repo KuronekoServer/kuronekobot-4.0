@@ -1,9 +1,9 @@
 const { EmbedBuilder, Colors } = require("discord.js");
 const { getJson } = require("../../../helpers/HttpUtils");
 const error = new EmbedBuilder()
-    .setTitle(`⚠️注意`)
+    .setTitle(`⚠注意`)
     .setDescription("ユーザーが見つかりませんでした。")
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | minecraft" })
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | minecraft" })
     .setColor(Colors.Red);
 module.exports = async (query) => {
     const response = await getJson(`https://api.mojang.com/user/profile/agent/minecraft/name/${query}`);
@@ -26,7 +26,7 @@ module.exports = async (query) => {
             }
         )
         .setColor(Colors.Green)
-        .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | minecraft" })
+        .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | minecraft" })
         .setColor(Colors.Green);
     return ({ embeds: [embed], ephemeral: true });
 };

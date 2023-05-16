@@ -33,7 +33,7 @@ module.exports = async (interaction) => {
         },
       )
       .setColor(Colors.Green)
-      .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | Wikipedia" })
+      .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | Wikipedia" })
       .setFooter({ text: `${interaction.user.tag}` });
     await interaction.reply({ embeds: [embed] });
   } else {
@@ -55,7 +55,7 @@ module.exports = async (interaction) => {
       )
       .setColor(Colors.Green)
       .setImage(json.originalimage.source)
-      .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | Wikipedia" });
+      .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | Wikipedia" });
     await interaction.reply({ embeds: [embed2] });
   };
 }

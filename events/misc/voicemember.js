@@ -1,5 +1,5 @@
 const { Events } = require('discord.js');
-const { sql } = require("../../helpers/utils");
+const { sql } = require("../../libs/Utils");
 //読み上げ
 const { read } = require("../../helpers/read");
 const { escape } = require("mysql2")

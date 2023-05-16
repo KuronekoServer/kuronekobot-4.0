@@ -13,7 +13,7 @@ const delete_button = new ActionRowBuilder()
     );
 const wait = new EmbedBuilder()
     .setTitle(`処理中...`)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | genshin" })
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | genshin" })
     .setColor(Colors.Green);
 const math = {
     "ATTACK": "[攻撃%] + [会心率*2] + [会心ダメージ]",

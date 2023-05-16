@@ -1,27 +1,27 @@
 const { SlashCommandBuilder, ChannelType, EmbedBuilder, Colors, PermissionFlagsBits } = require('discord.js');
-const { sql } = require("../../helpers/utils");
+const { sql } = require("../../libs/Utils");
 const { escape } = require("mysql2")
 
 const ERROREmbed = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("データの保存に失敗しました。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | log" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | log" });
 const delete_embed = new EmbedBuilder()
     .setTitle("✅成功")
     .setDescription("データの削除に成功しました!")
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | log" })
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | log" })
     .setColor(Colors.Green);
 const undefined_embed = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("データが見つかりませんでした。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | log" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | log" });
 const delete_error = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("データの削除に失敗しました。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | log" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | log" });
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('log')
@@ -43,7 +43,7 @@ module.exports = {
                 const update_embed = new EmbedBuilder()
                     .setTitle(`✅logチャンネル`)
                     .setDescription(`logチャンネルを${interaction.options.getChannel("channel")}に変更しました。`)
-                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | log" })
+                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | log" })
                     .setColor(Colors.Green);
                 if (!update) return await interaction.reply({ embeds: [ERROREmbed], ephemeral: true })
                 await interaction.reply({ embeds: [update_embed], ephemeral: true });
@@ -52,7 +52,7 @@ module.exports = {
                 const add_embed = new EmbedBuilder()
                     .setTitle(`✅logチャンネル`)
                     .setDescription(`logチャンネルを${interaction.options.getChannel("channel")}に設定しました。`)
-                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | log" })
+                    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | log" })
                     .setColor(Colors.Green);
                 if (!add) return await interaction.reply({ embeds: [ERROREmbed], ephemeral: true })
                 await interaction.reply({ embeds: [add_embed], ephemeral: true });

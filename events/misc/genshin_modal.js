@@ -1,5 +1,5 @@
 const { EmbedBuilder, Colors, ActionRowBuilder, StringSelectMenuBuilder, ButtonStyle, ButtonBuilder,Events } = require('discord.js');
-const { sql } = require("../../helpers/utils");
+const { sql } = require("../../libs/Utils");
 const { escape } = require("mysql2")
 
 const { EnkaClient } = require("enka-network-api");
@@ -13,13 +13,13 @@ const delete_button = new ActionRowBuilder()
             .setStyle(ButtonStyle.Danger),
     );
 const db_error = new EmbedBuilder()
-    .setTitle("⚠️エラー")
+    .setTitle("⚠エラー")
     .setDescription("データ更新に失敗しました。")
     .setColor(Colors.Red)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | genshin" });
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | genshin" });
 const wait = new EmbedBuilder()
     .setTitle(`処理中...`)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | genshin" })
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | genshin" })
     .setColor(Colors.Green);
 module.exports = {
     name: Events.InteractionCreate,
@@ -59,7 +59,7 @@ module.exports = {
             .setDescription(`${user.enkaProfile?.bio || "自己紹介なし"}\n**螺旋**\n${user?.abyssFloor || "取得失敗"}層 ${user?.abyssChamber || "取得失敗"}間\n**アチーブメント数**\n${user.achievements || "取得失敗"}`)
             .setThumbnail(`https://artifacter.krnk-infra.com/avatar/${user.profilePictureCharacter.cardIcon.name}/image.png`)
             .setImage(`https://enka.network/ui/${user.profileCard.pictures[1].name}.png`)
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | genshin" })
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | genshin" })
             .setColor(Colors.Green);
         await interaction.editReply({ embeds: [success], components: [type, characters, delete_button] });
     }

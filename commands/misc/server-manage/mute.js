@@ -1,13 +1,33 @@
-const { EmbedBuilder, Colors } = require("discord.js");
-module.exports = async (interaction) => {
-    const user = interaction.options.getUser("member");
-    const time = interaction.options.getInteger("time");
-    const member = await interaction.guild.members.fetch(user.id);
-    await member.timeout(time);
-    const success = new EmbedBuilder()
-        .setTitle("✅成功")
-        .setDescription(`${member}をミュートしました\n期間:${time}秒`)
-        .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | mute" })
-        .setColor(Colors.Green);
-    await interaction.reply({ embeds: [success], ephemeral: true });
+const { Colors } = require("discord.js");
+const { CustomEmbed } = require("../../../libs");
+
+module.exports = {
+    builder: (builder) => builder
+        .setName("mute")
+        .setDescription("指定したユーザーをミュートにします。")
+        .addUserOption(option => option
+            .setName("user")
+            .setDescription("ミュートにするユーザー")
+            .setRequired(true)
+        )
+        .addIntegerOption(option => option
+            .setName("time")
+            .setDescription("期間 (秒)")
+            .setRequired(true)
+            .setMinValue(1)
+        )
+    ,
+    async execute(interaction) {
+        const user = interaction.options.getUser("user");
+        const time = interaction.options.getInteger("time");
+        const member = await interaction.guild.members.fetch(user.id);
+        await member.timeout(time);
+        const embed = new CustomEmbed("mute").typeSuccess()
+            .setDescription(`${member}をミュートしました。`)
+            .addFields({
+                name: "期間",
+                value: `${time}秒`
+            });
+        interaction.reply({ embeds: [embed], ephemeral: true });
+    }
 };

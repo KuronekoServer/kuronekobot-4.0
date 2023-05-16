@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, Colors, ActionRowBuilder, StringSelectMenuBuilder, ButtonStyle, ButtonBuilder, TextInputBuilder, TextInputStyle, ModalBuilder } = require('discord.js');
-const { sql } = require("../../helpers/utils");
+const { sql } = require("../../libs/Utils");
 const { escape } = require("mysql2")
 const { EnkaClient } = require("enka-network-api");
 const enka = new EnkaClient();
@@ -70,7 +70,7 @@ module.exports = {
                 .setDescription(`${user.enkaProfile?.bio || "自己紹介なし"}\n**螺旋**\n${user.abyssFloor || "取得失敗"}層 ${user.abyssChamber || "取得失敗"}間\n**アチーブメント数**\n${user.achievements || "取得失敗"}`)
                 .setThumbnail(`https://artifacter.krnk-infra.com/avatar/${user.profilePictureCharacter.cardIcon.name}/image.png`)
                 .setImage(`https://enka.network/ui/${user.profileCard.pictures[1].name}.png`)
-                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | genshin" })
+                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | genshin" })
                 .setColor(Colors.Green);
             await interaction.followUp({ embeds: [success], components: [type, characters, delete_button] });
         };

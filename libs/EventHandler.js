@@ -1,8 +1,9 @@
 const fs = require("fs");
 const path = require("path");
+const logger = require("./GetLogger");
 
 function EventHandler(client, eventsPath) {
-    const Log = client.logger.createChannel("event");
+    const Log = logger.createChannel("event");
     Log.debug("Loading...");
     const events = [];
     fs.readdirSync(eventsPath).forEach((dir) => {

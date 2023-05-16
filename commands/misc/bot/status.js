@@ -5,7 +5,7 @@ const cpuModel = os.cpus()[0].model;
 const wait = new EmbedBuilder()
     .setTitle("✅処理中..")
     .setDescription(`計測しています`)
-    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | status" })
+    .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | status" })
     .setColor(Colors.Green);
 module.exports = async (interaction) => {
     await interaction.reply({ embeds: [wait], ephemeral: true });
@@ -29,7 +29,7 @@ module.exports = async (interaction) => {
                 { name: 'バージョン', value: `\`${process.env.version}\``, inline: true },
             )
             .setTimestamp(new Date())
-            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | status" });
+            .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | status" });
         await interaction.editReply({ embeds: [embed], ephemeral: true });
     });
 };

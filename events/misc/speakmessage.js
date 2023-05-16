@@ -1,5 +1,5 @@
 const { Events, ChannelType } = require('discord.js');
-const { sql } = require("../../helpers/utils");
+const { sql } = require("../../libs/Utils");
 const { escape } = require("mysql2")
 
 const { read } = require("../../helpers/read");

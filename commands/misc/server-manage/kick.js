@@ -1,29 +1,62 @@
-const { EmbedBuilder, Colors } = require("discord.js");
-module.exports = async (interaction) => {
-    const user = interaction.options.getUser("member");
-    const reason = interaction.options.getString("理由");
-    const member = await interaction.guild.members.fetch(user.id);
-    member.kick({ reason: reason })
-        .then(async () => {
-            const success = new EmbedBuilder()
-                .setTitle("✅成功")
-                .setDescription(`${member}をKICKしました\n理由:${reason || "なし"}`)
-                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | kick" })
-                .setColor(Colors.Green);
-            await interaction.reply({ embeds: [success], ephemeral: true });
-        })
-        .catch(async ex => {
-            const permissonerror = new EmbedBuilder()
-                .setTitle("⚠️エラー")
-                .setDescription(`${member}をKICKできませんでした。\n理由:権限不足`)
-                .setColor(Colors.Red)
-                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | kick" });
-            if (ex.code === 50013) return await interaction.reply({ embeds: [permissonerror], ephemeral: true });
-            const kickerror = new EmbedBuilder()
-                .setTitle("⚠️エラー")
-                .setDescription(`${member}をKICKできませんでした。\n詳細:${ex}`)
-                .setColor(Colors.Red)
-                .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "©️ 2023 KURONEKOSERVER | kick" });
-            await interaction.reply({ embeds: [kickerror], ephemeral: true });
-        });
+const { Colors } = require("discord.js");
+const { CustomEmbed } = require("../../../libs");
+
+module.exports = {
+    builder: (builder) => builder
+        .setName("kick")
+        .setDescription("ユーザーをkickします。")
+        .addUserOption(option => option
+            .setName("user")
+            .setDescription("kickするユーザー")
+            .setRequired(true)
+        )
+        .addStringOption(option => option
+            .setName("reason")
+            .setDescription("kickする理由")
+        )
+    ,
+    async execute(interaction) {
+        const user = interaction.options.getUser("user");
+        const reason = interaction.options.getString("reason");
+        const member = await interaction.guild.members.fetch(user.id);
+
+        const embed = new CustomEmbed("kick")
+            .addFields(
+                {
+                    name: "実行者",
+                    value: `${interaction.user}`
+                },
+                {
+                    name: "対象ユーザー",
+                    value: `${member} (${member.id})`
+                }
+            )
+
+        member.kick({ reason: reason })
+            .then(() => {
+                const embed = new CustomEmbed("kick").typeSuccess()
+                    .setDescription(`${member}をkickしました。`)
+                    .addFields({
+                        name: "理由",
+                        value: reason || "なし"
+                    });
+                interaction.reply({ embeds: [embed], ephemeral: true });
+            })
+            .catch((error) => {
+                const embed = new CustomEmbed("kick").typeError()
+                    .setDescription(`${member}をkickできませんでした。`);
+                if (error.code === 50013) {
+                    embed.addFields({
+                        name: "エラー理由",
+                        value: "権限不足"
+                    });
+                } else {
+                    embed.addFields({
+                        name: "エラー理由",
+                        value: `不明なエラー\n${error.message}`
+                    });
+                }
+                interaction.reply({ embeds: [embed], ephemeral: true });
+            });
+    }
 };
