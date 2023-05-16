@@ -9,7 +9,5 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDMPermission(false)
     ,
-    execute(...args) {
-        return args;
-    }
+    execute() { }
 };

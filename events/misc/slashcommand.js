@@ -1,10 +1,10 @@
-const { Events, EmbedBuilder, Colors } = require("discord.js");
+const { Events, Colors } = require("discord.js");
+const { CustomEmbed } = require("../../libs");
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
         const { client } = interaction;
-
         if (interaction.isAutocomplete()) {
             const command = client.commands.get(interaction.commandName);
             if (!command) return;
@@ -17,7 +17,12 @@ module.exports = {
             const command = client.commands.get(interaction.commandName);
             if (!command) return;
             try {
-                await command.execute(interaction, command.logger);
+                const response = await command.execute(interaction, command.logger);
+                if (command.subcommands) {
+                    const subcommand = command.subcommands.get(interaction.options.getSubcommand());
+                    const args = response ?? [];
+                    subcommand.execute(interaction, ...args, command.logger);
+                }
             } catch (error) {
                 command.logger.error(`${error.message}\n${error.stack}`);
                 const embed = new EmbedBuilder()

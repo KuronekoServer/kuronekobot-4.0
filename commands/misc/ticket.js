@@ -13,7 +13,7 @@ module.exports = {
     ,
     async execute(interaction, ...args) {
         const data = await sql(`select * from ticket_channel where guildid=${escape(interaction.guild.id)};`);
-        return [interaction, data[0][0], ...args]
+        return [data[0][0]]
     }
 };
 
