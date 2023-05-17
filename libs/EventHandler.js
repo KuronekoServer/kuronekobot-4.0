@@ -28,13 +28,15 @@ function EventHandler(client, eventsPath) {
     eventsMap.forEach((events, eventName) => {
         client.on(eventName ,(...args) => {
             events
-                .filter(event => event.filter(...args))
+                .filter(event => event.filter ? event.filter(...args) : true)
                 .forEach((event) => {
-                    try {
-                        event.execute(...args, event.logger);
-                    } catch (error) {
-                        event.logger.error(error);
-                    }
+                    new Promise(async (resolve) => {
+                        try {
+                            event.execute(...args, event.logger).then(resolve)
+                        } catch (error) {
+                            event.logger.error(error);
+                        }
+                    });
                 });
         });
     });
