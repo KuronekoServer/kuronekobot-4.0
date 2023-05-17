@@ -32,18 +32,15 @@ module.exports = {
             .addChoices(...sharevoxList)
         )
     ,
-    execute: async (interaction) => {
+    async execute(interaction) {
         const voicevox = interaction.options.getString("voicevox");
         const coeiroink = interaction.options.getString("coeiroink");
         const sharevox = interaction.options.getString("sharevox");
-        
         const embed = new CustomEmbed("speak");
-        if (!voicevox && !coeiroink && !sharevox) {
-            embed.typeError().setDescription("話者が選択されていません。");
-        } else if (voicevox && coeiroink && sharevox) {
-            embed.typeError().setDescription("話者は一つしか選択できません。");
-        }
-        if (embed.title) return interaction.reply({ embeds: [embed], ephemeral: true });
+        const selectedCount = [voicevox, coeiroink, sharevox].filter(Boolean).length;
+        if (selectedCount === 0) embed.typeError().setDescription("話者が選択されていません。");
+        if (selectedCount > 1) embed.typeError().setDescription("話者は一つしか選択できません。");
+        if (embed.data.title) return interaction.reply({ embeds: [embed], ephemeral: true });
 
         const serviceName = voicevox ? "voicevox" : coeiroink ? "COEIROINK" : "SHAREVOX";
         const speakname = voicevox || coeiroink || sharevox;
@@ -61,17 +58,17 @@ module.exports = {
                         }))
                     )
             );
-        interaction.reply({ embeds: [embed], components: [component], ephemeral: true })
-            .awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 3 * 60 * 1000 })
+        const message = await interaction.reply({ embeds: [embed], components: [component], ephemeral: true, fetchReply: true })
+        message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 3 * 60 * 1000 })
             .then(async (i) => {
                 const speakid = i.values[0];
                 const speakhost = process.env[serviceName];
-                const getdata = await Utils.sql(`select * from "user_speak" where userid="${interaction.user.id}";`);
+                const getdata = await Utils.sql(`select * from user_speak where userid="${interaction.user.id}";`);
                 let sqlStatus;
-                if (getdata[0][0].userid) {
-                    sqlStatus = Utils.sql(`update "user_speak" set speakid=${escape(speakid)},speakhost=${escape(speakhost)},speakname=${speakname} where userid="${interaction.user.id}";`);
+                if (getdata[0][0]?.userid) {
+                    sqlStatus = Utils.sql(`update user_speak set speakid=${escape(speakid)},speakhost=${escape(speakhost)},speakname=${speakname} where userid="${interaction.user.id}";`);
                 } else {
-                    sqlStatus = Utils.sql(`INSERT INTO "user_speak"(userid,speakid,speakhost,speakname) VALUES (${escape(interaction.user.id)},${escape(speakid)},${escape(speakhost)},${escape(speakname)});`)
+                    sqlStatus = Utils.sql(`INSERT INTO user_speak(userid,speakid,speakhost,speakname) VALUES (${escape(interaction.user.id)},${escape(speakid)},${escape(speakhost)},${escape(speakname)});`)
                 }
                 const embed = new CustomEmbed("speak");
                 if (!sqlStatus) embed.typeError().setDescription("データの更新でエラーが発生しました。");
