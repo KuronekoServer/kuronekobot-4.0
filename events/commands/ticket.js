@@ -43,7 +43,7 @@ module.exports = {
                     .setTitle("Ticket")
                     .setDescription(`チケットを作成しました。\nチャンネルを開いて質問などをご記入ください。\n${ticketChannel}`)
                     .setColor(Colors.Green);
-                interaction.reply({ embeds: [success_embed], ephemeral: true });
+                interaction.reply({ embeds: [embed], ephemeral: true });
                 const getdata = await sql(`select * from ticket_channel where guildid=${escape(interaction.guild.id)};`);
                 if (getdata[0][0]?.guildid) {
                     const logEmbed = new CustomEmbed("ticket")
@@ -90,6 +90,8 @@ module.exports = {
                 message.awaitMessageComponent({ time: 30 * 1000 })
                     .then(async (i) => {
                         if (i.customId === "ticketcloseclose") {
+                            console.log(interaction.channel.name)
+                            console.log(interaction.user.toString())
                             const logEmbed = new CustomEmbed("ticket")
                                 .setTitle("チケットが閉じられました。")
                                 .addFields(
@@ -100,12 +102,12 @@ module.exports = {
                                     },
                                     {
                                         name: "ユーザー",
-                                        value: interaction.user,
+                                        value: `${interaction.user}`,
                                         inline: true
                                     },
                                     {
                                         name: "日時",
-                                        value: new Date(),
+                                        value: `${new Date()}`,
                                         inline: true
                                     }
                                 )

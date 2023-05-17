@@ -28,10 +28,10 @@ function EventHandler(client, eventsPath) {
     eventsMap.forEach((events, eventName) => {
         client.on(eventName ,(...args) => {
             events
-                .filter(event => event.fillter(...args))
+                .filter(event => event.filter(...args))
                 .forEach((event) => {
                     try {
-                        event.execute(...args);
+                        event.execute(...args, event.logger);
                     } catch (error) {
                         event.logger.error(error);
                     }
