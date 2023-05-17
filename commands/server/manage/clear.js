@@ -12,7 +12,7 @@ module.exports = {
             .setMinValue(0)
         )
     ,
-    execute(interaction) {
+    async execute(interaction) {
         const deleteCount = interaction.options.getInteger("count");
         const component = new ActionRowBuilder()
             .addComponents(
@@ -31,8 +31,8 @@ module.exports = {
             .setTitle("⚠確認 (30秒後に自動キャンセルされます)")
             .setDescription(`${(deleteCount === 0) ? "すべてのメッセージ" : `${deleteCount}件のメッセージ`}を削除しますか?`)
             .setColor(Colors.Red);
-        interaction.reply({ embeds: [embed], components: [component] })
-            .awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 30 * 1000})
+        const message = await interaction.reply({ embeds: [embed], components: [component] })
+        message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 30 * 1000})
             .then(async (i) => {
                 const embed = new CustomEmbed("clear").typeSuccess();
                 let message;
@@ -50,8 +50,7 @@ module.exports = {
                         message = interaction.channel.send({ embeds: [embed] })
                     }
                 } else {
-                    embed.setDescription("キャンセルしました。");
-                    message = interaction.update({ embeds: [embed], components: [] });
+                    interaction.delete();
                 }
                 await message;
                 setTimeout(message.delete, 3 * 1000); 

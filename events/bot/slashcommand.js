@@ -1,14 +1,13 @@
-const { Events, Colors } = require("discord.js");
+const { Events } = require("discord.js");
 const { CustomEmbed } = require("../../libs");
 
 module.exports = {
     name: Events.InteractionCreate,
+    filter: (interaction) => interaction.isCommand() || interaction.isAutocomplete(),
     async execute(interaction) {
         const { client } = interaction;
         const command = client.commands.get(interaction.commandName);
-        if (!command) return;
         if (interaction.isAutocomplete()) {
-            if (!command) return;
             try {
                 await command.autocomplete(interaction, command.logger);
             } catch (error) {

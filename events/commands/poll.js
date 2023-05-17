@@ -3,13 +3,16 @@ const { getEmbedName } = require("../../libs");
 
 module.exports = {
     name: Events.MessageReactionAdd,
-    async execute(react, user, Log) {
-        const { client, message, emoji, users } = react;
-        if (
+    filter(react, user) {
+        const { client, message } = react;
+        return (
             message.author.id !== client.user.id ||
             user.id === client.user.id ||
             !message.embeds?.length
-        ) return;
+        );
+    },
+    async execute(react, user, Log) {
+        const { message, emoji, users } = react;
         const name = getEmbedName(message.embeds[0]) ?? "";
         if (!name.startsWith("poll")) return;
         const reactions = message.reactions.cache;
