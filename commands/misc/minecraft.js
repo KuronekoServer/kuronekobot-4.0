@@ -1,46 +1,114 @@
-const { SlashCommandBuilder } = require('discord.js');
-const mcjava = require("./sub/mcjava");
-const mcbedrock = require("./sub/mcbedrock");
-const mcuser = require("./sub/mcuser");
-let response;
-module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('minecraft')
-    .setDescription('Minecraft関係コマンド')
-    .addSubcommand(subcommand =>
-      subcommand
-        .setName('server-java')
-        .setDescription('Java版Minecraftサーバー情報')
-        .addStringOption(option => option.setName('address').setDescription('サーバーのアドレス').setRequired(true)))
-    .addSubcommand(subcommand =>
-      subcommand
-        .setName('server-bedrock')
-        .setDescription('統合版Minecraftサーバー情報')
-        .addStringOption(option => option.setName('address').setDescription('サーバーのアドレス').setRequired(true)))
-    .addSubcommand(subcommand =>
-      subcommand
-        .setName('user')
-        .setDescription('Minecraftユーザー情報')
-        .addStringOption(option => option.setName('username').setDescription('検索したいユーザーの名前').setRequired(true))),
-  async execute(interaction) {
-    const sub = interaction.options.getSubcommand();
+const axios = require("axios");
+const { CustomEmbed } = require("../../libs");
 
-    // Javaサーバー
-    if (sub === "server-java") {
-      const query = interaction.options.getString("address");
-      response = await mcjava(query);
-    };
-    // BedRockサーバー
-    if (sub === "server-bedrock") {
-      const query = interaction.options.getString("address");
-      response = await mcbedrock(query);
-    };
-    //user
-    if (sub === "user") {
-      const query = interaction.options.getString("username");
-      response = await mcuser(query);
-    };
-    //user https://mojang-api-docs.gapple.pw/no-auth/uuid-to-profile
-    await interaction.reply(response);
-  },
+module.exports = {
+    subcommands: [ServerInfo, UserInfo],
+    builder: (builder) => builder
+        .setName("minecraft")
+        .setDescription("Minecraft関係コマンド")
+    ,
+    execute() { }
+};
+
+const ServerInfo = {
+    builder: (builder) => builder
+        .setName("serverinfojava")
+        .setDescription("Java版Minecraftサーバー情報")
+        .addStringOption((option) => option
+            .setName("type")
+            .setDescription("サーバーの種類")
+            .setChoices(
+                { name: "Java", value: "java" },
+                { name: "Bedrock", value: "bedrock" }
+            )
+            .setRequired(true)
+        )
+        .addStringOption((option) => option
+            .setName("address")
+            .setDescription("サーバーのアドレス")
+            .setRequired(true)
+        )
+    ,
+    execute(interaction) {
+        const type = interaction.options.getString("type");
+        const address = interaction.options.getString("address");
+        const embed = new CustomEmbed("minecraft");
+        axios.get(`https://api.mcstatus.io/v2/status/${type}/${address}`)
+            .then((response) => {
+                const json = response.data;
+                embed
+                    .setTitle(`Minecraftサーバー (${type})`)
+                    .addFields(
+                        {
+                            name: "ステータス",
+                            value: json.online ? "オンライン" : "オフライン",
+                            inline: true
+                        },
+                        {
+                            name: "アドレス",
+                            value: json.host,
+                            inline: true
+                        },
+                        {
+                            name: "ポート",
+                            value: String(json.port),
+                            inline: true
+                        }
+                    )
+                    .setThumbnail("https://cdn.mikn.dev/mclogo.png")
+                    .setColor(json.online ? "GREEN" : "RED");
+                interaction.reply({ embeds: [embed] });
+            })
+            .catch((error) => {
+                embed.typeError()
+                    .setDescription("サーバーが見つかりませんでした。");
+                interaction.reply({ embeds: [embed] });
+            });
+    }
+};
+
+const UserInfo = {
+    builder: (builder) => builder
+        .setName("userinfo")
+        .setDescription("Minecraftユーザー情報")
+        .addStringOption((option) => option
+            .setName("username")
+            .setDescription("検索したいユーザーの名前")
+            .setRequired(true)
+        )
+    ,
+    async execute(interaction) {
+        const username = interaction.options.getString("username");
+        const embed = new CustomEmbed("minecraft");
+        function notFound() {
+            embed.typeError()
+                .setDescription("ユーザーが見つかりませんでした。");
+            interaction.reply({ embeds: [embed] });
+        }
+        // task: uuidからも検索できるようにする
+
+        axios.get(`https://api.mojang.com/users/profiles/minecraft/${username}`)
+            .then((response) => {
+                const user = response.data; 
+                axios.get(`https://sessionserver.mojang.com/session/minecraft/profile/${user.id}`)
+                    .then((response) => {
+                        embed
+                            .setTitle("Minecraftユーザー")
+                            .addFields(
+                                {
+                                    name: "ユーザーID",
+                                    value: user.id
+                                },
+                                {
+                                    name: "ユーザーネーム",
+                                    value: user.name
+                                }
+                            )
+                            .setImage(JSON.parse(Buffer.from(response.data.properties[0].value, "base64").toString()).textures.SKIN.url)
+                            .setColor("GREEN");
+                    })
+                    .catch(notFound);
+            })
+            .catch(notFound);
+    }
 };
