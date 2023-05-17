@@ -1,21 +1,6 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, Colors, ChannelType } = require("discord.js");
-const { CustomEmbed, ColorsChoice } = require("../../libs/CustomEmbed");
-const { sql } = require("../../libs/Utils");
-const { escape } = require("mysql2")
-
-module.exports = {
-    subcommands: [ticketCreate, ticketDelete],
-    builder: (builder) => builder
-        .setName("ticket")
-        .setDescription("チケットを作成します。")
-        .setDMPermission(false)
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-    ,
-    async execute(interaction, ...args) {
-        const data = await sql(`select * from ticket_channel where guildid=${escape(interaction.guild.id)};`);
-        return [data[0][0]]
-    }
-};
+const { CustomEmbed, ColorsChoice, Utils } = require("../../libs");
+const { escape } = require("mysql2");
 
 const ticketCreate = {
     builder: (builder) => builder
@@ -63,9 +48,9 @@ const ticketCreate = {
         if (log) {
             let promise;
             if (data?.guildid) {
-                promise = sql(`update ticket_channel set channelid=${escape(log.id)} where guildid=${escape(guild.id)};`);
+                promise = Utils.sql(`update ticket_channel set channelid=${escape(log.id)} where guildid=${escape(guild.id)};`);
             } else {
-                promise = sql(`insert into ticket_channel values (${escape(guild.id)},${escape(log.id)});`);
+                promise = Utils.sql(`insert into ticket_channel values (${escape(guild.id)},${escape(log.id)});`);
             };
             if (!await promise) {
                 embed.typeError()
@@ -106,7 +91,7 @@ const ticketDelete = {
             embed.typeError()
                 .setDescription("データが見つかりませんでした。");
         } else {
-            const sqlDelete = await sql(`DELETE FROM ticket_channel WHERE guildid = ${escape(interaction.guild.id)};`);
+            const sqlDelete = await Utils.sql(`DELETE FROM ticket_channel WHERE guildid = ${escape(interaction.guild.id)};`);
             if (!sqlDelete) {
                 embed.typeError()
                     .setDescription("データの削除に失敗しました。");
@@ -116,5 +101,19 @@ const ticketDelete = {
             }
         }
         interaction.reply({ embeds: [embed], ephemeral: true });
+    }
+};
+
+module.exports = {
+    subcommands: [ticketCreate, ticketDelete],
+    builder: (builder) => builder
+        .setName("ticket")
+        .setDescription("チケットを作成します。")
+        .setDMPermission(false)
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    ,
+    async execute(interaction, ...args) {
+        const data = await Utils.sql(`select * from ticket_channel where guildid=${escape(interaction.guild.id)};`);
+        return [data[0][0]]
     }
 };

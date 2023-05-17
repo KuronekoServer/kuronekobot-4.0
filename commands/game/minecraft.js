@@ -1,15 +1,6 @@
 const axios = require("axios");
 const { CustomEmbed } = require("../../libs");
 
-module.exports = {
-    subcommands: [ServerInfo, UserInfo],
-    builder: (builder) => builder
-        .setName("minecraft")
-        .setDescription("Minecraft関係コマンド")
-    ,
-    execute() { }
-};
-
 const ServerInfo = {
     builder: (builder) => builder
         .setName("serverinfojava")
@@ -111,4 +102,13 @@ const UserInfo = {
             })
             .catch(notFound);
     }
+};
+
+module.exports = {
+    subcommands: [ServerInfo, UserInfo],
+    builder: (builder) => builder
+        .setName("minecraft")
+        .setDescription("Minecraft関係コマンド")
+    ,
+    execute() { }
 };

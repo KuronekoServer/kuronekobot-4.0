@@ -1,22 +1,9 @@
 const { Colors } = require("discord.js");
-const { CustomEmbed, getEmbedName, ColorsChoice } = require("../../../libs");
-const poll = require("../../events/misc/poll");
-
-module.exports = {
-    subcommands: [pollCreate, pollSum],
-    builder: (builder) => builder
-        .setName("poll")
-        .setDescription("アンケートを実施する。")
-        .setDMPermission(false)
-    ,
-    execute(...args) {
-        return args;
-    }
-};
+const { CustomEmbed, getEmbedName, ColorsChoice } = require("../../libs");
 
 const maxChoice = 10;
 const ExampleEmojis = ["1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣", "🔟"];
-const bar = "=========================>"; //4% = 1文字
+const bar = "=========================>";
 
 const pollCreate = {
     builder: (builder) => {
@@ -149,5 +136,17 @@ const pollSum = {
             .setDescription(`${text}\n\n[元のアンケート](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id})`)
             .setColor(Colors.Green);
         interaction.reply({ embeds: [embed], ephemeral: true });
+    }
+};
+
+module.exports = {
+    subcommands: [pollCreate, pollSum],
+    builder: (builder) => builder
+        .setName("poll")
+        .setDescription("アンケートを実施する。")
+        .setDMPermission(false)
+    ,
+    execute(...args) {
+        return args;
     }
 };

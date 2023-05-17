@@ -52,9 +52,9 @@ function SlashCommandHandler(commandsPath) {
     const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
     rest.put(
         Routes.applicationCommands(process.env.clientId),
-        { body: [option, ...commands.map(command => command.data.toJSON())] },
+        { body: [option, ...commands.map(command => command.data)] },
     ).then((data) => {
-        Log.indo(`Deployed ${data.length} commands`);
+        Log.info(`Deployed ${data.length} commands`);
     }).catch((error) => {
         Log.error(error)
     });
