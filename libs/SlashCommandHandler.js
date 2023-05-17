@@ -2,7 +2,6 @@ const { Collection, REST, Routes, SlashCommandBuilder, SlashCommandSubcommandBui
 const fs = require("fs");
 const path = require("path");
 const logger = require("./GetLogger");
-const option = require("../helpers/optionslash.json");
 
 function SlashCommandHandler(commandsPath) {
     const Log = logger.createChannel("command");
@@ -35,6 +34,7 @@ function SlashCommandHandler(commandsPath) {
                 command.subcommands = new Collection();
                 subcommands.forEach(subcommand => {
                     const subcommandBuilder = subcommand.builder(new SlashCommandSubcommandBuilder());
+                    commandBuilder.addSubcommand(subcommandBuilder);
                     subcommand.logger = command.logger.createChild(subcommandBuilder.name);
                     subcommand.data = subcommandBuilder.toJSON();
                     command.subcommands.set(subcommandBuilder.name, subcommand);
@@ -52,7 +52,7 @@ function SlashCommandHandler(commandsPath) {
     const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
     rest.put(
         Routes.applicationCommands(process.env.clientId),
-        { body: [option, ...commands.map(command => command.data)] },
+        { body: commands.map(command => command.data) },
     ).then((data) => {
         Log.info(`Deployed ${data.length} commands`);
     }).catch((error) => {

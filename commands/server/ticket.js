@@ -75,23 +75,22 @@ const ticketCreate = {
 
         embed.typeSuccess()
             .setDescription("チケット作成画面を作成しました。");
-        interaction.reply({ embeds: [success_embed], ephemeral: true });
+        interaction.reply({ embeds: [embed], ephemeral: true });
     }
 };
 
 const ticketDelete = {
     builder: (builder) => builder
-        .setName("delete")
-        .setDescription("チケット作成画面を削除します。")
+        .setName("logdelete")
+        .setDescription("チケットのログチャンネルを削除します(チャンネルそのものを削除するわけではありません)。")
     ,
     async execute(interaction, data) {
         const embed = new CustomEmbed("ticket");
-
-        if (!data?.guildid) {
+        if (!(data?.guildid)) {
             embed.typeError()
                 .setDescription("データが見つかりませんでした。");
         } else {
-            const sqlDelete = await Utils.sql(`DELETE FROM ticket_channel WHERE guildid = ${escape(interaction.guild.id)};`);
+            const sqlDelete = await Utils.sql(`DELETE FROM ticket_channel WHERE guildid=${escape(interaction.guild.id)};`);
             if (!sqlDelete) {
                 embed.typeError()
                     .setDescription("データの削除に失敗しました。");

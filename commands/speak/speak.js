@@ -1,6 +1,18 @@
-const { SlashCommandBuilder } = require('discord.js');
-const join = require("./speak/join");
-const disconnect = require("./speak/disconnect");
+module.exports = {
+    subcommands: "./general",
+    builder: (builder) => builder
+        .setName("speak")
+        .setDescription("読み上げ関係のコマンド")
+        .setDMPermission(false)
+    ,
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused();
+        await interaction.respond(all_voice_list.filter(data => data.name.startsWith(focusedValue))).catch(() => { });
+    },
+    async execute() { }
+};
+
+/*
 const dictionary_add = require("./speak/dictionary_add");
 const dictionary_export = require("./speak/dictionary_export");
 const dictionary_import = require("./speak/dictionary_import");
@@ -18,100 +30,82 @@ const all_voice_list = require("../../helpers/voicelist/allvoicelist.json");
 let response;
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('speak')
-        .setDescription('読み上げ関係のコマンド')
-        .setDMPermission(false)
         .addSubcommand(subcommand =>
             subcommand
-                .setName('join')
-                .setDescription('ボイスチャンネルに参加します。')
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('skip')
-                .setDescription('読み上げをスキップします。')
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('disconnect')
-                .setDescription('ボイスチャンネルから退出します。')
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('user_voice')
+                .setName("user_voice")
                 .addStringOption(option => option.setName("voicevox話者名").setDescription("話者を選択してください").addChoices(...require("../../helpers/voicelist/voicevoxlist.json")))
                 .addStringOption(option => option.setName("coeiroink話者名").setDescription("話者を選択してください").addChoices(...require("../../helpers/voicelist/coeiroinklist.json")))
                 .addStringOption(option => option.setName("sharevox話者名").setDescription("話者を選択してください").addChoices(...require("../../helpers/voicelist/sharevoxlist.json")))
-                .setDescription('話者を変更します。')
+                .setDescription("話者を変更します。")
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('user_voice-setting')
-                .setDescription('ユーザーの各種voice設定をします。')
+                .setName("user_voice-setting")
+                .setDescription("ユーザーの各種voice設定をします。")
                 .addStringOption(option => option.setName("args").setDescription("設定する項目を選択").addChoices({ name: "pitch", value: "pitch" }, { name: "speed", value: "speed" }, { name: "intonation", value: "intonation" }).setRequired(true))
                 .addNumberOption(option => option.setName("number").setDescription("数値を入力"))
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('dictionary_add')
-                .setDescription('辞書を設定します。')
+                .setName("dictionary_add")
+                .setDescription("辞書を設定します。")
                 .addStringOption(option => option.setName("before").setDescription("変換前").setRequired(true))
                 .addStringOption(option => option.setName("after").setDescription("変換後").setRequired(true))
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('dictionary_remove')
-                .setDescription('辞書を削除します。')
+                .setName("dictionary_remove")
+                .setDescription("辞書を削除します。")
                 .addStringOption(option => option.setName("delete").setDescription("言葉").setRequired(true))
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('dictionary_export')
-                .setDescription('辞書の内容をエクスポートします。')
+                .setName("dictionary_export")
+                .setDescription("辞書の内容をエクスポートします。")
                 .addStringOption(option => option.setName("format").setDescription("形式を選択").addChoices({ name: "JSON", value: "json" }, { name: "colon", value: "colon" }, { name: "csv", value: "csv" }))
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('dictionary_import')
-                .setDescription('辞書をインポートします。')
+                .setName("dictionary_import")
+                .setDescription("辞書をインポートします。")
                 .addAttachmentOption(option => option.setName("file").setDescription("json形式にしてください").setRequired(true))
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('server_user-dictionary-list')
+                .setName("server_user-dictionary-list")
                 .addStringOption(option => option.setName("select").setDescription("選択してください").addChoices({ name: "user-read", value: "user" }, { name: "dictionary", value: "dictionary" }).setRequired(true))
                 .setDescription("辞書の一覧又は読み上げないユーザーを表示します。")
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('user_reset')
-                .setDescription('ユーザー設定初期化')
+                .setName("user_reset")
+                .setDescription("ユーザー設定初期化")
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('setting_show')
+                .setName("setting_show")
                 .addStringOption(option => option.setName("select").setDescription("対象の選択").addChoices({ name: "server", value: "server" }, { name: "user", value: "user" }).setRequired(true))
-                .setDescription('読み上げ関連設定の表示')
+                .setDescription("読み上げ関連設定の表示")
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('live_read')
+                .setName("live_read")
                 .addStringOption(option => option.setName("select").setDescription("選択してください").addChoices({ name: "youtube", value: "youtube" }, { name: "twitch", value: "twitch" }).setRequired(true))
                 .addStringOption(option => option.setName("url").setDescription("LIVEのURLを入力").setRequired(true))
-                .setDescription('ライブの読み上げ。')
+                .setDescription("ライブの読み上げ。")
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('live_read-stop')
+                .setName("live_read-stop")
                 .addStringOption(option => option.setName("select").setDescription("選択してください").addChoices({ name: "youtube", value: "youtube" }, { name: "twitch", value: "twitch" }).setRequired(true))
-                .setDescription('ライブの読み上げを停止します。')
+                .setDescription("ライブの読み上げを停止します。")
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('exvoice-word')
+                .setName("exvoice-word")
                 .addStringOption(option => option.setName("select").setDescription("単語の操作").addChoices({ name: "除外リスト", value: "removelist" }, { name: "一覧", value: "list" }).setRequired(true))
                 .addStringOption(option => option.setName("話者").setDescription("話者の選択").setAutocomplete(true).setRequired(true))
-                .setDescription('読み上げないexvoiceの追加。')
+                .setDescription("読み上げないexvoiceの追加。")
         ),
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
@@ -186,3 +180,4 @@ module.exports = {
         await interaction.deleteReply();
     },
 };
+*/

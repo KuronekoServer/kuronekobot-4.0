@@ -1,9 +1,26 @@
+const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require("discord.js");
+const fs = require("fs");
+
 //voicevox:http://127.0.0.1:50021/docs#/
 //COEIROINK:http://127.0.0.1:50031/docs#/
 //SHAREVOX:http://127.0.0.1:50025/docs#/
 
-const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require("discord.js");
-const fs = require("fs");
+module.exports = {
+    subcommands: "./admin",
+    builder: (builder) => builder
+        .setName("adminspeak")
+        .setDescription("読み上げ関係のコマンド")
+        .setDMPermission(false)
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    ,
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused();
+        await interaction.respond(all_voice_list.filter(data => data.name.startsWith(focusedValue))).catch(() => { });
+    },
+    async execute() { }
+};
+
+/*
 const server_auto_join = require("./speak/server_auto-join");
 const server_auto_join_delete = require("./speak/server_auto-join-delete");
 const server_force_guild = require("./speak/server_force-guild");
@@ -11,7 +28,6 @@ const server_read_bot = require("./speak/server_read-bot");
 const server_read = require("./speak/server_read");
 const server_reset = require("./speak/server_reset");
 const server_voice_setting = require("./speak/server_voice-setting");
-const server_voice = require("./speak/server_voice");
 const server_exvoice = require("./speak/server_exvoice");
 const server_exvoice_word = require("./speak/server_exvoice-word");
 const server_vc_only_tts = require("./speak/server_vc-only-tts");
@@ -41,15 +57,6 @@ module.exports = {
                 .setName("server_read-bot")
                 .setDescription("BOTの読み上げを許可するか決めます")
                 .addStringOption(option => option.setName("toggle").setDescription("BOTの読み上げを許可するか").addChoices({ name: "許可", value: "true" }, { name: "禁止", value: "false" }).setRequired(true))
-
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("server_voice")
-                .addStringOption(option => option.setName("voicevox話者名").setDescription("話者を選択してください").addChoices(...require("../../helpers/voicelist/voicevoxlist.json")))
-                .addStringOption(option => option.setName("coeiroink話者名").setDescription("話者を選択してください").addChoices(...require("../../helpers/voicelist/coeiroinklist.json")))
-                .addStringOption(option => option.setName("sharevox話者名").setDescription("話者を選択してください").addChoices(...require("../../helpers/voicelist/sharevoxlist.json")))
-                .setDescription("サーバー話者を変更します。")
 
         )
         .addSubcommand(subcommand =>
@@ -197,3 +204,4 @@ module.exports = {
         await interaction.deleteReply();
     },
 };
+*/

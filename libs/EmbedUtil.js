@@ -23,9 +23,9 @@ class CustomEmbed extends EmbedBuilder {
 }
 
 function getEmbedName(embed) {
-    const footer = embed.footer;
+    const footer = embed.footer.text;
     if (!footer) return null;
-    if (!footer.startWith(footerCR + " | ")) return null;
+    if (!footer.startsWith(footerCR + " | ")) return null;
     return footer.slice(footerCR.length + 3);
 }
 

@@ -1,10 +1,11 @@
 const axios = require("axios");
+const { Colors } = require("discord.js");
 const { CustomEmbed } = require("../../libs");
 
 const ServerInfo = {
     builder: (builder) => builder
-        .setName("serverinfojava")
-        .setDescription("Java版Minecraftサーバー情報")
+        .setName("serverinfo")
+        .setDescription("Minecraftサーバー情報")
         .addStringOption((option) => option
             .setName("type")
             .setDescription("サーバーの種類")
@@ -47,7 +48,7 @@ const ServerInfo = {
                         }
                     )
                     .setThumbnail("https://cdn.mikn.dev/mclogo.png")
-                    .setColor(json.online ? "GREEN" : "RED");
+                    .setColor(json.online ? Colors.Green : Colors.Red);
                 interaction.reply({ embeds: [embed] });
             })
             .catch((error) => {
@@ -68,7 +69,7 @@ const UserInfo = {
             .setRequired(true)
         )
     ,
-    async execute(interaction) {
+    async execute(interaction, logger) {
         const username = interaction.options.getString("username");
         const embed = new CustomEmbed("minecraft");
         function notFound() {
@@ -96,9 +97,12 @@ const UserInfo = {
                                 }
                             )
                             .setImage(JSON.parse(Buffer.from(response.data.properties[0].value, "base64").toString()).textures.SKIN.url)
-                            .setColor("GREEN");
+                            .setColor(Colors.Green);
+                        interaction.reply({ embeds: [embed] });
                     })
-                    .catch(notFound);
+                    .catch((error) => {
+                        logger.error(error);
+                    });
             })
             .catch(notFound);
     }
