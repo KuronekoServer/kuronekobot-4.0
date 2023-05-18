@@ -89,7 +89,7 @@ module.exports = {
             .setTimestamp(new Date())
             .setFooter({
                 text: `${interaction.guild.name}`,
-                iconURL: `${interaction.guild.icon === null ? "https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" : interaction.guild.iconURL({ dynamic: true, format: "png", size: 4096 })}`
+                iconURL: `${interaction.guild.icon === null ? "https://cdn.mikandev.tech/public-assets/clyde-blue.png" : interaction.guild.iconURL({ dynamic: true, format: "png", size: 4096 })}`
             });
 
         if (interaction.options.getBoolean("ephemeral")) {

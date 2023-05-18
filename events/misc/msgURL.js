@@ -29,7 +29,7 @@ module.exports = {
                     .setTimestamp(msg.createdAt)
                     .setFooter({
                         text: `${msg.channel.name}`,
-                        iconURL: `${msg.guild.iconURL() == null ? "https://www.freepnglogos.com/uploads/discord-logo-png/discord-logo-logodownload-download-logotipos-1.png" : msg.guild.iconURL()}`
+                        iconURL: `${msg.guild.iconURL() == null ? "https://cdn.mikandev.tech/public-assets/discord-logo.png" : msg.guild.iconURL()}`
                     })
 
                 if (msg.content.length > 0) {
