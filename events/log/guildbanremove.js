@@ -1,5 +1,4 @@
 const { Events, Colors } = require("discord.js");
-const { CustomEmbed } = require("../../libs/EmbedBuilder");
 const sendLog = require("../../helpers/sendLog");
 const { CustomEmbed } = require("../../libs");
 
