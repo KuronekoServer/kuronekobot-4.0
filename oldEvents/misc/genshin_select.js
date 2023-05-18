@@ -56,10 +56,10 @@ module.exports = {
             const success = new EmbedBuilder()
                 .setTitle(`${name} - レベル${user.characters.filter(r => name === r.characterData.name.get('jp'))[0].level}`)
                 .setDescription(`<t:${moment().unix()}>時点\n**スコア計算式**\n\`${math[types[type]]}\``)
-                .setThumbnail(`https://artifacter.krnk-infra.com/avatar/${user.profilePictureCharacter.cardIcon.name}/image.png`)
+                .setThumbnail(`https://cdn.mikandev.tech/public-assets/genshin-cards/${user.profilePictureCharacter.cardIcon.name}.png`)
                 .setImage("attachment://genshin.png")
                 .setFooter({
-                    iconURL: `https://artifacter.krnk-infra.com/avatar/${user.profilePictureCharacter.cardIcon.name}/image.png`,
+                    iconURL: `https://cdn.mikandev.tech/public-assets/genshin-cards/${user.profilePictureCharacter.cardIcon.name}.png`,
                     text: `${user.nickname} - レベル${user.level}`
                 })
                 .setColor(Colors.Green);
@@ -102,10 +102,10 @@ module.exports = {
                 const success = new EmbedBuilder()
                     .setTitle(`${name} - レベル${user.characters.filter(r => name === r.characterData.name.get('jp'))[0].level}`)
                     .setDescription(`<t:${moment().unix()}>時点\n**スコア計算式**\n\`${math[types[type]]}\``)
-                    .setThumbnail(`https://artifacter.krnk-infra.com/avatar/${user.profilePictureCharacter.cardIcon.name}/image.png`)
+                    .setThumbnail(`https://cdn.mikandev.tech/public-assets/genshin-cards/${user.profilePictureCharacter.cardIcon.name}.png`)
                     .setImage("attachment://genshin.png")
                     .setFooter({
-                        iconURL: `https://artifacter.krnk-infra.com/avatar/${user.profilePictureCharacter.cardIcon.name}/image.png`,
+                        iconURL: `https://cdn.mikandev.tech/public-assets/genshin-cards/${user.profilePictureCharacter.cardIcon.name}.png`,
                         text: `${user.nickname} - レベル${user.level}`
                     })
                     .setColor(Colors.Green);
