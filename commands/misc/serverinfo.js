@@ -1,6 +1,5 @@
 const { EmbedBuilder, codeBlock, ChannelType, Colors } = require("discord.js");
-const moment = require("moment");
-moment.locale("ja");
+const { CustomEmbed, ts2time } = require("../../libs");
 
 const filterLevel = {
     0: "Disabled - いかなるメディアコンテンツをスキャンしないでください。(全員を信頼する)",
@@ -54,7 +53,7 @@ module.exports = {
             { name: "オーナー名・ID", value: `${codeBlock(`${owner.user.tag} - ${interaction.guild.ownerId}`)}` },
             { name: "言語", value: `${codeBlock(interaction.guild.preferredLocale)}`, inline: true },
             { name: "ブーストレベル", value: `${codeBlock(`レベル-${interaction.guild.premiumTier}`)}`, inline: true },
-            { name: `サーバー作成日[${moment(interaction.guild.createdAt).fromNow()}]`, value: `${codeBlock(moment(interaction.guild.createdAt).format("YYYY年MMMMDodddd"))}` },
+            { name: `サーバー作成日`, value: `${ts2time(interaction.guild.createdAt)} (${ts2time(interaction.guild.createdAt, "R")})` },
             { name: `カテゴリーとチャンネル`, value: `${codeBlock(`カテゴリー:${channels.filter(channel => channel.type === ChannelType.GuildCategory).size}|テキスト:${channels.filter(channel => channel.type === ChannelType.GuildText).size}|ボイス:${channels.filter(channel => channel.type === ChannelType.GuildVoice).size}`)}` },
             { name: "その他のチャンネル", value: `${codeBlock(`アナウンス:${channels.filter(channel => channel.type === ChannelType.GuildAnnouncement).size}|フォーラム:${channels.filter(channel => channel.type === ChannelType.GuildForum).size}|スレッド:${channels.filter(channel => channel.type === ChannelType.PublicThread).size}|ステージ:${channels.filter(channel => channel.type === ChannelType.GuildStageVoice).size}`)}` },
             { name: `ロール[${roles.size}]`, value: `${codeBlock(roles.filter(r => !r.name.includes("everyone")).sort((a, b) => b.position - a.position).map(r => `${r.name}[${membersRole(members, r)}]`).join(","))}` },

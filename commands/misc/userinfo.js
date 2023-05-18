@@ -1,5 +1,5 @@
 const { Colors, time, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageComponentInteraction } = require("discord.js");
-const { CustomEmbed } = require("../../libs");
+const { CustomEmbed, ts2time } = require("../../libs");
 const { ja } = require("../../libs/Permissions");
 const status = {
     key: {
@@ -103,9 +103,4 @@ module.exports = {
             interaction.reply({ embeds: [embed], ephemeral })
         }
     }
-}
-
-//timeをdiscordのメッセージタイムスタンプに変換
-function ts2time(timestamp, format) {
-    return time(Math.floor(timestamp / 1000), format);
 }
