@@ -4,8 +4,8 @@ const sendLog = require("../../helpers/sendLog");
 
 module.exports = {
     name: Events.MessageDelete,
+    filter: (message) => message.channel.type !== ChannelType.DM,
     async execute(message) {
-        if (message.channel.type === ChannelType.DM) return;
         sendLog(message.guild, () => (
             new CustomEmbed("messagedelete")
                 .setTitle("✅メッセージの削除")

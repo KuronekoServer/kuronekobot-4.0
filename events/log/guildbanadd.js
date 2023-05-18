@@ -2,7 +2,6 @@ const { Events, Colors } = require("discord.js");
 const { CustomEmbed } = require("../../libs");
 const sendLog = require("../../helpers/sendLog");
 
-
 module.exports = {
     name: Events.GuildBanAdd,
     async execute(member) {
