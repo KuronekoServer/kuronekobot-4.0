@@ -20,6 +20,10 @@ class CustomEmbed extends EmbedBuilder {
         this.setColor(Colors.Red);
         return this;
     }
+    toJSON() {
+        if (!this.data.timestamp) this.setTimestamp();
+        return super.toJSON();
+    }
 }
 
 function getEmbedName(embed) {
