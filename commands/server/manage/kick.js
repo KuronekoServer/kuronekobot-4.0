@@ -1,4 +1,3 @@
-const { Colors } = require("discord.js");
 const { CustomEmbed } = require("../../../libs");
 
 module.exports = {

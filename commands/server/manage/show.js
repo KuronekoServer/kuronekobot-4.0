@@ -50,7 +50,7 @@ module.exports = {
         speakFieldData.forEach((data) => fieldData.push({ name: data[0], value: data[1], inline: true }));
         
         const embed = new CustomEmbed("show")
-            .setTitle("✅サーバーの情報")
+            .setTitle("サーバーの情報")
             .setDescription(`[サポートサーバー]https://discord.gg/Y6w5Jv3EAR`)
             .addFields(fieldData)
             .setColor(Colors.Green);
