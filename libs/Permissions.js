@@ -44,6 +44,8 @@ module.exports = {
     ViewAuditLog: "View audit log",
     ViewChannel: "View channel",
     ViewGuildInsights: "View server insights",
+    UseSoundboard: "Use Soundboard",
+    SendVoiceMessages: "Send Voice Messages",
     ja: {
         AddReactions: "リアクションの追加",
         Administrator: "管理者",
@@ -85,6 +87,8 @@ module.exports = {
         UseVAD: "ユーザーアクティビティ",
         ViewAuditLog: "監視ログを表示",
         ViewChannel: "チャンネルを見る",
-        ViewGuildInsights: "View server insights",
+        ViewGuildInsights: "サーバーインサイトを見る",
+        UseSoundboard: "サウンドボードを使用する",
+        SendVoiceMessages: "ボイスメッセージを送信する"
     }
 };
