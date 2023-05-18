@@ -1,6 +1,5 @@
-const { ChannelType, Colors, PermissionFlagsBits } = require("discord.js");
-const { CustomEmbed, Utils } = require("../../libs");
-const { escape } = require("mysql2");
+const { ChannelType, PermissionFlagsBits } = require("discord.js");
+const { CustomEmbed, SQL } = require("../../libs");
 
 const logCreate = {
     builder: (builder) => builder
@@ -13,15 +12,15 @@ const logCreate = {
             .addChannelTypes(ChannelType.GuildText)
         )
     ,
-    async execute(interaction, getdata, Log) {
+    async execute(interaction, data, Log) {
         const channel = interaction.options.getChannel("channel");
         let sqlStatus;
-        if (getdata?.guildid) {
-            sqlStatus = Utils.sql(`update log_channel set channelid=${escape(channel.id)} where guildid=${escape(interaction.guild.id)};`);
+        if (!data) {
+            sqlStatus = await SQL.insert("log_channel", [ interaction.guild.id, channel.id ]);
         } else {
-            sqlStatus = Utils.sql(`insert into log_channel values (${escape(interaction.guild.id)}, ${escape(interaction.options.getChannel("channel").id)});`);
+            sqlStatus = await SQL.update("log_channel", { channelid: channel.id }, { guildid: interaction.guild.id });
         };
-        await sqlStatus;
+        console.log(sqlStatus)
         const embed = new CustomEmbed("log");
         if (!sqlStatus) embed.typeError().setDescription("データの保存に失敗しました。");
         else embed.typeSuccess().setDescription(`logチャンネルを${channel}に設定しました。`);
@@ -34,11 +33,11 @@ const logDelete = {
         .setName("delete")
         .setDescription("logチャンネルを削除します")
     ,
-    async execute(interaction, getdata, Log) {
+    async execute(interaction, data, Log) {
         const embed = new CustomEmbed("log");
-        if (!getdata?.guildid) embed.typeError().setDescription("データが見つかりませんでした。");
+        if (!data) embed.typeError().setDescription("データが見つかりませんでした。");
         else {
-            const sqlStatus = await Utils.sql(`DELETE FROM log_channel WHERE guildid = ${escape(interaction.guild.id)};`);
+            const sqlStatus = await SQL.delete("log_channel", { guildid: interaction.guild.id });
             if (!sqlStatus) embed.typeError().setDescription("データの削除に失敗しました。");
             else embed.typeSuccess().setDescription("データの削除に成功しました!");
         };
@@ -56,7 +55,8 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     ,
     async execute(interaction) {
-        const getdata = await Utils.sql(`select * from log_channel where guildid=${escape(interaction.guild.id)};`);
-        return [getdata[0][0]];
+        const data = await SQL.select("log_channel", { guildid: interaction.guild.id });
+        return [data];
+        
     }
 };

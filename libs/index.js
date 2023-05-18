@@ -7,7 +7,7 @@ const Permissions = require("./Permissions");
 const EmbedUtil = require("./EmbedUtil");
 const { CustomEmbed, getEmbedName, ColorsChoice } = EmbedUtil;
 const ts2time = require("./ts2time");
-const Database = require("./Database");
+const SQL = require("./SQL");
 
 module.exports = {
     Logger,
@@ -21,5 +21,5 @@ module.exports = {
     getEmbedName,
     ColorsChoice,
     ts2time,
-    Database
+    SQL
 }

@@ -1,6 +1,7 @@
-const { Colors, time, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageComponentInteraction } = require("discord.js");
+const { Colors, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { CustomEmbed, ts2time } = require("../../libs");
 const { ja } = require("../../libs/Permissions");
+
 const status = {
     key: {
         desktop: "デスクトップ",

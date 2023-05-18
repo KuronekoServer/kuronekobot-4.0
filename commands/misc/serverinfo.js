@@ -1,5 +1,5 @@
 const { EmbedBuilder, codeBlock, ChannelType, Colors } = require("discord.js");
-const { CustomEmbed, ts2time } = require("../../libs");
+const { ts2time } = require("../../libs");
 
 const filterLevel = {
     0: "Disabled - いかなるメディアコンテンツをスキャンしないでください。(全員を信頼する)",

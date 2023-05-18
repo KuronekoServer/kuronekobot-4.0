@@ -1,6 +1,5 @@
 const { Colors } = require("discord.js");
-const { CustomEmbed, Utils } = require("../../../libs");
-const { escape } = require("mysql2");
+const { CustomEmbed, SQL } = require("../../../libs");
 
 module.exports = {
     builder: (builder) => builder
@@ -11,8 +10,11 @@ module.exports = {
         const dataNames = ["ticket_channel", "log_channel", "job_message", "dictionary", "server_speak", "read_user", "exvoiceword"];
         const data = {};
         const promises = dataNames.map((name) => {
-            return Utils.sql(`select * from ${name} where guildid=${escape(interaction.guild.id)};`)
-                .then((res) => data[name] = res[0][0]);
+            return SQL.select(name, { guildid: interaction.guild.id })
+                .then((res) => {
+                    if (!res) data[name] = {};
+                    else data[name] = res[0]
+                });
         });
         await Promise.all(promises);
 
@@ -50,8 +52,8 @@ module.exports = {
         speakFieldData.forEach((data) => fieldData.push({ name: data[0], value: data[1], inline: true }));
         
         const embed = new CustomEmbed("show")
-            .setTitle("サーバーの情報")
-            .setDescription(`[サポートサーバー]https://discord.gg/Y6w5Jv3EAR`)
+            .setTitle("サーバーの設定")
+            .setDescription(`[サポートサーバー](https://discord.gg/Y6w5Jv3EAR)`)
             .addFields(fieldData)
             .setColor(Colors.Green);
         interaction.reply({ embeds: [embed], ephemeral: true });
