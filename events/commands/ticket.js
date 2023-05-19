@@ -1,11 +1,9 @@
-const { Events, Colors, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
-const { Utils, CustomEmbed } = require("../../libs");
-const { sql } = Utils;
-const { escape } = require("mysql2");
+const { Events, Colors, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { CustomEmbed, SQL } = require("../../libs");
 
 module.exports = {
     name: Events.InteractionCreate,
-    filter: (interaction) => interaction.isButton() && interaction.customId.startsWith("ticket_"),
+    filter: (i) => i.isButton() && i.customId.startsWith("ticket_"),
     async execute(interaction) {
         const embed = new CustomEmbed("ticket");
         try {
@@ -41,11 +39,11 @@ module.exports = {
                 await ticketChannel.send({ content: `${interaction.member}`, embeds: [ticketEmbed], components: [ticketComponent] });
                 embed
                     .setTitle("Ticket")
-                    .setDescription(`チケットを作成しました。\nチャンネルを開いて質問などをご記入ください。\n${ticketChannel}`)
+                    .setDescription(`チケットを作成しました。\n${ticketChannel}`)
                     .setColor(Colors.Green);
                 interaction.reply({ embeds: [embed], ephemeral: true });
-                const getdata = await sql(`select * from ticket_channel where guildid=${escape(interaction.guild.id)};`);
-                if (getdata[0][0]?.guildid) {
+                const data = await SQL.select("ticket_channel", { guildid: interaction.guild.id });
+                if (data) {
                     const logEmbed = new CustomEmbed("ticket")
                         .setTitle("チケットが作成されました。")
                         .addFields(
@@ -66,7 +64,7 @@ module.exports = {
                             }
                         )
                         .setColor(Colors.Green);
-                    const logChannel = await interaction.guild.channels.cache.get(getdata[0][0].channelid);
+                    const logChannel = await interaction.guild.channels.cache.get(data[0].channelid);
                     await logChannel.send({ embeds: [logEmbed] }); 
                 }
             }
@@ -78,7 +76,7 @@ module.exports = {
                 const component = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
-                            .setCustomId("ticketcloseclose")
+                            .setCustomId("ticketcloseaccept")
                             .setLabel("閉じる")
                             .setStyle(ButtonStyle.Danger),
                         new ButtonBuilder()
@@ -89,36 +87,39 @@ module.exports = {
                 const message = await interaction.reply({ embeds: [embed], components: [component], ephemeral: true });
                 message.awaitMessageComponent({ time: 30 * 1000 })
                     .then(async (i) => {
-                        if (i.customId === "ticketcloseclose") {
-                            const logEmbed = new CustomEmbed("ticket")
-                                .setTitle("チケットが閉じられました。")
-                                .addFields(
-                                    {
-                                        name: "チャンネル",
-                                        value: interaction.channel.name,
-                                        inline: true
-                                    },
-                                    {
-                                        name: "ユーザー",
-                                        value: `${interaction.user}`,
-                                        inline: true
-                                    },
-                                    {
-                                        name: "日時",
-                                        value: `${new Date()}`,
-                                        inline: true
-                                    }
-                                )
-                                .setColor(Colors.Red);
-                            await interaction.channel.delete();
-                            const getdata = await sql(`select * from ticket_channel where guildid=${escape(interaction.guild.id)};`);
-                            if (getdata[0][0]?.guildid) {
-                                const logChannel = await interaction.guild.channels.cache.get(getdata[0][0].channelid);
-                                await logChannel.send({ embeds: [logEmbed] });
+                        if (i.customId === "ticketcloseaccept") {
+                            const data = await SQL.select("ticket_channel", { guildid: interaction.guild.id });
+                            if (data) {
+                                const logEmbed = new CustomEmbed("ticket")
+                                    .setTitle("チケットが閉じられました。")
+                                    .addFields(
+                                        {
+                                            name: "チャンネル",
+                                            value: interaction.channel.name,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "ユーザー",
+                                            value: `${interaction.user}`,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "日時",
+                                            value: `${new Date()}`,
+                                            inline: true
+                                        }
+                                    )
+                                    .setColor(Colors.Red);
+                                await interaction.channel.delete();
+                                const logChannel = await interaction.guild.channels.cache.get(data[0].channelid);
+                                logChannel.send({ embeds: [logEmbed] });
                             }
                         } else {
                             message.delete();
                         }
+                    })
+                    .catch(() => {
+                        message.delete();
                     });
             }
         } catch (error) {
