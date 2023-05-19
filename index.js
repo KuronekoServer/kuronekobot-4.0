@@ -15,6 +15,7 @@ require("dotenv").config();
 const client = new Client({
     intents: Object.values(GatewayIntentBits),
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
+    allowedMentions: { repliedUser: false },
     rest: 60000
 });
 
