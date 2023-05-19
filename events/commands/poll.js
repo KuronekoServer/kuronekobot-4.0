@@ -6,9 +6,9 @@ module.exports = {
     filter(react, user) {
         const { client, message } = react;
         return (
-            message.author.id !== client.user.id ||
-            user.id === client.user.id ||
-            !message.embeds?.length
+            message.author.id === client.user.id &&
+            user.id !== client.user.id &&
+            message.embeds?.length
         );
     },
     async execute(react, user, Log) {
