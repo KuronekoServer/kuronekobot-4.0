@@ -4,11 +4,20 @@ const sendLog = require("../../helpers/sendLog");
 
 module.exports = {
     name: Events.GuildBanAdd,
-    async execute(member) {
-        sendLog(member.guild, () => (
+    async execute(guildBan) {
+        sendLog(guildBan.guild, () => (
             new CustomEmbed("BANadd")
-                .setTitle("✅BAN")
-                .setDescription(`${member.user} (${member.user.id})がBANされました`)
+                .setTitle("ユーザーがBANされました。")
+                .addFields(
+                    {
+                        name: "ユーザー (id)",
+                        value: `${guildBan.user} (${guildBan.user.id})`,
+                    },
+                    {
+                        name: "理由",
+                        value: `${guildBan.reason || "なし"}`,
+                    }
+                )
                 .setColor(Colors.Red)
         ));
     }
