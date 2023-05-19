@@ -1,55 +1,40 @@
-const { EmbedBuilder, Events, ChannelType } = require('discord.js');
+const { Events, Colors, hyperlink } = require("discord.js");
+const { CustomEmbed } = require("../../libs");
 
-const regex = /https:\/\/(ptb.)?discord\.com\/channels\/(\d{16,19})\/(\d{16,19})\/(\d{16,19})/;
+const regex = /(https?:\/\/)?((ptb|canary)\.)?discord\.com\/channels(\/\d{17,19}){3}/;
 
 module.exports = {
     name: Events.MessageCreate,
-    filter: (message) => message.channel.type !== ChannelType.DM && message.content.match(regex),
     async execute(message) {
-        let channel_id;
-        let message_id;
-        if (results[2] = "ptb.") {
-            channel_id = results[3]
-            message_id = results[4]
-        } else {
-            channel_id = results[2]
-            message_id = results[3]
-        };
-
-        const channelch = message.client.channels.cache.get(channel_id);
-        if (!channelch) return;
-
-        channelch.messages.fetch(message_id)
-            .then(msg => {
-                const embed = new EmbedBuilder()
-                    .setAuthor({
-                        name: `${msg.author.username}`,
-                        iconURL: msg.author.avatarURL({ format: 'png', size: 4096, dynamic: true })
-                    })
-                    .setTimestamp(msg.createdAt)
-                    .setFooter({
-                        text: `${msg.channel.name}`,
-                        iconURL: `${msg.guild.iconURL() == null ? "https://cdn.mikandev.tech/public-assets/discord-logo.png" : msg.guild.iconURL()}`
-                    })
-
-                if (msg.content.length > 0) {
-                    embed.setDescription(`${msg.content}`);
-                };
-
-                if (msg.attachments?.size > 0) {
-                    embed.setImage(`${msg.attachments.map(attachment => attachment.url)}`);
-                } else if (msg.stickers?.size > 0) {
-                    embed.setImage(`https://media.discordapp.net/stickers/${msg.stickers.first().id}.png`);
-                };
-
-                message.reply({
-                    embeds: [embed]
-                });
-
-                if (msg.embeds[0]) {
-                    message.channel.send({ embeds: [msg.embeds[0]] });
-                };
-            })
-            .catch(console.error);
+        const { client, content } = message;
+        const urls = content.match(regex);
+        if (!urls) return;
+        urls.forEach(async (url) => {
+            const [guildId, channelId, messageId] = new URL(url).pathname.split("/").slice(2);
+            const guild = client.guilds.cache.get(guildId);
+            if (!guild) return;
+            const channel = await guild.channels.fetch(channelId);
+            if (!channel) return;
+            const msg = await channel.messages.fetch(messageId);
+            if (!msg) return;
+            const embedText = msg.embeds.length ? `\n${msg.embeds.length}個の埋め込みメッセージがあります。` : "";
+            const attachmentText = msg.attachments.size ? `\n${msg.attachments.size}個の添付ファイルがあります。` : "";
+            const embed = new CustomEmbed("fetchMessage")
+                .setAuthor({ name: msg.author.tag, icon_url: msg.author.displayAvatarURL({ dynamic: true }) })
+                .setDescription(`${hyperlink("メッセージにジャンプ", msg.url)}${embedText}${attachmentText}`)
+                .setTimestamp(msg.createdAt)
+                .setColor(Colors.Aqua);
+            if (msg.content) embed.addFields({ name: "\u200b", value: msg.content || "\u200b" });
+            if (msg.embeds.length) 
+        });
+        
     }
 };
+
+function fetchMessageData(url, client) {
+    const [guildId, channelId, messageId] = 
+    const guild = client.guilds.cache.get(guildId);
+    const channel = guild.channels.cache.get(channelId);
+    const msg = channel.messages.fetch(messageId);
+    return msg;
+}
