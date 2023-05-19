@@ -1,10 +1,10 @@
-const { Events, Colors, ChannelType } = require("discord.js");
+const { Events, Colors } = require("discord.js");
 const { CustomEmbed } = require("../../libs");
 const sendLog = require("../../helpers/sendLog");
 
 module.exports = {
     name: Events.MessageDelete,
-    filter: (message) => message.channel.type !== ChannelType.DM,
+    filter: (message) => !message.channel.isDMBased() && message.author.id !== message.client.user.id,
     async execute(message) {
         sendLog(message.guild, () => (
             new CustomEmbed("messagedelete")

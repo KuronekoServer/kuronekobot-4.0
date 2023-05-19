@@ -3,7 +3,7 @@ const { CustomEmbed } = require("../../libs");
 
 module.exports = {
     name: Events.InteractionCreate,
-    filter: (interaction) => interaction.isCommand() || interaction.isAutocomplete(),
+    filter: (i) => i.isCommand() || i.isAutocomplete(),
     async execute(interaction) {
         const { client } = interaction;
         const command = client.commands.get(interaction.commandName);

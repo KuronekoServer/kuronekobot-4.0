@@ -1,10 +1,10 @@
-const { Events, Colors, ChannelType } = require("discord.js");
+const { Events, Colors } = require("discord.js");
 const { CustomEmbed } = require("../../libs");
 const sendLog = require("../../helpers/sendLog");
 
 module.exports = {
     name: Events.MessageUpdate,
-    filter: (oldMessage) => oldMessage.channel.type !== ChannelType.DM,
+    filter: (oldMessage) => !oldMessage.channel.isDMBased() && oldMessage.author.id !== oldMessage.client.user.id,
     async execute(oldMessage, newMessage) {
         sendLog(oldMessage.guild, () => (
             new CustomEmbed("messageUpdate")
