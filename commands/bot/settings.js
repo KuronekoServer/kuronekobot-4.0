@@ -1,9 +1,9 @@
 const { Colors } = require("discord.js");
-const { CustomEmbed, SQL } = require("../../../libs");
+const { CustomEmbed, SQL } = require("../../libs");
 
 module.exports = {
     builder: (builder) => builder
-        .setName("show")
+        .setName("settings")
         .setDescription("サーバーの設定を表示します。")
     ,
     async execute(interaction) {
