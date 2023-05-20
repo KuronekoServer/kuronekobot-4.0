@@ -25,14 +25,13 @@ module.exports = {
         const not_exvoice = (await sql(`select * from exvoiceword where guildid=${escape(message.guild.id)} and speakname=${escape(name)};`))[0].map(data => data.word);
         const exvoice = (exvoice_list[name]) ? exvoice_list[name].filter(item => !not_exvoice.includes(item)) : null
         const before_msg = (get_server_data[0][0]?.read_username && !get_server_data[0][0]?.dictionary_username) ? `${user}さんのメッセージ　${live_content}` : live_content;
-        const romajimsg = before_msg.replace(/((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi, 'リンク省略');
+        const romajimsg = before_msg.replace(/(https?|ftp):\/\/[\w\/:%#\$\&\?\(\)~\.=\+\-]+/gi, 'リンク省略');
         const code = romajimsg.replace(/```[\s\S]*?```/gi, "コード省略");
-        const wara = code.replace(/w|ｗ|W|Ｗ/g, "わら");
-        const tmpfile = tmp ? "添付ファイル" + wara : wara;
-        const format_msg = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${tmpfile}`, {
+        const format_msg = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${code}`, {
             httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
         }).catch((ex) => { });
-        const msg = (format_msg.data) ? format_msg.data : romajimsg;
+        const wara = format_msg.data ? format_msg.data : code.replace(/w|ｗ|W|Ｗ/g, "わら");
+        const msg = tmp ? `添付ファイル ${wara}`: wara;
         const check = exvoice?.find(str => msg.includes(str));
         if (exvoice && check && !get_server_data[0][0]?.exvoice) {
             const matchStr = exvoice?.find(str => msg.includes(str)); // 配列内に一致する要素を検索する

@@ -4,7 +4,7 @@ const sendLog = require("../../helpers/sendLog");
 
 module.exports = {
     name: Events.MessageUpdate,
-    filter: (oldMessage) => !oldMessage.channel.isDMBased() && oldMessage.author.id !== oldMessage.client.user.id,
+    filter: (oldMessage) => !oldMessage.channel.isDMBased() && oldMessage.author?.id !== oldMessage.client.user.id,
     async execute(oldMessage, newMessage) {
         sendLog(oldMessage.guild, () => (
             new CustomEmbed("messageUpdate")
