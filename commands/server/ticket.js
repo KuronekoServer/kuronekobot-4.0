@@ -111,7 +111,7 @@ module.exports = {
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     ,
-    async execute(interaction, ...args) {
+    async execute(interaction) {
         const data = await Utils.sql(`select * from ticket_channel where guildid=${escape(interaction.guild.id)};`);
         return [data[0][0]]
     }
