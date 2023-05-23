@@ -5,7 +5,7 @@ const SlashCommandHandler = require("./SlashCommandHandler");
 const Utils = require("./Utils");
 const Permissions = require("./Permissions");
 const EmbedUtil = require("./EmbedUtil");
-const { CustomEmbed, getEmbedName, ColorsChoice } = EmbedUtil;
+const { CustomEmbed, getEmbedName, ColorsChoice, EmbedPages } = EmbedUtil;
 const ts2time = require("./ts2time");
 const SQL = require("./SQL");
 
@@ -20,6 +20,7 @@ module.exports = {
     CustomEmbed,
     getEmbedName,
     ColorsChoice,
+    EmbedPages,
     ts2time,
     SQL
 }

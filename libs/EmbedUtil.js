@@ -1,4 +1,4 @@
-const { Colors, EmbedBuilder } = require("discord.js");
+const { Colors, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
 const footerCR = "© 2023 KURONEKOSERVER";
 
@@ -61,8 +61,99 @@ const ColorsChoice = [
     { name: "青紫色", value: "Blurple" }
 ];
 
+const nextButton = new ButtonBuilder()
+    .setCustomId("page_next")
+    .setLabel("次のページ")
+    .setStyle(ButtonStyle.Primary);
+
+const backButton = new ButtonBuilder()
+    .setCustomId("page_back")
+    .setLabel("前のページ")
+    .setStyle(ButtonStyle.Primary);
+
+const firstComponent = new ActionRowBuilder()
+    .addComponents(nextButton);
+
+const middleComponent = new ActionRowBuilder()
+    .addComponents(backButton, nextButton);
+
+const lastComponent = new ActionRowBuilder()
+    .addComponents(backButton);
+
+class EmbedPages {
+    constructor(name) {
+        this.name = name;
+        this.date = new Date();
+        this.pages = [];
+    }
+
+    setTimestamp(timestamp = Date.now()) {
+		this.date = timestamp;
+		return this;
+	}
+
+    setColor(color) {
+        this.color = color;
+        return this;
+    }
+
+    addPage(callback) {
+        const embed = new CustomEmbed(this.name)
+            .setTimestamp(this.date);
+        callback(embed);
+        this.pages.push(embed);
+        return this;
+    }
+
+    run(interaction) {
+        const pages = this.pages;
+        pages.forEach((embed, i) => {
+            embed
+                .setAuthor({ name: `${i + 1}ページ / ${pages.length}ページ` })
+                .setColor(this.color)
+                .setTimestamp(this.date);
+        });
+        let page = 0;
+        const maxPage = pages.length - 1;
+        interaction.reply({ embeds: [pages[page]], components: [firstComponent], fetchReply: true })
+            .then(async function collecter(message) {
+                message.awaitMessageComponent({ time: 3 * 60 * 1000 })
+                    .then(async (i) => {
+                        switch (i.customId) {
+                            case "page_next":
+                                    page++;
+                                break;
+                            case "page_back":
+                                    page--;
+                                break;
+                        }
+                        const embed = pages[page];
+                        let component;
+                        switch (page) {
+                            case 0:
+                                component = firstComponent;
+                                break;
+                            case maxPage:
+                                component = lastComponent;
+                                break;
+                            default:
+                                component = middleComponent;
+                                break;
+                        }
+                        i.update({ embeds: [embed], components: [component], fetchReply: true }).then(collecter);
+                    })
+                    .catch((error) => {
+                        console.error(error)
+                        message.edit({ components: [] });
+                    })
+            });
+        return this;
+    }
+}
+
 module.exports = {
     CustomEmbed,
     getEmbedName,
-    ColorsChoice
+    ColorsChoice,
+    EmbedPages
 };
