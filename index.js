@@ -31,15 +31,18 @@ globalThis.tlivechat = {};
 const enka = new EnkaClient({ showFetchCacheLog: true });
 
 //死活監視
-setInterval(() => {
-    axios.get(process.env.URL)
-        .then(response => {
-            console.log(`[GETリクエスト] ${response.config.url} - ステータスコード: ${response.status}`);
-        })
-        .catch(error => {
-            console.log(chalk.red(`[GETリクエスト] ${error.config.url} - ${error.message}`))
-        });
-}, 10 * 1000);
+if (process.env.URL) {
+    Log.info("死活監視を開始します。");
+    setInterval(() => {
+        axios.get(process.env.URL)
+            .then(response => {
+                console.log(`[GETリクエスト] ${response.config.url} - ステータスコード: ${response.status}`);
+            })
+            .catch(error => {
+                console.log(chalk.red(`[GETリクエスト] ${error.config.url} - ${error.message}`))
+            });
+    }, 10 * 1000);   
+}
 
 process.on("uncaughtException", (error) => {
     Log.error(error)
