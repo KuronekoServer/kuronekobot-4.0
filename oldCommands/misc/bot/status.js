@@ -26,7 +26,7 @@ module.exports = async (interaction) => {
                 { name: '視聴Youtube数', value: `\`${Object.keys(globalThis.ylivechat).length}\`チャンネル`, inline: true },
                 { name: 'BOT応答時間', value: `\`${msg.createdTimestamp - interaction.createdTimestamp}\`ms`, inline: true },
                 { name: 'API応答時間', value: `\`${interaction.client.ws.ping}\`ms`, inline: true },
-                { name: 'バージョン', value: `\`${process.env.version}\``, inline: true },
+                { name: 'バージョン', value: `\`${process.version}\``, inline: true },
             )
             .setTimestamp(new Date())
             .setFooter({ iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png", text: "© 2023 KURONEKOSERVER | status" });
