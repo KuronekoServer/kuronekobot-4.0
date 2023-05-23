@@ -18,6 +18,7 @@ function SlashCommandHandler(commandsPath) {
             const command = require(commandPath);
             const commandBuilder = command.builder(new SlashCommandBuilder());
             const name = commandBuilder.name;
+            command.category = categoryDir;
             command.logger = categoryLog.createChild(name);
             if ("subcommands" in command) {
                 Log.debug(`Loading subcommands for ${categoryDir} ${file}...`);
@@ -47,6 +48,18 @@ function SlashCommandHandler(commandsPath) {
         }
         Log.debug(`Loaded category ${categoryDir} ${commandFiles.length} commands`);
     });
+
+    // helpコマンドの選択肢を指定
+    const helpCommand = commands.get("help");
+    helpCommand.logger.debug(`Loading Choices...`);
+    helpCommand.data.options[0].choices = commands.map((command) => {
+        return {
+            name: command.data.name,
+            value: `/${command.data.name}`
+        }
+    });
+    helpCommand.logger.debug(`Loaded Choices`);
+
     Log.info(`Loaded ${commands.size} commands`);
     Log.info("Deploying...");
     const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
