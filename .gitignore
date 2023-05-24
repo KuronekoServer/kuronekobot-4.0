@@ -103,4 +103,4 @@ dist
 .tern-port
 
 .env
-.env
+config.js
