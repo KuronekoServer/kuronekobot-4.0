@@ -1,4 +1,7 @@
 const { Colors, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const logger = require("./GetLogger");
+const Log = logger.createChannel("EmbedUtil");
+const pagesLog = Log.createChild("pages");
 
 const footerCR = "© 2023 KURONEKOSERVER";
 
@@ -143,8 +146,11 @@ class EmbedPages {
                         i.update({ embeds: [embed], components: [component], fetchReply: true }).then(collecter);
                     })
                     .catch((error) => {
-                        console.error(error)
-                        message.edit({ components: [] });
+                        if (error.name === "Error [InteractionCollectorError]") {
+                            message.edit({ components: [] });
+                        } else {
+                            pagesLog.error(error);
+                        }
                     })
             });
         return this;
