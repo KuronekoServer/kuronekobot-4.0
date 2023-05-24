@@ -18,11 +18,11 @@ const client = new Client({
     allowedMentions: { repliedUser: false },
     rest: 60000
 });
+client.config = require("./config");
 
 const Log = logger.createChannel("main");
 
 EventHandler(client, path.resolve(__dirname, "./events"));
-client.commands = SlashCommandHandler(path.resolve(__dirname, "./commands"));
 
 globalThis.voice_channel = [];
 globalThis.ylivechat = {};
@@ -31,10 +31,10 @@ globalThis.tlivechat = {};
 const enka = new EnkaClient({ showFetchCacheLog: true });
 
 //死活監視
-if (process.env.URL) {
+if (client.config.url) {
     Log.info("死活監視を開始します。");
     setInterval(() => {
-        axios.get(process.env.URL)
+        axios.get(client.config.url)
             .then(response => {
                 console.log(`[GETリクエスト] ${response.config.url} - ステータスコード: ${response.status}`);
             })
@@ -48,4 +48,7 @@ process.on("uncaughtException", (error) => {
     Log.error(error)
 });
 
-client.login(process.env.TOKEN);
+client.login(client.config.token)
+    .then(() => {
+        client.commands = SlashCommandHandler(client, path.resolve(__dirname, "./commands"));
+    });

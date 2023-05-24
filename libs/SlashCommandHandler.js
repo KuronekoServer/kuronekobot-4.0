@@ -1,10 +1,9 @@
 const { Collection, REST, Routes, SlashCommandBuilder, SlashCommandSubcommandBuilder } = require("discord.js");
 const fs = require("fs");
 const path = require("path");
-const logger = require("./GetLogger");
 
-function SlashCommandHandler(commandsPath) {
-    const Log = logger.createChannel("command");
+function SlashCommandHandler(client, commandsPath) {
+    const Log = client.logger.createChannel("command");
     Log.info("Loading...");
     const commands = new Collection();
     fs.readdirSync(commandsPath).forEach((categoryDir) => {
@@ -62,9 +61,9 @@ function SlashCommandHandler(commandsPath) {
 
     Log.info(`Loaded ${commands.size} commands`);
     Log.info("Deploying...");
-    const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
+    const rest = new REST({ version: "10" }).setToken(client.config.token);
     rest.put(
-        Routes.applicationCommands(process.env.clientId),
+        Routes.applicationCommands(client.user.id),
         { body: commands.map(command => command.data) },
     ).then((data) => {
         Log.info(`Deployed ${data.length} commands`);
