@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {
     token: "", // Discord Bot Token
     proxy: "localhost:8080", // ScreenShotコマンドに使用
@@ -11,15 +13,16 @@ module.exports = {
         limit: 5, // DB接続を試みる時間
         name: "newer-kuronekochanbot" // DB名(SQLにログインしてcreate database hogeで作成)
     },
-    spaek: {
+    speak: {
         voicevox: "http://127.0.0.1:50021", // VoiceVoxのURL
-        COEIROINK: "http://127.0.0.1:50031", // COEIRO INKのURL
-        SHAREVOX: "http://127.0.0.1:50025", // SHAREVOXのURL
-        exvoice: "./exvoice", // exvoiceのパス
-        max_message: 50, // 最大メッセージ数(以下省略まで)
+        coeiroink: "http://127.0.0.1:50031", // COEIROINKのURL
+        sharevox: "http://127.0.0.1:50025", // SHAREVOXのURL
+        exvoice: path.resolve(__dirname, "./exvoice"), // exvoiceのパス
+        maxMessage: 50, // 最大メッセージ数(以下省略まで)
         timeout: 30, // 合成する際のタイムアウトの時間(秒)
         maxFreeSockets: 100, // ソケットエラー出たら増やす(増えるほどリソース食います)
         maxTotalSockets: 200, // ソケットエラー出たら増やす(増えるほどリソース食います)
+        maxSockets: 100//ソケットエラー出たら増やす(増えるほどリソース食います)
     },
     webhook: {
         error: "",

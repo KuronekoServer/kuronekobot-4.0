@@ -1,9 +1,8 @@
 const { WebhookClient } = require("discord.js");
 const chalk = require("chalk");
 const Logger = require("./Logger");
-require("dotenv").config();
-
-const errorWebhook = new WebhookClient({ url: process.env.errorwebhook });
+const config = require("../config");
+const errorWebhook = new WebhookClient({ url: config.webhook.error });
 const logQueue = ["接続しました。"];
 setInterval(() => {
     if (logQueue.length === 0) return;

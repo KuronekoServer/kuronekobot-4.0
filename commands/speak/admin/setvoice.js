@@ -42,7 +42,7 @@ module.exports = {
         if (selectedCount > 1) embed.typeError().setDescription("話者は一つしか選択できません。");
         if (embed.data.title) return interaction.reply({ embeds: [embed], ephemeral: true });
 
-        const serviceName = voicevox ? "voicevox" : coeiroink ? "COEIROINK" : "SHAREVOX";
+        const serviceName = voicevox ? "voicevox" : coeiroink ? "coeiroink" : "sharevox";
         const speakname = voicevox || coeiroink || sharevox;
         embed.typeSuccess().setDescription(`話者を変更しました。\n${speakname}のスタイルを選択してください。\n※3分後に自動キャンセルされます。`);
         const component = new ActionRowBuilder()
@@ -50,7 +50,7 @@ module.exports = {
                 new StringSelectMenuBuilder()
                     .setCustomId("setvoice")
                     .setPlaceholder("選択されていません")
-                    .addOptions(...allList[serviceName.toLowerCase()]
+                    .addOptions(...allList[serviceName]
                         .filter(name => name.name === speakname)[0]
                          .styles.map(option => ({
                             label: option.name,
@@ -62,7 +62,7 @@ module.exports = {
         message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 3 * 60 * 1000 })
             .then(async (i) => {
                 const speakid = i.values[0];
-                const speakhost = process.env[serviceName];
+                const speakhost = interaction.client.config.speak[serviceName];
                 const getdata = await Utils.sql(`select * from server_speak where guildid="${interaction.guild.id}";`);
                 let sqlStatus;
                 if (getdata[0][0]?.guildid) {

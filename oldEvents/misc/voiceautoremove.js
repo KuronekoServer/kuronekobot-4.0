@@ -6,7 +6,7 @@ module.exports = {
         if (!oldState.channel && !newState.channel) return;
         const connection = getVoiceConnection(oldState.guild.id);
         //KICKされた場合
-        if (oldState.member.user.id === process.env.clientId && oldState.channelId && !newState.channelId) {
+        if (oldState.member.user.id === oldState.client.user.id && oldState.channelId && !newState.channelId) {
             if (connection?.state?.status) connection.destroy();
             if (globalThis.voice_channel[oldState.guild.id]) delete globalThis.voice_channel[oldState.guild.id];
             if (globalThis.ylivechat[oldState.guild.id]) {

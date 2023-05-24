@@ -1,13 +1,13 @@
-require('dotenv').config();
+const config = require("../config");
 const mysql = require('mysql2/promise');
 
 (async () => {
     const conn = await mysql.createConnection({
-        host: process.env.db_host,
-        user: process.env.db_user,
-        password: process.env.db_password,
-        database: process.env.db_name,
-        port: process.env.db_port,
+        host: config.db.host,
+        user: config.db.user,
+        password: config.db.password,
+        database: config.db.name,
+        port: config.db.port,
     });
     /**
      * サーバーIDとチャンネルIDを含むテーブルを自動生成する。

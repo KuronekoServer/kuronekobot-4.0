@@ -16,7 +16,7 @@ module.exports = {
                             deny: [PermissionsBitField.Flags.ViewChannel]
                         },
                         {
-                            id: process.env.clientId,
+                            id: interaction.client.user.id,
                             allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
                         },
                         {

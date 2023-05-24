@@ -12,7 +12,7 @@ module.exports = {
         const react_message = await react_channel.messages.fetch(getdata[0][0]?.messageid);
         const reaction = react_message.reactions.cache.get(react._emoji.name);
         if (!reaction.me) return await react.remove();
-        if (react_message.author.id !== process.env.clientId) return;
+        if (react_message.author.id !== user.client.user.id) return;
         const num = Array.from(react_message.reactions.cache.keys()).indexOf(react._emoji.name);
         const content = react_message.embeds[0]?.data?.description.split("\n")[num];
         const role = await react.message.guild.roles.fetch((content.split(/<@&(.+)>/)[1]?.match(/\d+/g)[0]) ? content.split(/<@&(.+)>/)[1]?.match(/\d+/g)[0] : content.split(":")[1]);

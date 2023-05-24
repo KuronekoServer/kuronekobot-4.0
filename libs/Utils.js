@@ -13,6 +13,8 @@ const mysql = require("mysql2/promise");
 const { COLORS } = require("../data.json");
 const permissions = require("./Permissions");
 
+const config = require("../config");
+
 const logger = require("./GetLogger");
 const Log = logger.createChannel("utils");
 const ftpLog = Log.createChild("ftp");
@@ -174,11 +176,11 @@ class Utils {
     static async sql(command) {
         try {
             const connection = await mysql.createConnection({
-                host: process.env.db_host,
-                user: process.env.db_user,
-                password: process.env.db_password,
-                database: process.env.db_name,
-                port: process.env.db_port,
+                host: config.db.host,
+                user: config.db.user,
+                password: config.db.password,
+                database: config.db.name,
+                port: config.db.port,
             });
             const result = await connection.query(command);
             await connection.end();
