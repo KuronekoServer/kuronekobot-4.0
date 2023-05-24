@@ -1,6 +1,7 @@
 const mysql = require("mysql2/promise");
 const { escape } = require("mysql2");
 
+const config = require("../config");
 const logger = require("./GetLogger");
 const Log = logger.createChannel("db");
 
@@ -11,17 +12,22 @@ const runCmdLog = Log.createChild("runCmd");
 class SQL {
     constructor() {
         this.connectionOption = {
-            host: process.env.db_host,
-            port: process.env.db_port,
-            user: process.env.db_user,
-            password: process.env.db_password,
-            database: process.env.db_name,
+            host: config.db.host,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: config.db.name,
         };
     }
 
     select(table, whereObject, columns = "*") {
+        const data = ["SELECT", columns, "FROM", table];
+        if (whereObject) {
+            const where = this.whereParser(whereObject);
+            data.push("WHERE", where);
+        }
         const where = this.whereParser(whereObject);
-        return this.sql(`SELECT ${columns} FROM ${table} WHERE ${where}`);
+        return this.sql(`${data.join(" ")};`);
     }
 
     insert(table, data) {

@@ -1,44 +1,120 @@
-const http = require('http');
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+const axios = require("axios");
+const { createAudioPlayer, createAudioResource, getVoiceConnection, AudioPlayerStatus } = require("@discordjs/voice");
+
+const { SQL } = require("../libs");
+
 const { sql } = require("../libs/Utils");
 const { escape } = require("mysql2")
-const { createAudioPlayer, createAudioResource, getVoiceConnection, AudioPlayerStatus } = require('@discordjs/voice');
-const fs = require("node:fs");
-const axios = require("axios");
+
 const exvoice_list = {};
-const timeout = process.env.timeout
-fs.readdirSync(`${process.env.exvoice}`).map(data => {
-    exvoice_list[data] = fs.readdirSync(`${process.env.exvoice}/${data}`).map(name => name.replace(".wav", ""));
+const config = require("../config");
+
+const {
+    timeout,
+    maxMessage,
+    maxFreeSockets,
+    maxTotalSockets,
+    maxSockets
+} = config.speak;
+
+const hosts = {
+    voicevox: config.speak.voicevox,
+    coeiroink: config.speak.coeiroink,
+    sharevox: config.speak.sharevox
+};
+
+const defaultQuery = {
+    speaker: 3,
+    host: hosts.voicevox,
+    name: "ずんだもん",
+    speed: 1,
+    pitch: 0,
+    intonation: 1
+};
+
+fs.readdirSync(config.speak.exvoice).forEach(data => {
+    exvoice_list[data] = [];
+    fs.readdirSync(path.resolve(config.speak.exvoice, data))
+        .forEach((name) => {
+            if (name.endsWith(".wav")) exvoice_list[data].push(name);
+        });
 });
-const max_message = process.env.max_message;
 
 module.exports = {
-    async read(message, user, live_content, skip, tmp) {
+    async read(message, user, liveContent, skip, tmp) {
+        const guildid = message.guild.id;
+
+        const serverData = await SQL.select("server_speak", { guildid });
+        const userData = await SQL.select("user_speak", { userid: message.member.id });
+        const dictionaryData = await SQL.select("dictionary", { guildid });
+        const globalDictionaryData = await SQL.select("globaldictionary");
+        const dictionary = dictionaryData[0]?.map(c => c).concat(globalDictionaryData[0]).map(a => a)[0];
+
         const get_server_data = await sql(`select * from server_speak where guildid=${escape(message.guild.id)};`);
-        const getdata = await sql(`select * from user_speak where userid=${escape(message.member.id)};`);
-        const dictionary = ((await sql(`select * from dictionary where guildid=${escape(message.guild.id)};`))[0]?.map(c => c).concat(((await sql(`select * from globaldictionary;`))[0]).map(a => a)))[0];
-        const speaker = (!get_server_data[0][0]?.force_voice) ? get_server_data[0][0]?.speakid || getdata[0][0]?.speakid || 3 : getdata[0][0]?.speakid || get_server_data[0][0]?.speakid || 3;
-        const host = (get_server_data[0][0]?.force_voice) ? get_server_data[0][0]?.speakhost || getdata[0][0]?.speakhost || process.env.voicevox : getdata[0][0]?.speakphost || get_server_data[0][0]?.speakhost || process.env.voicevox;
-        const name = (get_server_data[0][0]?.force_voice) ? get_server_data[0][0]?.speakname || getdata[0][0]?.speakname || "ずんだもん" : getdata[0][0]?.speakname || get_server_data[0][0]?.speakname || "ずんだもん";
-        const speed = (get_server_data[0][0]?.force_args) ? get_server_data[0][0]?.speed || getdata[0][0]?.speed || 1 : getdata[0][0]?.speed || get_server_data[0][0]?.speed || 1;
-        const pitch = (get_server_data[0][0]?.force_args) ? get_server_data[0][0]?.pitch || getdata[0][0]?.pitch || 0 : getdata[0][0]?.pitch || get_server_data[0][0]?.pitch || 0;
-        const intonation = (get_server_data[0][0]?.force_args) ? get_server_data[0][0]?.intonation || getdata[0][0]?.intonation || 1 : getdata[0][0]?.intonation || get_server_data[0][0]?.intonation || 1;
-        const not_exvoice = (await sql(`select * from exvoiceword where guildid=${escape(message.guild.id)} and speakname=${escape(name)};`))[0].map(data => data.word);
-        const exvoice = (exvoice_list[name]) ? exvoice_list[name].filter(item => !not_exvoice.includes(item)) : null
-        const before_msg = (get_server_data[0][0]?.read_username && !get_server_data[0][0]?.dictionary_username) ? `${user}さんのメッセージ　${live_content}` : live_content;
-        const romajimsg = before_msg.replace(/(https?|ftp):\/\/[\w\/:%#\$\&\?\(\)~\.=\+\-]+/gi, 'リンク省略');
-        const code = romajimsg.replace(/```[\s\S]*?```/gi, "コード省略");
-        const format_msg = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${code}`, {
-            httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
-        }).catch((ex) => { });
-        const wara = format_msg.data ? format_msg.data : code.replace(/w|ｗ|W|Ｗ/g, "わら");
-        const msg = tmp ? `添付ファイル ${wara}`: wara;
-        const check = exvoice?.find(str => msg.includes(str));
-        if (exvoice && check && !get_server_data[0][0]?.exvoice) {
-            const matchStr = exvoice?.find(str => msg.includes(str)); // 配列内に一致する要素を検索する
-            const result = msg.substring(msg.indexOf(matchStr), msg.indexOf(matchStr) + matchStr.length);
-            const array = msg.split(result)//result を基準に文字列を分割する
+
+        const serverQuery = Object.assign({}, defaultQuery, serverData[0][0]);
+        const userQuery = Object.assign({}, defaultQuery, userData[0][0]);
+        const query = {};
+        if (serverData[0][0]?.force_voice) {
+            query.speaker = serverQuery.speakid;
+            query.host = serverQuery.speakhost;
+            query.name = serverQuery.speakname;
+        } else {
+            query.speaker = userQuery.speakid;
+            query.host = userQuery.speakhost;
+            query.name = userQuery.speakname;
+        }
+        if (serverData[0][0]?.force_args) {
+            query.speed = serverQuery.speed;
+            query.pitch = serverQuery.pitch;
+            query.intonation = serverQuery.intone;
+        } else {
+            query.speed = userQuery.speed;
+            query.pitch = userQuery.pitch;
+            query.intonation = userQuery.intone;
+        }
+
+        const exvoiceData = await SQL.sql(`SELECT * FROM exvoiceword WHERE guildid=${escape(message.guild.id)} and speakname=${escape(query.name)};`);
+        const notExvoice = exvoiceData[0].map(data => data.word);
+        const exvoice = (exvoice_list[query.name]) ? exvoice_list[query.name].filter(item => !notExvoice.includes(item)) : null;
+
+        let speakText = liveContent;
+        if (serverData[0][0]?.read_username && !serverData[0][0]?.dictionary_username) speakText = `${user}さんのメッセージ ${liveContent}`;
+        speakText
+            .replace(/(https?|ftp):\/\/[\w\/:%#\$\&\?\(\)~\.=\+\-]+/gi, "リンク省略")
+            .replace(/```[\s\S]*?```/gi, "コード省略");
+        const speakData = await axios.get(`https://eng-jpn-api.kuroneko6423.com/query?text=${speakText}`, {
+            httpAgent,
+        }).catch((error) => { });
+        if (speakData.data) speakText = speakData.data;
+        else speakText = speakText.replace(/w|W|ｗ|Ｗ/g, "わら");
+        if (tmp) speakText = `添付ファイル ${speakText}`;
+
+        const matchStr = exvoice?.find(str => speakText.includes(str));
+
+        const instance = axios.create({
+            baseURL: query.host,
+            httpAgent: new http.Agent({
+                keepAlive: true,
+                timeout: timeout * 1000,
+                keepAliveMsecs: Infinity,
+                maxFreeSockets,
+                maxTotalSockets, 
+                maxSockets
+            }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (exvoice && matchStr && !serverData[0][0]?.exvoice) {
+            const result = speakText.substring(speakText.indexOf(matchStr), speakText.indexOf(matchStr) + matchStr.length);
+            const array = speakText.split(result);
             const splitResult = [array.shift(), array.join(result)];
-            let string_array = [];
+            let stringArray = [];
             await Promise.all(splitResult?.map(async content => {
                 if (dictionary.length !== 0) {
                     let newString = content;
@@ -50,61 +126,39 @@ module.exports = {
                             newString = newString.replace(regex, after);
                         };
                     };
-                    string_array.push(newString.replace(string_array[0], ""));
+                    stringArray.push(newString.replace(stringArray[0], ""));
                 };
             }));
-            const last_content = (string_array.length === 0) ?
-                (splitResult.join("").length >= max_message) ? `${splitResult[1].slice(0, (max_message - splitResult[0].length <= 0) ? 0 : max_message - splitResult[0].length)}以下省略` : splitResult[1] :
-                (string_array.join("").length >= max_message) ? `${string_array[1].slice(0, (max_message - string_array[0].length <= 0) ? 0 : max_message - string_array[0].length)}以下省略` : string_array[1];
-            const start_content = (string_array.length === 0) ? splitResult[0] : string_array[0];
-            const text = (get_server_data[0][0]?.read_username && get_server_data[0][0]?.dictionary_username) ?
-                `${user}さんのメッセージ　${start_content}` : start_content;
-            const audio_query_response_start = await axios.post(`${host}/audio_query?text=${text}&speaker=${speaker}`, {
-                httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            const audio_query_response_last = await axios.post(`${host}/audio_query?text=${last_content}&speaker=${speaker}`, {
-                httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            const buffer_array = [];
-            const readmsg = async (audio_query_json) => {
-                audio_query_json["speedScale"] = speed;
-                audio_query_json["pitchScale"] = pitch;
-                audio_query_json["intonationScale"] = intonation;
-                const synthesis_response = await axios.post(`${host}/synthesis?speaker=${speaker}`, audio_query_json, {
-                    httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'accept': 'audio/wav'
-                    },
-                    'responseType': "arraybuffer",
+            const last_content = (stringArray.length === 0) ?
+                (splitResult.join("").length >= maxMessage) ? `${splitResult[1].slice(0, (maxMessage - splitResult[0].length <= 0) ? 0 : maxMessage - splitResult[0].length)}以下省略` : splitResult[1] :
+                (stringArray.join("").length >= maxMessage) ? `${stringArray[1].slice(0, (maxMessage - stringArray[0].length <= 0) ? 0 : maxMessage - stringArray[0].length)}以下省略` : stringArray[1];
+            const start_content = (stringArray.length === 0) ? splitResult[0] : stringArray[0];
+            const text = (serverData[0][0]?.read_username && serverData[0][0]?.dictionary_username) ? `${query.user}さんのメッセージ ${start_content}` : start_content;
+            
+            const audioQueryStart = await instance.post(`/audio_query?text=${text}&speaker=${query.speaker}`);
+            const audioQueryLast = await instance.post(`/audio_query?text=${last_content}&speaker=${query.speaker}`);
+            const bufferArray = [];
+            async function readmsg(audioQuery) {
+                audioQuery["speedScale"] = query.speed;
+                audioQuery["pitchScale"] = query.pitch;
+                audioQuery["intonationScale"] = query.intonation;
+                const synthesis = await instance.post(`/synthesis?speaker=${query.speaker}`, audioQuery, {
+                    headers: { accept: "audio/wav" },
+                    responseType: "arraybuffer",
                 });
-                if (!synthesis_response?.data) return;
-                buffer_array.push(synthesis_response?.data.toString("base64"));
+                if (!synthesis?.data) return;
+                bufferArray.push(synthesis?.data.toString("base64"));
             };
-            await readmsg(audio_query_response_start?.data);
-            await readmsg(audio_query_response_last?.data);
-            const exvoice_file = fs.readFileSync(`${process.env.exvoice}/${name}/${result}.wav`).toString("base64");
-            buffer_array.splice(1, 0, exvoice_file);
-            const response = await axios.post(
-                `${host}/connect_waves`,
-                buffer_array,
-                {
-                    httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
-                    headers: {
-                        "accept": "audio/wav",
-                        'Content-Type': 'application/json',
-                    },
-                    'responseType': "stream",
-                }
-            );
+            await readmsg(audioQueryStart?.data);
+            await readmsg(audioQueryLast?.data);
+            const exvoiceFile = fs.readFileSync(`${config.speak.exvoice}/${query.name}/${result}.wav`).toString("base64");
+            bufferArray.splice(1, 0, exvoiceFile);
+            const response = await instance.post("/connect_waves", bufferArray, {
+                headers: { accept: "audio/wav" },
+                responseType: "stream"
+            });
             if (!response.data) return;
-            const voiceChannel = getVoiceConnection(message.guild.id);
+            const voiceChannel = getVoiceConnection(guildid);
             const player = createAudioPlayer();
             if (!voiceChannel) return;
             if (skip) {
@@ -113,14 +167,14 @@ module.exports = {
             await new Promise(resolve => {
                 const subscription = voiceChannel.state.subscription;
                 if (subscription && subscription.player.state.status !== AudioPlayerStatus.Idle) {
-                    subscription.player.once('idle', () => resolve());
+                    subscription.player.once("idle", () => resolve());
                 } else resolve();
             });
             const resource = createAudioResource(response.data);
             player.play(resource);
             voiceChannel.subscribe(player);
         } else {
-            let newString = msg;
+            let newString = speakText;
             if (dictionary?.length !== 0) {
                 for (let i = 0; i < dictionary.length; i++) {
                     const before = dictionary[i].before_text;
@@ -130,31 +184,20 @@ module.exports = {
                 };
             };
             const content = (newString === "") ?
-                (msg.length >= max_message) ? `${msg.slice(0, max_message)}以下省略` : msg :
-                (newString.length >= max_message) ? `${newString.slice(0, max_message)}以下省略` : newString;
-            const text = (get_server_data[0][0]?.read_username && get_server_data[0][0]?.dictionary_username) ?
-                `${user}さんのメッセージ　${content}` : content;
-            const audio_query_response = await axios.post(`${host}/audio_query?text=${text}&speaker=${speaker}`, {
-                timeout: timeout * 1000,
-                httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                (speakText.length >= maxMessage) ? `${speakText.slice(0, maxMessage)}以下省略` : speakText :
+                (newString.length >= maxMessage) ? `${newString.slice(0, maxMessage)}以下省略` : newString;
+            const text = (serverData[0][0]?.read_username && serverData[0][0]?.dictionary_username) ? `${user}さんのメッセージ ${content}` : content;
+            const audioQueryResponse = await instance.post(`/audio_query?text=${text}&speaker=${query.speaker}`);
+            const audioQuery = await audioQueryResponse.data;
+            audioQuery["speedScale"] =  query.speed;
+            audioQuery["pitchScale"] = query.pitch;
+            audioQuery["intonationScale"] = query.intonation;
+            const synthesis = await instance.post(`/synthesis?speaker=${query.speaker}`, audioQuery, {
+                headers: { accept: "audio/wav" },
+                responseType: "stream"
             });
-            const audio_query_json = await audio_query_response.data;
-            audio_query_json["speedScale"] = speed;
-            audio_query_json["pitchScale"] = pitch;
-            audio_query_json["intonationScale"] = intonation;
-            const synthesis_response = await axios.post(`${host}/synthesis?speaker=${speaker}`, audio_query_json, {
-                httpAgent: new http.Agent({ keepAlive: true, timeout: timeout * 1000, keepAliveMsecs: Infinity, maxFreeSockets: Number(process.env.maxFreeSockets), maxSockets: Number(process.env.maxSockets), maxTotalSockets: Number(process.env.maxTotalSockets) }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'accept': 'audio/wav'
-                },
-                'responseType': "stream"
-            });
-            if (!synthesis_response.data) return;
-            const voiceChannel = getVoiceConnection(message.guild.id);
+            if (!synthesis.data) return;
+            const voiceChannel = getVoiceConnection(guildid);
             if (!voiceChannel) return;
             const player = createAudioPlayer();
             if (skip) {
@@ -163,11 +206,11 @@ module.exports = {
             await new Promise(resolve => {
                 const subscription = voiceChannel.state.subscription;
                 if (subscription && subscription.player.state.status !== AudioPlayerStatus.Idle) {
-                    subscription.player.removeAllListeners('idle');
-                    subscription.player.once('idle', () => resolve());
+                    subscription.player.removeAllListeners("idle");
+                    subscription.player.once("idle", () => resolve());
                 } else resolve();
             });
-            const resource = createAudioResource(synthesis_response.data);
+            const resource = createAudioResource(synthesis.data);
             player.play(resource);
             voiceChannel.subscribe(player);
         };
