@@ -1,6 +1,7 @@
 const path = require("path");
 
 module.exports = {
+    prefix: "nk!", //prefix
     token: "", // Discord Bot Token
     proxy: "localhost:8080", // ScreenShotコマンドに使用
     //推奨: Cloudflare WARP > ギアアイコン > 環境設定 > 詳細 > プロキシ モードを構成

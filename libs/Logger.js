@@ -19,46 +19,7 @@ const defaultOption = {
  * @property {(data: { lineText: string, level: string, time: string, location: string[] }) => any} writeLog
  */
 
-class Logger {
-    /**
-     * @param {LoggerOption} option
-     */
-    constructor(option) {
-        this.setOption(option);
-    }
-
-    /**
-     * @type {LoggerOption}
-     */
-    option = defaultOption;
-
-    /**
-     * @type {Channel[]}
-     */
-    channels = [];
-
-    /**
-     * @param {LoggerOption} option 
-     * @returns {LoggerOption}
-     */
-    setOption(option) {
-        return this.option = {
-            levels: (option.levels ?? this.option.levels).map(level => level.toUpperCase()),
-            timeFormat: option.timeFormat ?? this.option.timeFormat,
-            writeLog: option.writeLog ?? this.option.writeLog
-        };
-    }
-    /**
-     * @param {string} locationStr 
-     * @returns {Channel}
-     */
-    createChannel(locationStr) {
-        const location = [locationStr];
-        return new Channel(this, location, this.option);
-    }
-}
-
-class Channel {
+class LoggerChannel {
     /**
      * @param {Logger} logger
      * @param {string[]} location
@@ -92,7 +53,7 @@ class Channel {
     option;
 
     /**
-     * @type {Channel[]}
+     * @type {LoggerChannel[]}
      */
     childs = [];
 
@@ -104,10 +65,51 @@ class Channel {
 
     createChild(locationStr) {
         const location = [...this.location, locationStr];
-        const channel = new Channel(this.logger, location, this.option);
+        const channel = new LoggerChannel(this.logger, location, this.option);
         this.childs.push(channel);
         return channel;
     }
+}
+
+class Logger {
+    /**
+     * @param {LoggerOption} option
+     */
+    constructor(option) {
+        this.setOption(option);
+    }
+
+    /**
+     * @type {LoggerOption}
+     */
+    option = defaultOption;
+
+    /**
+     * @type {LoggerChannel[]}
+     */
+    channels = [];
+
+    /**
+     * @param {LoggerOption} option 
+     * @returns {LoggerOption}
+     */
+    setOption(option) {
+        return this.option = {
+            levels: (option.levels ?? this.option.levels).map(level => level.toUpperCase()),
+            timeFormat: option.timeFormat ?? this.option.timeFormat,
+            writeLog: option.writeLog ?? this.option.writeLog
+        };
+    }
+    /**
+     * @param {string} locationStr 
+     * @returns {LoggerChannel}
+     */
+    createChannel(locationStr) {
+        const location = [locationStr];
+        return new LoggerChannel(this, location, this.option);
+    }
+    
+    static LoggerChannel = LoggerChannel;
 }
 
 module.exports = Logger;

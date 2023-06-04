@@ -10,14 +10,11 @@ module.exports = {
         .addStringOption(option => option
             .setName("commandname")
             .setDescription("指定されたコマンドの詳細を表示します。")
-            /* SlashCommandHandlerに実装している
-            .setChoices(...{ name: command.data.name, value: `/${command.data.name}`})
-            */
+            .setAutocomplete(true)
         )
     ,
-    async autocomplete(interaction) {
-        const focusedValue = interaction.options.getFocused();
-        await interaction.respond(all_voice_list.filter(data => data.name.startsWith(focusedValue))).catch(() => { });
+    autoComplete(interaction) {
+        //commandnameのオートコンプリート
     },
     execute(interaction) {
         const { commands } = interaction.client;

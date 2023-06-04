@@ -1,5 +1,8 @@
+const path = require("path");
+
+
 module.exports = {
-    subcommands: "./general",
+    subcommands: path.resolve(__dirname, "./general"),
     builder: (builder) => builder
         .setName("speak")
         .setDescription("読み上げ関係のコマンド")

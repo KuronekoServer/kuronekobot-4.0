@@ -1,26 +1,15 @@
-const Logger = require("./Logger");
-const GetLogger = require("./GetLogger");
-const EventHandler = require("./EventHandler");
-const SlashCommandHandler = require("./SlashCommandHandler");
-const Utils = require("./Utils");
-const Permissions = require("./Permissions");
+module.exports.Logger = require("./Logger");
+module.exports.GetLogger = require("./GetLogger");
+module.exports.EventHandler = require("./EventHandler");
+module.exports.CommandsBuilder = require("./CommandsBuilder");
+module.exports.Utils = require("./Utils");
+module.exports.Permissions = require("./Permissions");
+module.exports.EmbedUtil = require("./EmbedUtil");
 const EmbedUtil = require("./EmbedUtil");
-const { CustomEmbed, getEmbedName, ColorsChoice, EmbedPages } = EmbedUtil;
-const ts2time = require("./ts2time");
-const SQL = require("./SQL");
-
-module.exports = {
-    Logger,
-    GetLogger,
-    EventHandler,
-    SlashCommandHandler,
-    Utils,
-    Permissions,
-    EmbedUtil,
-    CustomEmbed,
-    getEmbedName,
-    ColorsChoice,
-    EmbedPages,
-    ts2time,
-    SQL
-}
+module.exports.CustomEmbed = EmbedUtil.CustomEmbed;
+module.exports.getEmbedName = EmbedUtil.getEmbedName;
+module.exports.ColorsChoice = EmbedUtil.ColorsChoice;
+module.exports.EmbedPages = EmbedUtil.EmbedPages;
+module.exports.ts2time = require("./ts2time");
+module.exports.SQL = require("./SQL");
+module.exports.Command = require("./Command");

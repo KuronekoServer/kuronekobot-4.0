@@ -4,7 +4,7 @@ const sendLog = require("../../helpers/sendLog");
 
 module.exports = {
     name: Events.MessageDelete,
-    filter: (message) => !message.channel.isDMBased() && message.author.id !== message.client.user.id,
+    filter: (message) => !message.channel.isDMBased() && message.author?.id !== message.client.user.id,
     async execute(message) {
         sendLog(message.guild, () => (
             new CustomEmbed("messagedelete")

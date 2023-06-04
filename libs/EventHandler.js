@@ -9,12 +9,13 @@ function EventHandler(client, eventsPath) {
     const eventsMap = new Map();
     fs.readdirSync(eventsPath).forEach((dir) => {
         Log.debug(`Loading ${dir}...`);
+        const eventsLog = Log.createChild(dir);
         const eventPath = path.resolve(eventsPath, dir);
         const eventFiles = fs.readdirSync(eventPath).filter(file => file.endsWith(".js"));
         for (const file of eventFiles) {
-            Log.debug(`Loading ${dir} ${file}...`);
+            eventsLog.debug(`Loading ${dir} ${file}...`);
             const event = require(path.resolve(eventPath, file));
-            event.logger = Log.createChild(event.name);
+            event.logger = eventsLog.createChild(file);
             events.push(event);
             if (eventsMap.has(event.name)) {
                 eventsMap.get(event.name).push(event);
@@ -30,9 +31,9 @@ function EventHandler(client, eventsPath) {
             events
                 .filter(event => event.filter ? event.filter(...args) : true)
                 .forEach((event) => {
-                    new Promise(async (resolve) => {
+                    new Promise(async () => {
                         try {
-                            event.execute(...args, event.logger).then(resolve)
+                            await event.execute(...args, event.logger);
                         } catch (error) {
                             event.logger.error(error);
                         }

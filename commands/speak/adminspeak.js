@@ -1,12 +1,13 @@
 const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require("discord.js");
 const fs = require("fs");
+const path = require("path");
 
 //voicevox:http://127.0.0.1:50021/docs#/
 //COEIROINK:http://127.0.0.1:50031/docs#/
 //SHAREVOX:http://127.0.0.1:50025/docs#/
 
 module.exports = {
-    subcommands: "./admin",
+    subcommands: path.resolve(__dirname, "./admin"),
     builder: (builder) => builder
         .setName("adminspeak")
         .setDescription("読み上げ関係のコマンド")

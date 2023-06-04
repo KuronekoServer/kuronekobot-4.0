@@ -7,7 +7,7 @@ const chalk = require("chalk");
 const {
     GetLogger: logger,
     EventHandler,
-    SlashCommandHandler
+    CommandsBuilder
 } = require("./libs");
 
 require("dotenv").config();
@@ -19,10 +19,12 @@ const client = new Client({
     rest: 60000
 });
 client.config = require("./config");
+client.logger = logger;
 
 const Log = logger.createChannel("main");
 
 EventHandler(client, path.resolve(__dirname, "./events"));
+client.commands = CommandsBuilder(client, path.resolve(__dirname, "./commands"));
 
 globalThis.voice_channel = [];
 globalThis.ylivechat = {};
@@ -48,7 +50,4 @@ process.on("uncaughtException", (error) => {
     Log.error(error)
 });
 
-client.login(client.config.token)
-    .then(() => {
-        client.commands = SlashCommandHandler(client, path.resolve(__dirname, "./commands"));
-    });
+client.login(client.config.token);
