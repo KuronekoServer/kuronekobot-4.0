@@ -1,12 +1,19 @@
-import Header from './components/test';
-
+"use client";
+import { Box } from "@mui/material";
+import FadeIn from "./FadeIn";
+import Button from "./Button";
 export default function FirstPost() {
   return (
-    <>
-      <h1>Hello　Home</h1>
-      <h2>
-        <Header />
-      </h2>
-    </>
-  )
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginTop: "300px"
+      }}
+    >
+      <FadeIn />
+        <Button text="DISCORD LOGIN" url="./pages/next" />
+    </Box>
+  );
 }
