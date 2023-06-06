@@ -2,7 +2,7 @@ const mysql = require("mysql2/promise");
 const { escape } = require("mysql2");
 
 const config = require("../config");
-const logger = require("./GetLogger");
+const logger = require("../helpers/getLogger");
 const Log = logger.createChannel("db");
 
 const connectionLog = Log.createChild("connection");

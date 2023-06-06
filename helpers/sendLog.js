@@ -1,6 +1,8 @@
-const { Utils } = require("../libs");
 const { escape } = require("mysql2");
-const { GetLogger: logger } = require("../libs");
+
+const { Utils } = require("../libs");
+const logger = require("./getLogger");
+
 const Log = logger.createChannel("sendLog");
 
 async function sendLog(guild, callback) {

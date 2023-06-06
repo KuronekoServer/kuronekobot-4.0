@@ -1,7 +1,7 @@
 module.exports = {
     builder: (builder) => builder
         .setName("test")
-        .setDescription("ボットの応答速度を測定します。")
+        .setDescription("何もありません")
         .addStringOption((option) => option
             .setName("test")
             .setDescription("テスト")

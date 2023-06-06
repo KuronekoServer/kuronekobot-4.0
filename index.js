@@ -4,13 +4,8 @@ const path = require("path");
 const axios = require("axios");
 const chalk = require("chalk");
 
-const {
-    GetLogger: logger,
-    EventHandler,
-    CommandsBuilder
-} = require("./libs");
-
-require("dotenv").config();
+const { EventHandler, CommandsBuilder } = require("./libs");
+const logger = require("./helpers/getLogger");
 
 const client = new Client({
     intents: Object.values(GatewayIntentBits),

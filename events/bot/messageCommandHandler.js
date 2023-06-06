@@ -9,33 +9,28 @@ module.exports = {
     async execute(message) {
         const command = new Command.MessageCommandManager(message);
 
-        const autocompleteOptions = command.options.data.filter((o) => o.autocomplete);
-        if (autocompleteOptions.length) {
-            let autocompleteMenu = [];
-            for (const option of autocompleteOptions) {
+        if (command.autocomplete) {
+            let autocompleteMenu = await Promise.all(command.options.data.map(async (option) => {
+                if (!option.autocomplete) return;
                 const index = command.options._hoistedOptions.findIndex((o) => o.name === option.name);
                 command.options._hoistedOptions[index].focused = true;
-                const optionData = await command.autocomplete(command);
+                const result = await command.autocomplete(command);
                 command.options._hoistedOptions[index].focused = false;
-                if (!optionData.length) continue;
-                if (option.value === optionData[0].value) continue;
-                autocompleteMenu.push(new StringSelectMenuBuilder()
+                if ((result ?? []).length === 0) return;
+                if (!result.includes(option.value)) result.unshift({ name: option.value, value: option.value });
+                if (result.length === 1) return;
+                return new StringSelectMenuBuilder()
                     .setCustomId(`options_select_${option.name}`)
                     .setPlaceholder(`${option.name}のオプションを選択`)
-                    .addOptions(new StringSelectMenuOptionBuilder()
-                        .setLabel(option.value)
-                        .setValue(option.value)
-                    )
-                    .addOptions(optionData.map((o, index) => new StringSelectMenuOptionBuilder()
+                    .addOptions(result.map((o) => new StringSelectMenuOptionBuilder()
                         .setLabel(o.name)
                         .setValue(o.value)
-                    )));
-            }
-
+                    ));
+            }));
+            autocompleteMenu = autocompleteMenu.filter((o) => Boolean);
             if (autocompleteMenu.length) {
                 const component = new ActionRowBuilder()
 			        .addComponents(autocompleteMenu);
-
                 const msg = await command.reply({
                     content: 'オプションを選択してください',
                     components: [component]
@@ -46,14 +41,16 @@ module.exports = {
                         const option = command.options.data.findIndex((o) => o.name === i.customId.slice(15));
                         command.options.data[option].value = i.values[0];
                     })
-                    .catch((err) => {
+                    .catch(() => {
                         error = true;
                     });
                 msg.delete();
                 if (error) return;
             }
         }
-        if (!("execute" in command)) return;
-        commandHandler(command);
+
+        if (command.execute) {
+            commandHandler(command);
+        }
     }
 };

@@ -44,35 +44,32 @@ const pollCreate = {
             );
         return builder;
     },
-    async execute(interaction) {
-        const { options } = interaction;
+    async execute(command) {
+        const { options } = command;
         const title = options.getString("title");
         const color = options.getString("color") ?? "Blue";
         const image = options.getAttachment("image");
         const maxChoice = options.getInteger("maxchoice") || defaultMaxChoice;
         const choices = [];
         const emojis = [];
-        const nonSelectEmoji = Array.from(ExampleEmojis);
         for (let i = 1; i <= maxChoice; i++) {
             const choice = options.getString(`choice${i}`);
             let emoji = options.getString(`emoji${i}`);
-            if (!choice) break;
+            if (!choice) continue;
             choices.push(choice);
-            if (!emoji) emoji = nonSelectEmoji.shift();
-            else emoji.trim();
-            emojis.push(emoji);
+            emojis.push(emoji ?? ExampleEmojis[i - 1]);
         }
 
         const loadEmbed = new CustomEmbed("poll")
             .setTitle("処理中...");
-        const message = await interaction.reply({ embeds: [loadEmbed] , fetchReply: true });
+        const message = await command.reply({ embeds: [loadEmbed] , fetchReply: true });
         for (const emoji of emojis) {
             const check = await message.react(emoji).catch((error) => { });
             if (!check) {
                 await message.delete();
                 const embed = new CustomEmbed("poll").typeError()
                     .setDescription("絵文字の追加中にエラーが発生しました。")
-                return interaction.reply({ embeds: [embed], ephemeral: true });
+                return command.reply({ embeds: [embed], ephemeral: true });
             }
         }
         let description = choices.map((c, i) => `${emojis[i]} ${c}`).join("\n");
@@ -82,7 +79,7 @@ const pollCreate = {
             .setDescription(description)
             .setColor(Colors[color])
         if (image) pollEmbed.setImage(image.attachment);
-        interaction.editReply({ embeds: [pollEmbed] })
+        command.editReply({ embeds: [pollEmbed] })
     }
 };
 

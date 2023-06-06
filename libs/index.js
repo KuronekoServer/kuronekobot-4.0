@@ -1,5 +1,4 @@
 module.exports.Logger = require("./Logger");
-module.exports.GetLogger = require("./GetLogger");
 module.exports.EventHandler = require("./EventHandler");
 module.exports.CommandsBuilder = require("./CommandsBuilder");
 module.exports.Utils = require("./Utils");

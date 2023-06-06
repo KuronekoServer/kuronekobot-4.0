@@ -1,16 +1,17 @@
 const { Colors, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const logger = require("./GetLogger");
+
+const logger = require("../helpers/getLogger");
+const config = require("../config");
+
 const Log = logger.createChannel("EmbedUtil");
 const pagesLog = Log.createChild("pages");
-
-const footerCR = "© 2023 KURONEKOSERVER";
 
 class CustomEmbed extends EmbedBuilder {
     constructor(name) {
         super();
         this.setFooter({
-            iconURL: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png",
-            text: footerCR + (name ? ` | ${name}` : "")
+            iconURL: config.embed.iconUrl,
+            text: config.embed.footerCR + (name ? ` | ${name}` : "")
         });
     }
     typeSuccess() {
@@ -32,8 +33,8 @@ class CustomEmbed extends EmbedBuilder {
 function getEmbedName(embed) {
     const footer = embed.footer.text;
     if (!footer) return null;
-    if (!footer.startsWith(footerCR + " | ")) return null;
-    return footer.slice(footerCR.length + 3);
+    if (!footer.startsWith(config.embed.footerCR + " | ")) return null;
+    return footer.slice(config.embed.footerCR.length + 3);
 }
 
 const ColorsChoice = [

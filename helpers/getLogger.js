@@ -1,9 +1,13 @@
 const { WebhookClient } = require("discord.js");
 const chalk = require("chalk");
-const Logger = require("./Logger");
+
+const { Logger } = require("../libs");
 const config = require("../config");
+
 const errorWebhook = new WebhookClient({ url: config.webhook.error });
+
 const logQueue = ["接続しました。"];
+
 setInterval(() => {
     if (logQueue.length === 0) return;
     let data = logQueue.shift();

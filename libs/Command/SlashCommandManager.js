@@ -13,7 +13,6 @@ class SlashCommandManager extends CommandManager {
         if (!this.name) return;
 
         this.options = interaction.options;
-
         this.interaction = interaction;
         this.id = interaction.id;
         this.author = interaction.user;

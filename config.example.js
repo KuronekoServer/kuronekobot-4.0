@@ -28,5 +28,9 @@ module.exports = {
     webhook: {
         error: "",
         report: ""
+    },
+    embed: {
+        footerCR: "© 2023 KURONEKOSERVER",
+        iconUrl: "https://media.discordapp.net/attachments/1081437402389811301/1082168221320364062/kuroneko.png"
     }
 };

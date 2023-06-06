@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const logger = require("./GetLogger");
+
+const logger = require("../helpers/getLogger");
 
 function EventHandler(client, eventsPath) {
     const Log = logger.createChannel("event");

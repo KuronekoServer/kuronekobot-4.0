@@ -8,13 +8,15 @@ module.exports = {
     async execute(interaction) {
         const command = new Command.SlashCommandManager(interaction);
 
-        if (interaction.isCommand()) {            
-            if (!("execute" in command)) return;
-            commandHandler(command);
-        } else {
-            if (!("autocomplete" in command)) return;
+        if (interaction.isAutocomplete() && command.autocomplete && command.options.getFocused()) {
             const result = await command.autocomplete(command);
-            interaction.respond(result);
+            if ((result ?? []).length > 0){
+                interaction.respond(result);
+            }
+        }
+
+        if (interaction.isCommand() && command.execute) {
+            commandHandler(command);
         }
     }
 };
