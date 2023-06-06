@@ -45,7 +45,7 @@ module.exports = {
                 const commandList = [`\`/${cmd.name}\` - ${cmd.description}`];
                 if ('subcommands' in cmd) {
                     cmd.subcommands.forEach((subcommand) => {
-                        commandList.push(`> \`/${cmd.name} ${subcommand.name}\` - ${subcommand.description}`);
+                        commandList.push(`> \`${command.prefix}${cmd.name} ${subcommand.name}\` - ${subcommand.description}`);
                     });
                 }
                 categoryCommands[cmd.category].push(commandList);
@@ -98,7 +98,7 @@ module.exports = {
             const showCommand = commands.find((cmd) => cmd.name === commandName);
             if (!showCommand) return command.reply(`'${commandName}'というコマンドが見つかりませんでした。`);
             const embed = new CustomEmbed('help')
-                .setName(`${showCommand.prefix}${commandName} の詳細`)
+                .setTitle(`${showCommand.prefix}${commandName} の詳細`)
                 .setColor(Colors.Orange)
                 .addFields(
                     {
@@ -113,12 +113,13 @@ module.exports = {
                                 '\n\n' +
                                 '引数は以下のように指定します。\n' +
                                 '空白やコロンが引数に含まれる場合は、引数をダブルクォーテーションで囲ってください。\n' +
-                                `\`${command.prefix}コマンド名 引数1 引数2 ...\`\n\`` +
-                                `\`${command.prefix}コマンド名 名前1:引数1 名前2: 引数2\`\n` +
-                                `\`${command.prefix}コマンド名 名前3:引数3 名前1:引数1 名前2:引数2\``
+                                `\`${command.prefix}コマンド名 引数1 引数2 ...\`\n` +
+                                `\`${command.prefix}コマンド名 名前1:引数1 名前2: 引数2...\`\n` +
+                                `\`${command.prefix}コマンド名 名前3:引数3 名前1:引数1 名前2:引数2...\``
                             : ''
                     },
                 )
+            command.reply({ embeds: [embed] })
         }
     }
 }
