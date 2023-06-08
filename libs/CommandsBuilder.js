@@ -16,7 +16,7 @@ class Subcommand {
     constructor(data, parent, builderClass = SlashCommandSubcommandBuilder) {
         this.builder = data.builder;
         this.parent = parent;
-        if ("execute" in this.parent) {
+        if (this.parent.execute) {
             this.execute = (...parentArgs) => {
                 const parentExcuteRes = this.parent.execute(...parentArgs)
                 if (isPromise(parentExcuteRes)) return parentExcuteRes.then(data.execute);

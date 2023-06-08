@@ -29,7 +29,9 @@ class SlashCommandManager extends CommandManager {
 
     type = Managers.Slash;
 
-    reply(option) {
+    reply(_option) {
+        const option = Object.assign({}, _option);
+        if (option.ephemeral === null) option.ephemeral = true;
         return this.interaction.reply(option);
     }
 

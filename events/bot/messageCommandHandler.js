@@ -6,9 +6,22 @@ const config = require('../../config');
 module.exports = {
     name: Events.MessageCreate,
     filter: (m) => m.content.startsWith(config.prefix),
-    async execute(message) {
+    async execute(message, logger) {
         const command = new Command.MessageCommandManager(message);
-
+        if (!command._command) {
+            return;
+        }
+        const required = command._command.options.filter((o) => {
+            if (
+                o.required &&
+                command.options._hoistedOptions.findIndex((option) => o.name === option.name) === -1
+            ) return true;
+        });
+        if (required.length > 0) {
+            command.reply(`\`${required.map((o) => o.name).join('` と `')}\`を指定してください。`)
+                .then((m) => setTimeout(() => m.delete(), 5 * 1000));
+            return;
+        }
         if (command.autocomplete) {
             let autocompleteMenu = await Promise.all(command.options.data.map(async (option) => {
                 if (!option.autocomplete) return;

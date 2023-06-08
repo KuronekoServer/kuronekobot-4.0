@@ -1,118 +1,116 @@
-const axios = require("axios");
-const { Colors } = require("discord.js");
-const { CustomEmbed } = require("../../libs");
+const path = require('path');
+const fs = require('fs');
+const axios = require('axios');
+const { Colors, time, codeBlock, AttachmentBuilder } = require('discord.js');
+const { CustomEmbed } = require('../../libs');
 
-const ServerInfo = {
+const serverIcon = fs.readFileSync(path.resolve(__dirname, './minecraft_server_icon.png'));
+
+function padLength(str, len) {
+    if (str.length > len) return str.slice(0, len);
+    return str + ' '.repeat(len - str.length);
+}
+
+function findLong(arr) {
+    return arr.reduce((a, b) => a.length > b.length ? a : b);
+}
+
+const serverInfoJava = {
     builder: (builder) => builder
-        .setName("serverinfo")
-        .setDescription("Minecraftサーバー情報")
+        .setName('java')
+        .setDescription('Java版Minecraftサーバーの情報取得')
         .addStringOption((option) => option
-            .setName("type")
-            .setDescription("サーバーの種類")
-            .setChoices(
-                { name: "Java", value: "java" },
-                { name: "Bedrock", value: "bedrock" }
-            )
-            .setRequired(true)
-        )
-        .addStringOption((option) => option
-            .setName("address")
-            .setDescription("サーバーのアドレス")
+            .setName('address')
+            .setDescription('サーバーアドレス')
             .setRequired(true)
         )
     ,
-    execute(interaction) {
-        const type = interaction.options.getString("type");
-        const address = interaction.options.getString("address");
-        const embed = new CustomEmbed("minecraft");
-        axios.get(`https://api.mcstatus.io/v2/status/${type}/${address}`)
+    execute(command) {
+        const address = command.options.getString('address');
+        axios.get(`https://api.mcstatus.io/v2/status/java/${address}`)
             .then((response) => {
-                const json = response.data;
-                embed
-                    .setTitle(`Minecraftサーバー (${type})`)
+                const data = response.data;
+                const embed = new CustomEmbed('mnecraftJavaServerInfo')
+                    .setTitle(`Java ${data.host} : ${data.port}`)
                     .addFields(
                         {
-                            name: "ステータス",
-                            value: json.online ? "オンライン" : "オフライン",
+                            name: 'ステータス',
+                            value: data.online ? 'オンライン' : 'オフライン',
                             inline: true
                         },
                         {
-                            name: "アドレス",
-                            value: json.host,
-                            inline: true
-                        },
-                        {
-                            name: "ポート",
-                            value: String(json.port),
+                            name: '取得',
+                            value: time(new Date(data.retrieved_at), 'R'),
                             inline: true
                         }
                     )
-                    .setThumbnail("https://cdn.mikn.dev/mclogo.png")
-                    .setColor(json.online ? Colors.Green : Colors.Red);
-                interaction.reply({ embeds: [embed] });
-            })
-            .catch((error) => {
-                embed.typeError()
-                    .setDescription("サーバーが見つかりませんでした。");
-                interaction.reply({ embeds: [embed] });
-            });
-    }
-};
+                    .setThumbnail('attachment://server_icon.png')
+                    .setColor(data.online ? Colors.Green : Colors.Red)
+                
+                const attachment = new AttachmentBuilder()
+                    .setName('server_icon.png')
+                    .setFile(data.icon ? Buffer.from(data.icon.slice(22), 'base64') : serverIcon)
 
-const UserInfo = {
+                if (data.online) {
+                    let info = [
+                        ['Player', ...data.players.list.map((p) => p.name_clean)],
+                        ['Plugin', ...data.plugins.map((p) => `${p.name} (${p.version})`)],
+                        ['Mod', data.mods.map((m) => `${m.name} (${m.version})`)]
+                    ]
+                        .filter((i) => i.length > 1)
+                        .map((i) => i.unshift(findLong(i)));
+
+                    let infoData = [];
+                    while (info.length > 0) {
+                        let addInfos = [];
+                        if (info.reduce((i, c) => c + i[0], 0) + info.length - 1 <= 30) {
+                            addInfos = info;
+                            info = [];
+                        } else {
+                            addInfos.push(info.shift());
+                            if (info.length > 0 && addInfos[0][0] + info[0][0] + 1 <= 30) {
+                                addInfos.push(info.shift());
+                            }
+                        }
+                        for (let i = 1; i < Math.max(...addInfos.map((i) => i.length)); i++) {
+                            infoData.push(addInfos.map((i) => padLength(i[i] ?? '', i[0])).join('|'));
+                        }
+                    }
+
+                    embed
+                        .setDescription(codeBlock(data.motd.clean.split('\n').map((l) => l.trim()).join('\n') ?? 'A Minecraft Server') + '\n\n' + infoData.join('\n'))
+                        .addFields(
+                            {
+                                name: 'サーバーソフトウェア',
+                                value: data.software ?? '不明',
+                                inline: true
+                            },
+                            {
+                                name: 'Eula違反',
+                                value: data.eula_blocked ? 'はい' : 'いいえ',
+                                inline: true
+                            },
+                        )
+                } else {
+                    embed.setDescription('Can\'t connect to server')
+                }
+                command.reply({ embeds: [embed], files: [attachment]});
+            })
+    }
+}
+
+
+
+const ServerInfo = {
+    subcommands: [serverInfoJava],
     builder: (builder) => builder
-        .setName("userinfo")
-        .setDescription("Minecraftユーザー情報")
-        .addStringOption((option) => option
-            .setName("username")
-            .setDescription("検索したいユーザーの名前")
-            .setRequired(true)
-        )
-    ,
-    async execute(interaction, logger) {
-        const username = interaction.options.getString("username");
-        const embed = new CustomEmbed("minecraft");
-        function notFound() {
-            embed.typeError()
-                .setDescription("ユーザーが見つかりませんでした。");
-            interaction.reply({ embeds: [embed] });
-        }
-        // task: uuidからも検索できるようにする
-
-        axios.get(`https://api.mojang.com/users/profiles/minecraft/${username}`)
-            .then((response) => {
-                const user = response.data; 
-                axios.get(`https://sessionserver.mojang.com/session/minecraft/profile/${user.id}`)
-                    .then((response) => {
-                        embed
-                            .setTitle("Minecraftユーザー")
-                            .addFields(
-                                {
-                                    name: "ユーザーID",
-                                    value: user.id
-                                },
-                                {
-                                    name: "ユーザーネーム",
-                                    value: user.name
-                                }
-                            )
-                            .setImage(JSON.parse(Buffer.from(response.data.properties[0].value, "base64").toString()).textures.SKIN.url)
-                            .setColor(Colors.Green);
-                        interaction.reply({ embeds: [embed] });
-                    })
-                    .catch((error) => {
-                        logger.error(error);
-                    });
-            })
-            .catch(notFound);
-    }
+        .setName('serverinfo')
+        .setDescription('Minecraftサーバー情報')
 };
 
 module.exports = {
-    subcommands: [ServerInfo, UserInfo],
+    subcommandGroups: [ServerInfo],
     builder: (builder) => builder
-        .setName("minecraft")
-        .setDescription("Minecraft関係コマンド")
-    ,
-    execute() { }
+        .setName('minecraft')
+        .setDescription('Minecraft関係コマンド')
 };

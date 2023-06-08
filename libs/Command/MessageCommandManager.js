@@ -7,15 +7,16 @@ class MessageCommandManager extends CommandManager {
     constructor(message) {
         const prefix = message.client.config.prefix;
         let argsStr = message.content.slice(prefix.length).trim();
-        const args = argsStr.split(/\s+/).filter(Boolean);
+        const args = argsStr.toLowerCase().split(/\s+/).filter(Boolean);
         const name = args.shift();
         if (!name) return;
         argsStr = argsStr.slice(name.length).trim();
-        super(message.client, name, ...args.slice(0, 2).map((s) => s.toLowerCase()));
+        super(message.client, name, ...args.slice(0, 2));
         this.prefix = prefix;
         if (!this.name) return;
-        if (this._parentGroup) args.shift();
-        if (this._baseCommand !== this._command) args.shift();
+        let ignoreArgCount = 0;
+        if (this._parentGroup) ignoreArgCount ++;
+        if (this._baseCommand !== this._command) ignoreArgCount ++;
         
         const allOptions = this._command.options.filter(o => ![ApplicationCommandOptionType.SubcommandGroup, ApplicationCommandOptionType.Subcommand].includes(o.type));
         function searchOption(name) {
@@ -63,7 +64,8 @@ class MessageCommandManager extends CommandManager {
 
         argsStr
             .match(/(\w+\s{0,}(:|：)\s{0,})?(".+"|'.+'|`.+`|[^\s]+)/g)
-            ?.filter((_option) => {
+            ?.slice(ignoreArgCount)
+            .filter((_option) => {
                 let [name, value] = _option.split(/:|：/).map((s) => s.trim());
                 if (!value) return true;
                 name = name.toLowerCase();
@@ -72,7 +74,7 @@ class MessageCommandManager extends CommandManager {
                 options.push(transformOption(optionData, value));
             })
             .forEach((value) => options.push(transformOption(allOptions.shift(), value)));
-
+/*
         if (this._baseCommand !== this._command) {
             options = [{
                 name: this._command.name,
@@ -86,8 +88,7 @@ class MessageCommandManager extends CommandManager {
                 type: ApplicationCommandOptionType.SubcommandGroup,
                 options
             }];
-        }
-
+        }*/
         this.options = new CommandInteractionOptionResolver(message.client, options, this._command.options);
 
         this.message = message;
@@ -113,9 +114,14 @@ class MessageCommandManager extends CommandManager {
             this._replyMessage = this.message.reply(options);
         }
         return this._replyMessage.then((message) => {
-            if (options.ephemeral) this.message.delete();
-            if (options.fetchReply) return message;
-            return new MessageResponse(message);
+            if (options.ephemeral) {
+                this.message.reply(
+                    'メッセージをDMに送信しました。\n' + 
+                    `[ここをクリックしてメッセージを開く](${message.url})\n` +
+                    'このメッセージは10秒後に削除されます。'
+                ).then((m) => m.delete({ timeout: 10 * 1000 }));
+            }
+            return options.fetchReply ? message : new MessageResponse(message);
         });
     }
 

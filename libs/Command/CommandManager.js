@@ -141,7 +141,9 @@ class CommandManager extends Base {
     options = null;
 
     /**
-     * Creates a reply to this command.
+     * コマンドに返信します。
+     * ephemeralをnullにするとスラッシュコマンドの場合はtrueになり、メッセージコマンドの場合はそのまま返信します。
+     * ephemeralをtrueにするとメッセージコマンドの場合はDMに内容を送信し、そのメッセージのURLを送信しそのメッセージを10秒後に削除します。
      * @param {string|MessagePayload|InteractionReplyOptions} options
      * @returns {Promise<Message>|Promise<MessageResponse>|Promise<InteractionResponse>}
      */
