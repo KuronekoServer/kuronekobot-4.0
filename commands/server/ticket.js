@@ -1,6 +1,5 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, Colors, ChannelType } = require("discord.js");
-const { CustomEmbed, ColorsChoice, Utils } = require("../../libs");
-const { escape } = require("mysql2");
+const { CustomEmbed, ColorsChoice, sql } = require("../../libs");
 
 const ticketCreate = {
     builder: (builder) => builder
@@ -48,9 +47,9 @@ const ticketCreate = {
         if (log) {
             let promise;
             if (data?.guildid) {
-                promise = Utils.sql(`update ticket_channel set channelid=${escape(log.id)} where guildid=${escape(guild.id)};`);
+                promise = sql.update('ticket_channel', { channelid: log.id }, `guildid = ${guild.id}`)
             } else {
-                promise = Utils.sql(`insert into ticket_channel values (${escape(guild.id)},${escape(log.id)});`);
+                promise = sql.insert('ticket_channel', [guild.id, log.id]);
             };
             if (!await promise) {
                 embed.typeError()
@@ -90,7 +89,7 @@ const ticketDelete = {
             embed.typeError()
                 .setDescription("データが見つかりませんでした。");
         } else {
-            const sqlDelete = await Utils.sql(`DELETE FROM ticket_channel WHERE guildid=${escape(interaction.guild.id)};`);
+            const sqlDelete = await sql.delete('ticket_channel', `guildid = ${interaction.guild.id}`);
             if (!sqlDelete) {
                 embed.typeError()
                     .setDescription("データの削除に失敗しました。");
@@ -112,7 +111,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     ,
     async execute(interaction) {
-        const data = await Utils.sql(`select * from ticket_channel where guildid=${escape(interaction.guild.id)};`);
+        const data = await sql.select('ticket_channel', `guildid = ${interaction.guild.id}`);
         return [data[0][0]]
     }
 };

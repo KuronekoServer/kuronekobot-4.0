@@ -1,4 +1,5 @@
 const { REST, Routes, Events, ActivityType } = require("discord.js");
+const { config } = require("../../config");
 
 module.exports = {
     name: Events.ClientReady,
@@ -8,7 +9,7 @@ module.exports = {
         const commandsData = client.commands.map(command => command.build());
         Log.info(`Rebuilt ${commandsData.length} commands`);
         Log.info("Deploying command...");
-        const rest = new REST({ version: "10" }).setToken(client.token);
+        const rest = new REST({ version: "10" }).setToken(config.discordToken);
         rest.put(
             Routes.applicationCommands(client.user.id),
             { body: commandsData },
@@ -17,6 +18,7 @@ module.exports = {
         }).catch((error) => {
             Log.error(error)
         });
+        console.log(JSON.stringify(commandsData, null, 4))
 
         function setActivity() {
             client.user.setPresence({ activities: [{ name: `/help`, type: ActivityType.Streaming }] });

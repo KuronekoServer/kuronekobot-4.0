@@ -1,100 +1,138 @@
-const mysql = require("mysql2/promise");
-const { escape } = require("mysql2");
-
-const config = require("../config");
-const logger = require("../helpers/getLogger");
-const Log = logger.createChannel("db");
-
-const connectionLog = Log.createChild("connection");
-const runCmdLog = Log.createChild("runCmd");
-
-
-class SQL {
-    constructor() {
-        this.connectionOption = {
-            host: config.db.host,
-            port: config.db.port,
-            user: config.db.user,
-            password: config.db.password,
-            database: config.db.name,
-        };
-    }
-
-    select(table, whereObject, columns = "*") {
-        const data = ["SELECT", columns, "FROM", table];
-        if (whereObject) {
-            const where = this.whereParser(whereObject);
-            data.push("WHERE", where);
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const promise_1 = __importDefault(require("mysql2/promise"));
+const mysql2_1 = require("mysql2");
+const config_1 = require("../config");
+class sql {
+    static select(optionOrTable, colmunOrFilter, filter) {
+        let option;
+        if (typeof optionOrTable === 'string') {
+            option = {
+                table: optionOrTable
+            };
+            if (filter) {
+                option.colmun = colmunOrFilter;
+                option.filter = filter;
+            }
+            else {
+                option.filter = colmunOrFilter;
+            }
         }
-        const where = this.whereParser(whereObject);
-        return this.sql(`${data.join(" ")};`);
-    }
-
-    insert(table, data) {
-        let keys, values;
-        if (Array.isArray(data)) {
-            values = data.map((value) => escape(value));
-        } else {
-            keys = Object.keys(data);
-            values = Object.values(data).map((value) => escape(value));
+        else {
+            option = optionOrTable;
         }
-        const sql = this.sql(`INSERT INTO ${table} ${keys ? `(${keys.join(",")})` : ""} VALUES (${values.join(",")})`, true);
-        return sql.then((result) => {
-            return Boolean(result);
+        const queryArr = ['SELECT'];
+        if (option.distinct)
+            queryArr.push('DISTINCT');
+        queryArr.push(option.colmun || '*');
+        queryArr.push('FROM');
+        queryArr.push(option.table);
+        if (option.filter)
+            queryArr.push('WHERE', option.filter);
+        return sql.query(`${queryArr.join(' ')};`);
+    }
+    static insert(optionOrTable, colmunOrValues, values) {
+        let option;
+        if (typeof optionOrTable === 'string') {
+            option = {
+                table: optionOrTable
+            };
+            if (values) {
+                option.colmun = colmunOrValues;
+                option.values = values;
+            }
+            else {
+                option.values = colmunOrValues;
+            }
+        }
+        else {
+            option = optionOrTable;
+        }
+        const queryArr = ['INSERT', 'INTO'];
+        queryArr.push(option.table);
+        if (option.colmun)
+            queryArr.push(`(${option.colmun.join(', ')})`);
+        if (option.values)
+            queryArr.push('VALUES', `(${option.values.join(', ')})`);
+        return sql.query(`${queryArr.join(' ')};`);
+    }
+    static update(tableOrOption, data, filter) {
+        let option;
+        if (typeof tableOrOption === 'string') {
+            option = {
+                table: tableOrOption,
+                data: data,
+                filter: filter
+            };
+        }
+        else {
+            option = tableOrOption;
+        }
+        const queryArr = ['UPDATE'];
+        queryArr.push(option.table);
+        queryArr.push('SET');
+        const dataArr = [];
+        Object.entries(option.data).forEach(([key, value]) => {
+            dataArr.push(`${key} = ${(0, mysql2_1.escape)(value)}`);
         });
+        queryArr.push(dataArr.join(', '));
+        if (option.filter)
+            queryArr.push('WHERE', option.filter);
+        return sql.query(`${queryArr.join(' ')};`);
     }
-
-    update(table, data, whereObject) {
-        const where = this.whereParser(whereObject);
-        const set = Object.entries(data).map(([key, value]) => `${key}=${escape(value)}`).join(",");
-        const sql = this.sql(`UPDATE ${table} SET ${set} WHERE ${where}`, true);
-        return sql.then((result) => {
-            return Boolean(result);
-        });
+    static delete(optionOrTable, filter) {
+        let option;
+        if (typeof optionOrTable === 'string') {
+            option = {
+                table: optionOrTable,
+                filter: filter
+            };
+        }
+        else {
+            option = optionOrTable;
+        }
+        const queryArr = ['DELETE', 'FROM'];
+        queryArr.push(option.table);
+        if (option.filter)
+            queryArr.push('WHERE', option.filter);
+        return sql.query(`${queryArr.join(' ')};`);
     }
-
-    delete(table, whereObject) {
-        const where = this.whereParser(whereObject);
-        return this.sql(`DELETE FROM ${table} WHERE ${where}`);
-    }
-    whereParser(where) {
-        const whereArray = Object.entries(where).map(([key, value]) => `${key}=${escape(value)}`)
-        return whereArray.join(" AND ");
-    }
-
-    sql(command, option) {
-        console.log(command);
-        return new Promise((resolve) => {
-            mysql.createConnection(this.connectionOption)
+    static query(query) {
+        return new Promise((resolve, reject) => {
+            promise_1.default.createConnection(sql.connectionOption)
                 .then((connection) => {
-                    connection.query(command)
-                        .then((result) => {
-                            if (option) {
-                                resolve(result);
-                            } else {
-                                if (result[0] && result[0].length > 0) {
-                                    resolve(result[0]);
-                                } else {
-                                    resolve();
-                                }
-                            }
-                        })
-                        .catch((error) => {
-                            runCmdLog.error(error);
-                            resolve();
-                        })
-                        .then(() => {
-                            connection.end();
-                        });
+                connection.query(query)
+                    .then((result) => {
+                    if (Array.isArray(result[0]) && result[0].length === 0) {
+                        resolve(null);
+                    }
+                    else {
+                        resolve(result[0]);
+                    }
                 })
-                .catch((error) => {
-                    connectionLog.error(error);
-                    resolve();
+                    .catch((error) => {
+                    //runCmdLog.error(error);
+                    resolve(void 0);
+                })
+                    .then(() => {
+                    connection.end();
                 });
+            })
+                .catch((error) => {
+                //connectionLog.error(error);
+                resolve(void 0);
+            });
         });
     }
 }
-
-// thisを使いたいのでnewしてます。
-const sql = new SQL();
-module.exports = sql;
+sql.connectionOption = {
+    host: config_1.config.db.host,
+    port: config_1.config.db.port,
+    user: config_1.config.db.user,
+    password: config_1.config.db.password,
+    database: config_1.config.db.name,
+};
+exports.default = sql;

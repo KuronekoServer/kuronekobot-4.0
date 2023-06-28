@@ -1,7 +1,7 @@
 const { ActionRowBuilder, Events, StringSelectMenuOptionBuilder, StringSelectMenuBuilder } = require('discord.js');
 const { Command } = require('../../libs');
 const commandHandler = require('../../helpers/commandHandler');
-const config = require('../../config');
+const { config } = require('../../config');
 
 module.exports = {
     name: Events.MessageCreate,

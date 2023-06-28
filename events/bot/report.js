@@ -1,6 +1,6 @@
 const { WebhookClient, Colors, Events } = require("discord.js");
 const { CustomEmbed } = require("../../libs");
-const config = require("../../config");
+const { config } = require("../../config");
 
 const webhook = new WebhookClient({ url: config.webhook.report });
 

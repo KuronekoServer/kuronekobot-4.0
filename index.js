@@ -7,13 +7,14 @@ const chalk = require("chalk");
 const { EventHandler, CommandsBuilder } = require("./libs");
 const logger = require("./helpers/getLogger");
 
+const { config } = require("./config");
+
 const client = new Client({
     intents: Object.values(GatewayIntentBits),
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
     allowedMentions: { repliedUser: false },
     rest: 60000
 });
-client.config = require("./config");
 client.logger = logger;
 
 const Log = logger.createChannel("main");
@@ -28,10 +29,10 @@ globalThis.tlivechat = {};
 const enka = new EnkaClient({ showFetchCacheLog: true });
 
 //死活監視
-if (client.config.url) {
+if (config.url) {
     Log.info("死活監視を開始します。");
     setInterval(() => {
-        axios.get(client.config.url)
+        axios.get(config.url)
             .then(response => {
                 console.log(`[GETリクエスト] ${response.config.url} - ステータスコード: ${response.status}`);
             })
@@ -45,4 +46,4 @@ process.on("uncaughtException", (error) => {
     Log.error(error)
 });
 
-client.login(client.config.token);
+client.login(config.discordToken);

@@ -3,9 +3,11 @@ const Managers = require('./Managers');
 const CommandManager = require('./CommandManager');
 const MessageResponse = require('./MessageResponse');
 
+const { config } = require('../../config');
+
 class MessageCommandManager extends CommandManager {
     constructor(message) {
-        const prefix = message.client.config.prefix;
+        const prefix = config.prefix;
         let argsStr = message.content.slice(prefix.length).trim();
         const args = argsStr.toLowerCase().split(/\s+/).filter(Boolean);
         const name = args.shift();

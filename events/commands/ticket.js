@@ -1,5 +1,5 @@
 const { Events, Colors, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const { CustomEmbed, SQL } = require("../../libs");
+const { CustomEmbed, sql } = require("../../libs");
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -42,7 +42,7 @@ module.exports = {
                     .setDescription(`チケットを作成しました。\n${ticketChannel}`)
                     .setColor(Colors.Green);
                 interaction.reply({ embeds: [embed], ephemeral: true });
-                const data = await SQL.select("ticket_channel", { guildid: interaction.guild.id });
+                const data = await sql.select("ticket_channel", `guildid = ${interaction.guild.id}`);
                 if (data) {
                     const logEmbed = new CustomEmbed("ticket")
                         .setTitle("チケットが作成されました。")
@@ -88,7 +88,7 @@ module.exports = {
                 message.awaitMessageComponent({ time: 30 * 1000 })
                     .then(async (i) => {
                         if (i.customId === "ticketcloseaccept") {
-                            const data = await SQL.select("ticket_channel", { guildid: interaction.guild.id });
+                            const data = await sql.select("ticket_channel", `guildid = ${interaction.guild.id}`);
                             if (data) {
                                 const logEmbed = new CustomEmbed("ticket")
                                     .setTitle("チケットが閉じられました。")

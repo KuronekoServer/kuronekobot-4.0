@@ -2,7 +2,7 @@
 //COEIROINK:http://127.0.0.1:50031/docs#/
 //SHAREVOX:http://127.0.0.1:50025/docs#/
 const fs = require("fs");
-const config = require("../config");
+const { config } = require("../config");
 const { getJson } = require("./HttpUtils");
 (async () => {
     let speechlist = [];

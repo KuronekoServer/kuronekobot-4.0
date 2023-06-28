@@ -1,7 +1,7 @@
 const { Colors, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
 const logger = require("../helpers/getLogger");
-const config = require("../config");
+const { config } = require("../config");
 
 const Log = logger.createChannel("EmbedUtil");
 const pagesLog = Log.createChild("pages");

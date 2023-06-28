@@ -2,7 +2,7 @@ const { WebhookClient } = require("discord.js");
 const chalk = require("chalk");
 
 const { Logger } = require("../libs");
-const config = require("../config");
+const { config } = require("../config");
 
 const errorWebhook = new WebhookClient({ url: config.webhook.error });
 

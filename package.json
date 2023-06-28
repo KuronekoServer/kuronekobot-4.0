@@ -50,6 +50,8 @@
     "slash-command-builder": "^0.1.1",
     "sourcebin_js": "^0.0.3-ignore",
     "tmi.js": "^1.8.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.5",
     "youtube-chat": "^2.2.0"
   }
 }

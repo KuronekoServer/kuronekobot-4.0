@@ -1,5 +1,5 @@
 const { WebhookClient } = require("discord.js");
-const config = require("../config");
+const { config } = require("../config");
 const webhookClient = new WebhookClient({ url: config.webhook.error });
 
 module.exports = {

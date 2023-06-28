@@ -1,12 +1,10 @@
-const { escape } = require("mysql2");
-
-const { Utils } = require("../libs");
+const { sql } = require("../libs");
 const logger = require("./getLogger");
 
 const Log = logger.createChannel("sendLog");
 
 async function sendLog(guild, callback) {
-    const getdata = await Utils.sql(`select * from log_channel where guildid=${escape(guild.id)};`);
+    const getdata = await sql.select("log_channel", `guildid = ${guild.id}`);
     const data = getdata[0][0];
     if (!data) return;
     try {
@@ -16,7 +14,7 @@ async function sendLog(guild, callback) {
         await channel.send({ embeds: [embed] });
     } catch (error) {
         Log.error(error);
-        Utils.sql(`DELETE FROM log_channel WHERE guildid=${escape(guild.id)};`);
+        sql.delete("log_channel", `guildid = ${guild.id}`);
     }
 }
 

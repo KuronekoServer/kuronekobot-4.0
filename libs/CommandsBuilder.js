@@ -30,9 +30,8 @@ class Subcommand {
         this.category = parent.category;
         this.logger = parent.logger.createChild(this.name);
         this.autoComplete = data.autoComplete;
-        
     }
-    build() {
+    build(builderInstance) {
         const builder = this.builder(new this._builderClass());
         this.name = builder.name;
         this.description = builder.description;
@@ -49,6 +48,13 @@ class SubcommandGroup extends Subcommand {
             const subcommand = new Subcommand(subcommandData, this);
             this.subcommands.set(subcommand.name, subcommand);
         });
+        this.builder = (builder) => {
+            data.builder(builder);
+            this.subcommands.forEach(subcommandData => {
+                builder.addSubcommand(subcommandData.builder);
+            });
+            return builder;
+        }
     }
 }
 

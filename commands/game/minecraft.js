@@ -12,7 +12,7 @@ function padLength(str, len) {
 }
 
 function findLong(arr) {
-    return arr.reduce((a, b) => a.length > b.length ? a : b);
+    return arr.reduce((a, b) => a.length > b.length ? a : b).length;
 }
 
 const serverInfoJava = {
@@ -30,7 +30,7 @@ const serverInfoJava = {
         axios.get(`https://api.mcstatus.io/v2/status/java/${address}`)
             .then((response) => {
                 const data = response.data;
-                const embed = new CustomEmbed('mnecraftJavaServerInfo')
+                const embed = new CustomEmbed('minecraftJavaServerInfo')
                     .setTitle(`Java ${data.host} : ${data.port}`)
                     .addFields(
                         {
@@ -55,11 +55,10 @@ const serverInfoJava = {
                     let info = [
                         ['Player', ...data.players.list.map((p) => p.name_clean)],
                         ['Plugin', ...data.plugins.map((p) => `${p.name} (${p.version})`)],
-                        ['Mod', data.mods.map((m) => `${m.name} (${m.version})`)]
+                        ['Mod', ...data.mods.map((m) => `${m.name} (${m.version})`)]
                     ]
-                        .filter((i) => i.length > 1)
-                        .map((i) => i.unshift(findLong(i)));
-
+                        .filter((i) => i.length > 1);
+                    info.forEach((i) => i.unshift(findLong(i)));
                     let infoData = [];
                     while (info.length > 0) {
                         let addInfos = [];
@@ -72,14 +71,18 @@ const serverInfoJava = {
                                 addInfos.push(info.shift());
                             }
                         }
-                        for (let i = 1; i < Math.max(...addInfos.map((i) => i.length)); i++) {
-                            infoData.push(addInfos.map((i) => padLength(i[i] ?? '', i[0])).join('|'));
+                        for (let n = 1; n < Math.max(...addInfos.map((i) => i.length)); n++) {
+                            infoData.push(addInfos.map((i) => padLength(i[n] ?? '', i[0])).join('|'));
                         }
                     }
-
+                    console.log(infoData)
                     embed
-                        .setDescription(codeBlock(data.motd.clean.split('\n').map((l) => l.trim()).join('\n') ?? 'A Minecraft Server') + '\n\n' + infoData.join('\n'))
+                        .setDescription((data.motd.clean.split('\n').map((l) => l.trim()).join('\n') ?? 'A Minecraft Server') + (infoData.length ? '\n\n' + codeBlock(infoData.join('\n')) : ''))
                         .addFields(
+                            {
+                                name: 'バージョン',
+                                value: data.version.name_clean,
+                            },
                             {
                                 name: 'サーバーソフトウェア',
                                 value: data.software ?? '不明',

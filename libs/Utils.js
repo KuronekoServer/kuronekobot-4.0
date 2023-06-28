@@ -3,30 +3,13 @@
 //© 2023 MikanDev All Rights Reserved
 //© 2023 Anmoti All Rights Reserved
 
-const ftpClient = require("ftp");
 const mysql = require("mysql2/promise");
 
-const config = require("../config");
+const { config } = require("../config");
 const logger = require("../helpers/getLogger");
 
 const Log = logger.createChannel("utils");
-const ftpLog = Log.createChild("ftp");
 const sqlLog = Log.createChild("sql");
-
-const ftp = new ftpClient();
-const ftp_option = {
-    host: process.env.core_host,
-    port: process.env.core_port,
-    user: process.env.core_account,
-    password: process.env.core_password
-};
-
-ftp.on("error", (error) => {
-    ftp.connect(ftp_option);
-    ftpLog.error("非常自動再接続しました。");
-    ftpLog.error(error);
-});
-
 class Utils {
 
     /**

@@ -1,4 +1,4 @@
-const config = require("../config");
+const { config } = require("../config");
 const mysql = require('mysql2/promise');
 
 (async () => {
