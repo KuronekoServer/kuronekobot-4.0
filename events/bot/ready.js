@@ -18,7 +18,6 @@ module.exports = {
         }).catch((error) => {
             Log.error(error)
         });
-        console.log(JSON.stringify(commandsData, null, 4))
 
         function setActivity() {
             client.user.setPresence({ activities: [{ name: `/help`, type: ActivityType.Streaming }] });

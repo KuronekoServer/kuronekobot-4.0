@@ -29,10 +29,12 @@ class SlashCommandManager extends CommandManager {
 
     type = Managers.Slash;
 
-    reply(_option) {
-        const option = Object.assign({}, _option);
-        if (option.ephemeral === null) option.ephemeral = true;
-        return this.interaction.reply(option);
+    reply(options) {
+        if (typeof options !== 'string' && options.ephermal === null) {
+            return this.interaction.reply({ ...options, ephermal: true });
+        } else {
+            return this.interaction.reply(options);
+        }
     }
 
     fetchReply() {
@@ -40,7 +42,11 @@ class SlashCommandManager extends CommandManager {
     }
 
     deferReply(option) {
-        return this.interaction.deferReply(option);
+        if (typeof options !== 'string' && options.ephermal === null) {
+            return this.interaction.deferReply({ ...options, ephermal: true });
+        } else {
+            return this.interaction.deferReply(options);
+        }
     }
 }
 
