@@ -40,7 +40,7 @@ module.exports = {
                         .setValue(o.value)
                     ));
             }));
-            autocompleteMenu = autocompleteMenu.filter((o) => Boolean);
+            autocompleteMenu = autocompleteMenu.filter((o) => o instanceof StringSelectMenuBuilder);
             if (autocompleteMenu.length) {
                 const component = new ActionRowBuilder()
 			        .addComponents(autocompleteMenu);
