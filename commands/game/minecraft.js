@@ -4,7 +4,7 @@ const axios = require('axios');
 const { Colors, time, codeBlock, AttachmentBuilder } = require('discord.js');
 const { CustomEmbed } = require('../../libs');
 
-const serverIcon = fs.readFileSync(path.resolve(__dirname, './minecraft_server_icon.png'));
+const serverIcon = fs.readFileSync(path.resolve(__dirname, '../../assets/minecraft_server_icon.png'));
 
 function padLength(str, len) {
     if (str.length > len) return str.slice(0, len);
