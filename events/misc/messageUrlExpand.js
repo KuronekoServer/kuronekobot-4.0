@@ -19,9 +19,9 @@ module.exports = {
             .filter((id, index, ids) => ids.findIndex((i) => i.guild === id.guild && i.channel === id.channel && i.message === id.message) === index);
         
         for (const id of ids) {
-            const guild = client.guilds.cache.get(id.guild);
+            const guild = await client.guilds.fetch(id.guild);
             if (!guild) return;
-            const channel = guild.channels.cache.get(id.channel);
+            const channel = await guild.channels.fetch(id.channel);
             if (!channel) return;
             const msg = await channel.messages.fetch(id.message);
             if (!msg) return;
