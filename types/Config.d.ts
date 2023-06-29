@@ -11,17 +11,6 @@ interface Config {
         limit: number;
         name: string;
     };
-    speak: {
-        voicevox: string;
-        coeiroink: string;
-        sharevox: string;
-        exvoice: string;
-        maxMessage: number;
-        timeout: number;
-        maxFreeSockets: number;
-        maxTotalSockets: number;
-        maxSockets: number;
-    };
     webhook: {
         error: string;
         report: string;

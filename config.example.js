@@ -38,17 +38,6 @@ const config = {
         limit: 5,
         name: "newer-kuronekochanbot", //DB名(SQLにログインしてcreate database hogeで作成)
     },
-    speak: {
-        voicevox: "http://127.0.0.1:50021",
-        coeiroink: "http://127.0.0.1:50031",
-        sharevox: "http://127.0.0.1:50025",
-        exvoice: path.resolve(__dirname, "./exvoice"),
-        maxMessage: 50,
-        timeout: 30,
-        maxFreeSockets: 100,
-        maxTotalSockets: 200,
-        maxSockets: 100, //ソケットエラー出たら増やす(増えるほどリソース食います)
-    },
     webhook: {
         error: "",
         report: "",
