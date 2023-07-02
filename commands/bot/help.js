@@ -90,7 +90,10 @@ module.exports = {
             const embedPages = new EmbedPages('help').setColor(Colors.Gold);
             pagesField.forEach((page) => {
                 embedPages.addPage((embed) => {
-                    embed.addFields(page.map((field) => ({ name: field.name, value: field.values.join('\n') })));
+                    embed.addFields(page
+                        .filter((field) => field.values.length !== 0)
+                        .map((field) => ({ name: field.name, value: field.values.join('\n') }))
+                    );
                 });
             });
             embedPages.run(command);
