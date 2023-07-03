@@ -64,7 +64,7 @@ class Command extends Base {
         this.logger = Log.createChild(data.builder(new SlashCommandBuilder()).name);
         if ("subcommandGroups" in data) {
             this.subcommandGroups = new Collection();
-            data.subcommandGroups.forEach(subcommandGroupData => {
+            getCommandDatas(data.subcommandGroups).forEach(subcommandGroupData => {
                 const subcommandGroup = new SubcommandGroup(subcommandGroupData, this);
                 this.subcommandGroups.set(subcommandGroup.name, subcommandGroup);
             });
