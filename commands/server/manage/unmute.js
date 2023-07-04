@@ -12,7 +12,6 @@ module.exports = {
     ,
     async execute(command) {
         const user = command.options.getUser("user");
-        const time = command.options.getInteger("time");
         const member = await command.guild.members.fetch(user.id);
         await member.timeout(0);
         const embed = new CustomEmbed("unmute").typeSuccess()
