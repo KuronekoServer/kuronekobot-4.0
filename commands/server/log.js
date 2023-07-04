@@ -20,7 +20,7 @@ const logCreate = {
         } else {
             sqlStatus = await sql.update('log_channel', { channelid: channel.id }, `guildid = ${interaction.guild.id}`);
         };
-        console.log(sqlStatus)
+        
         const embed = new CustomEmbed('log');
         if (!sqlStatus) embed.typeError().setDescription('データの保存に失敗しました。');
         else embed.typeSuccess().setDescription(`logチャンネルを${channel}に設定しました。`);
