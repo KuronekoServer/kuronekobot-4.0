@@ -16,15 +16,16 @@ class Subcommand {
     constructor(data, parent, builderClass = SlashCommandSubcommandBuilder) {
         this.builder = data.builder;
         this.parent = parent;
-        if (this.parent.execute) {
-            this.execute = (...parentArgs) => {
-                const parentExcuteRes = this.parent.execute(...parentArgs)
-                if (isPromise(parentExcuteRes)) return parentExcuteRes.then(data.execute);
-                return data.execute(...parentExcuteRes);
-            };
-        } else {
-            this.execute = data.execute;
-        }
+        this.execute = async(...parentArgs) => {
+            let args = parentArgs;
+            if (this.parent.execute instanceof Function) {
+                args = await this.parent.execute(...args);
+            }
+            if (data.execute instanceof Function) {
+                args = await data.execute(...args);
+            }
+            return args;
+        };
         this._builderClass = builderClass;
         this.build();
         this.category = parent.category;
