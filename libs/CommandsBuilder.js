@@ -32,8 +32,8 @@ class Subcommand {
         this.logger = parent.logger.createChild(this.name);
         this.autoComplete = data.autoComplete;
     }
-    build(builderInstance) {
-        const builder = this.builder(new this._builderClass());
+    build(builderInstance = this._builderClass) {
+        const builder = this.builder(new builderInstance());
         this.name = builder.name;
         this.description = builder.description;
         this.options = builder.options;
@@ -100,8 +100,8 @@ class Command extends Base {
         this.execute = data.execute;
         this.autocomplete = data.autocomplete;
     }
-    build() {
-        const builder = this.builder(new SlashCommandBuilder());
+    build(builderInstance = SlashCommandBuilder) {
+        const builder = this.builder(new builderInstance());
         this.name = builder.name;
         this.description = builder.description;
         this.options = builder.options;
