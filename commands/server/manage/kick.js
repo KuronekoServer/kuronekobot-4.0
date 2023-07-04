@@ -33,7 +33,7 @@ module.exports = {
 
         member.kick({ reason: reason })
             .then(() => {
-                const embed = new CustomEmbed("kick").typeSuccess()
+                embed.typeSuccess()
                     .setDescription(`${member}をkickしました。`)
                     .addFields({
                         name: "理由",
@@ -42,7 +42,7 @@ module.exports = {
                 interaction.reply({ embeds: [embed], ephemeral: true });
             })
             .catch((error) => {
-                const embed = new CustomEmbed("kick").typeError()
+                embed.typeError()
                     .setDescription(`${member}をkickできませんでした。`);
                 if (error.code === 50013) {
                     embed.addFields({
