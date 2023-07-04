@@ -133,4 +133,4 @@ class sql {
     }
 }
 
-export default sql;
+export { sql };

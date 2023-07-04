@@ -10,5 +10,5 @@ module.exports.getEmbedName = EmbedUtil.getEmbedName;
 module.exports.ColorsChoice = EmbedUtil.ColorsChoice;
 module.exports.EmbedPages = EmbedUtil.EmbedPages;
 module.exports.ts2time = require("./ts2time");
-module.exports.sql = require("./sql");
+module.exports.sql = require("./sql").sql;
 module.exports.Command = require("./Command");

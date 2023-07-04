@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sql = void 0;
 const promise_1 = __importDefault(require("mysql2/promise"));
 const mysql2_1 = require("mysql2");
 const config_1 = require("../config");
@@ -128,6 +129,7 @@ class sql {
         });
     }
 }
+exports.sql = sql;
 sql.connectionOption = {
     host: config_1.config.db.host,
     port: config_1.config.db.port,
@@ -135,4 +137,3 @@ sql.connectionOption = {
     password: config_1.config.db.password,
     database: config_1.config.db.name,
 };
-exports.default = sql;
