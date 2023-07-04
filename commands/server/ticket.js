@@ -33,8 +33,8 @@ const ticketCreate = {
             .setDescription("ログを送信するチャンネル")
         )
     ,
-    async execute(interaction, data) {
-        const { options, guild } = interaction;
+    async execute(command, data) {
+        const { options, guild } = command;
         const title = options.getString("title");
         const description = options.getString("description");
         const image = options.getAttachment("image");
@@ -54,7 +54,7 @@ const ticketCreate = {
             if (!await promise) {
                 embed.typeError()
                     .setDescription("データの保存に失敗しました。");
-                return interaction.reply({ embeds: [embed], ephemeral: true })
+                return command.reply({ embeds: [embed], ephemeral: true })
             }
         };
 
@@ -70,11 +70,11 @@ const ticketCreate = {
             .setColor(Colors[color])
         if (description) ticketEmbed.setDescription(description);
         if (image) ticketEmbed.setImage(image.attachment);
-        await interaction.channel.send({ embeds: [ticketEmbed], components: [component] });
+        await command.channel.send({ embeds: [ticketEmbed], components: [component] });
 
         embed.typeSuccess()
             .setDescription("チケット作成画面を作成しました。");
-        interaction.reply({ embeds: [embed], ephemeral: true });
+        command.reply({ embeds: [embed], ephemeral: true });
     }
 };
 
@@ -83,13 +83,13 @@ const ticketDelete = {
         .setName("logdelete")
         .setDescription("チケットのログチャンネルを削除します(チャンネルそのものを削除するわけではありません)。")
     ,
-    async execute(interaction, data) {
+    async execute(command, data) {
         const embed = new CustomEmbed("ticket");
         if (!(data?.guildid)) {
             embed.typeError()
                 .setDescription("データが見つかりませんでした。");
         } else {
-            const sqlDelete = await sql.delete('ticket_channel', `guildid = ${interaction.guild.id}`);
+            const sqlDelete = await sql.delete('ticket_channel', `guildid = ${command.guild.id}`);
             if (!sqlDelete) {
                 embed.typeError()
                     .setDescription("データの削除に失敗しました。");
@@ -98,7 +98,7 @@ const ticketDelete = {
                     .setDescription("データの削除に成功しました。");
             }
         }
-        interaction.reply({ embeds: [embed], ephemeral: true });
+        command.reply({ embeds: [embed], ephemeral: true });
     }
 };
 
@@ -110,8 +110,8 @@ module.exports = {
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     ,
-    async execute(interaction) {
-        const data = await sql.select('ticket_channel', `guildid = ${interaction.guild.id}`);
-        return [data[0][0]]
+    async execute(command) {
+        const data = await sql.select('ticket_channel', `guildid = ${command.guild.id}`);
+        return [command, data[0][0]]
     }
 };

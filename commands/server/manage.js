@@ -8,6 +8,4 @@ module.exports = {
         .setDescription("サーバーの管理用")
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDMPermission(false)
-    ,
-    execute() { }
 };

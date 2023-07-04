@@ -19,16 +19,16 @@ module.exports = {
             .setDescription("BANする理由")
         )
     ,
-    async execute(interaction, logger) {
-        const user = interaction.options.getUser("user");
-        const day = interaction.options.getInteger("day");
-        const reason = interaction.options.getString("reason");
+    async execute(command, logger) {
+        const user = command.options.getUser("user");
+        const day = command.options.getInteger("day");
+        const reason = command.options.getString("reason");
 
         const embed = new CustomEmbed("ban")
             .addFields(
                 {
                     name: "実行者",
-                    value: `${interaction.user}`,
+                    value: `${command.user}`,
                     inline: true
                 },
                 {
@@ -38,7 +38,7 @@ module.exports = {
                 }
             );
 
-        const member = await interaction.guild.members.fetch(user.id);
+        const member = await command.guild.members.fetch(user.id);
         member.ban({ days: day, reason: reason })
             .then(() => {
                 embed.typeSuccess()
@@ -55,7 +55,7 @@ module.exports = {
                             inline: true
                         }
                     );
-                interaction.reply({ embeds: [embed], ephemeral: true });
+                command.reply({ embeds: [embed], ephemeral: true });
             })
             .catch(async error => {
                 embed.typeError()
@@ -71,7 +71,7 @@ module.exports = {
                         value: `不明なエラー\n${error.message}`,
                     });
                 }
-                interaction.reply({ embeds: [embed], ephemeral: true });
+                command.reply({ embeds: [embed], ephemeral: true });
             });
     }
 };

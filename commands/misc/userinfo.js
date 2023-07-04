@@ -26,10 +26,10 @@ module.exports = {
             .setName("ephemeral")
             .setDescription("自分だけが見れるようにするか")
         ),
-    async execute(interaction) {
-        const { client, channel, options } = interaction;
-        const user = options.getUser("user") || interaction.user;
-        const ephemeral = interaction.options.getBoolean("ephemeral") || false;
+    async execute(command) {
+        const { client, channel, options } = command;
+        const user = options.getUser("user") || command.user;
+        const ephemeral = command.options.getBoolean("ephemeral") || false;
 
         const mutualGuilds = client.guilds.cache.filter(guild => guild.members.cache.has(user.id));
 
@@ -50,7 +50,7 @@ module.exports = {
                 member = null;
             }
         } else {
-            member = interaction.member;
+            member = command.member;
         }
 
         const inThisGuild = channel.guild && member?.guild?.id === channel.guild.id;
@@ -90,7 +90,7 @@ module.exports = {
                         .setLabel("権限一覧を表示する")
                         .setStyle(ButtonStyle.Primary)
                 );
-            const message = await interaction.reply({ embeds: [embed], components: [component], ephemeral, fetchReply: true });
+            const message = await command.reply({ embeds: [embed], components: [component], ephemeral, fetchReply: true });
             message.awaitMessageComponent({ filter: (i) => i.customId === "userinfo_permissions", time: 3 * 60 * 1000 })
                 .then(() => {
                     const permissions = member.permissions;
@@ -98,10 +98,10 @@ module.exports = {
                 })
                 .catch(() => { })
                 .then(() => {
-                    interaction.editReply({ embeds: [embed], components: [] });
+                    command.editReply({ embeds: [embed], components: [] });
                 })
         } else {
-            interaction.reply({ embeds: [embed], ephemeral })
+            command.reply({ embeds: [embed], ephemeral })
         }
     }
 }

@@ -16,10 +16,10 @@ module.exports = {
             .setMinValue(1)
         )
     ,
-    async execute(interaction) {
-        const user = interaction.options.getUser("user");
-        const time = interaction.options.getInteger("time");
-        const member = await interaction.guild.members.fetch(user.id);
+    async execute(command) {
+        const user = command.options.getUser("user");
+        const time = command.options.getInteger("time");
+        const member = await command.guild.members.fetch(user.id);
         await member.timeout(time);
         const embed = new CustomEmbed("mute").typeSuccess()
             .setDescription(`${member}をミュートしました。`)
@@ -27,6 +27,6 @@ module.exports = {
                 name: "期間",
                 value: `${time}秒`
             });
-        interaction.reply({ embeds: [embed], ephemeral: true });
+        command.reply({ embeds: [embed], ephemeral: true });
     }
 };

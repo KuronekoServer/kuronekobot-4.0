@@ -97,20 +97,20 @@ const pollSum = {
             .setDescription("対象のチャンネルID")
         )
     ,
-    async execute(interaction) {
-        const { options, guild } = interaction;
+    async execute(command) {
+        const { options, guild } = command;
         const messageId = options.getString("messageid");
         const channelId = options.getString("channelid");
         let message, channel, pollEmbed;
         try {
-            channel = channelId ? await guild.channels.fetch(channelId) : interaction.channel;
+            channel = channelId ? await guild.channels.fetch(channelId) : command.channel;
             message = await channel.messages.fetch(messageId);
             pollEmbed = message.embeds[0]?.data;
             if (!pollEmbed || !getEmbedName(pollEmbed).startsWith("poll")) throw new Error();
         } catch (error) {
             const embed = new CustomEmbed("poll").typeError()
                 .setDescription("pollメッセージが取得できませんでした。")
-            return interaction.reply({ embeds: [embed], ephemeral: true });
+            return command.reply({ embeds: [embed], ephemeral: true });
         }
         const reactions = message.reactions.cache;
         const contents = pollEmbed.description.split("\n").slice(0, -2);
@@ -134,7 +134,7 @@ const pollSum = {
             .setTitle(pollEmbed.title)
             .setDescription(`${text}\n[元のアンケート](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id})`)
             .setColor(Colors.Green);
-        interaction.reply({ embeds: [embed] });
+        command.reply({ embeds: [embed] });
     }
 };
 

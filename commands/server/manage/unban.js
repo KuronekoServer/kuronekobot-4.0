@@ -10,13 +10,13 @@ module.exports =  {
             .setRequired(true)
         )
     ,
-    execute(interaction) {
-        const id = interaction.options.getString("userid");
-        interaction.guild.members.unban(id)
+    execute(command) {
+        const id = command.options.getString("userid");
+        command.guild.members.unban(id)
             .then((user) => {
                 const embed = new CustomEmbed("unban").typeSuccess()
                     .setDescription(`${user}(${user.id})のBANを解除しました。`);
-                interaction.reply({ embeds: [embed], ephemeral: true });
+                command.reply({ embeds: [embed], ephemeral: true });
             })
             .catch((error) => {
                 let errorReason;
@@ -40,7 +40,7 @@ module.exports =  {
                         name: "エラー理由",
                         value: errorReason
                     });
-                interaction.reply({ embeds: [embed], ephemeral: true });
+                command.reply({ embeds: [embed], ephemeral: true });
             });
     }
 };

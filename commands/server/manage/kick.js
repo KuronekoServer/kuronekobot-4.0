@@ -14,16 +14,16 @@ module.exports = {
             .setDescription("kickする理由")
         )
     ,
-    async execute(interaction) {
-        const user = interaction.options.getUser("user");
-        const reason = interaction.options.getString("reason");
-        const member = await interaction.guild.members.fetch(user.id);
+    async execute(command) {
+        const user = command.options.getUser("user");
+        const reason = command.options.getString("reason");
+        const member = await command.guild.members.fetch(user.id);
 
         const embed = new CustomEmbed("kick")
             .addFields(
                 {
                     name: "実行者",
-                    value: `${interaction.user}`
+                    value: `${command.user}`
                 },
                 {
                     name: "対象ユーザー",
@@ -39,7 +39,7 @@ module.exports = {
                         name: "理由",
                         value: reason || "なし"
                     });
-                interaction.reply({ embeds: [embed], ephemeral: true });
+                command.reply({ embeds: [embed], ephemeral: true });
             })
             .catch((error) => {
                 embed.typeError()
@@ -55,7 +55,7 @@ module.exports = {
                         value: `不明なエラー\n${error.message}`
                     });
                 }
-                interaction.reply({ embeds: [embed], ephemeral: true });
+                command.reply({ embeds: [embed], ephemeral: true });
             });
     }
 };

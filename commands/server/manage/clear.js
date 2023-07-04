@@ -12,8 +12,8 @@ module.exports = {
             .setMinValue(0)
         )
     ,
-    async execute(interaction) {
-        const deleteCount = interaction.options.getInteger("count");
+    async execute(command) {
+        const deleteCount = command.options.getInteger("count");
         const component = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
@@ -31,26 +31,26 @@ module.exports = {
             .setTitle("⚠確認 (30秒後に自動キャンセルされます)")
             .setDescription(`${(deleteCount === 0) ? "すべてのメッセージ" : `${deleteCount}件のメッセージ`}を削除しますか?`)
             .setColor(Colors.Red);
-        const message = await interaction.reply({ embeds: [embed], components: [component] })
-        message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 30 * 1000})
+        const message = await command.reply({ embeds: [embed], components: [component] })
+        message.awaitMessageComponent({ filter: i => i.user.id === command.user.id, time: 30 * 1000})
             .then(async (i) => {
                 const embed = new CustomEmbed("clear").typeSuccess();
                 let message;
                 if (i.customId === "clear") {
                     if (deleteCount === 0) {
-                        const cloned = await interaction.channel.clone();
-                        await cloned.setPosition(interaction.channel.position);
-                        await interaction.channel.delete();
+                        const cloned = await command.channel.clone();
+                        await cloned.setPosition(command.channel.position);
+                        await command.channel.delete();
                         embed.setDescription("すべてのメッセージを削除しました。");
                         message = cloned.send({ embeds: [embed] });
                     } else {
-                        await interaction.delete();
-                        await interaction.channel.bulkDelete(deleteCount);
+                        await command.delete();
+                        await command.channel.bulkDelete(deleteCount);
                         embed.setDescription(`${deleteCount}件のメッセージを削除しました。`);
-                        message = interaction.channel.send({ embeds: [embed] })
+                        message = command.channel.send({ embeds: [embed] })
                     }
                 } else {
-                    interaction.delete();
+                    command.delete();
                 }
                 await message;
                 setTimeout(message.delete, 3 * 1000); 
