@@ -8,10 +8,6 @@ function getCommandDatas(obj) {
     return commandFiles.map((commandFile) => require(path.resolve(obj, commandFile)));
 }
 
-function isPromise(obj) {
-	return obj instanceof Promise || (obj && typeof obj.then === 'function');
-}
-
 class Subcommand {
     constructor(data, parent, builderClass = SlashCommandSubcommandBuilder) {
         this.builder = data.builder;
