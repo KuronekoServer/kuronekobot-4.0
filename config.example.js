@@ -2,7 +2,7 @@ const config = {
     discordToken: "",
     prefix: "nk!",
     proxy: "localhost:8080", //Screenshotコマンドのプロキシ
-    url: undefined, //死活監視url
+
     db: {
         host: "localhost",
         user: "root",
