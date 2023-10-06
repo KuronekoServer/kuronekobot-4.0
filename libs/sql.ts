@@ -122,7 +122,7 @@ class sql {
                             resolve(void 0);
                         })
                         .then(() => {
-                            connection.end();
+                            connection.destroy();
                         });
                 })
                 .catch((error) => {
