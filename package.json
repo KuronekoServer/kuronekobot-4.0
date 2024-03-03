@@ -14,7 +14,8 @@
     "url": "git+https://github.com/KuronekoServer/newer-kuronekobot.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "KuronekoServer",
+  "contributors": "TanakaTakeshikun, anmoti, Puton1221, maamokun, kuroneko6423",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/KuronekoServer/newer-kuronekobot/issues"
