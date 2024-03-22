@@ -1,67 +1,36 @@
+const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { EnkaClient } = require("enka-network-api");
-const { Client, GatewayIntentBits, Collection, Partials, Colors } = require('discord.js');
+const path = require("path");
+const axios = require("axios");
+const chalk = require("chalk");
+
+const { EventHandler, CommandsBuilder } = require("./libs");
+const logger = require("./helpers/getLogger");
+
+const { config } = require("./config");
+
 const client = new Client({
     intents: Object.values(GatewayIntentBits),
-    partials: [Partials.Message, Partials.Channel, Partials.Reaction], rest: 60000
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction],
+    allowedMentions: { repliedUser: false },
+    rest: 60000
 });
-const chalk = require('chalk');
-require('dotenv').config();
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
-const { send } = require("./helpers/sendwebhook");
-require('./deploy-commands.js');
+client.logger = logger;
+
+const Log = logger.createChannel("main");
+
+EventHandler(client, path.resolve(__dirname, "./events"));
+client.commands = CommandsBuilder(client, path.resolve(__dirname, "./commands"));
+
 globalThis.voice_channel = [];
 globalThis.ylivechat = {};
 globalThis.tlivechat = {};
-// イベントハンドラー
-client.events = new Collection();
-fs.readdirSync('./events/').forEach(async dir => {
-    const eventsPath = path.join(__dirname, `./events/${dir}`);
-    const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
-    for (const file of eventFiles) {
-        const filePath = path.join(eventsPath, file);
-        const event = require(filePath);
-        client.on(event.name, (...args) => event.execute(...args));
-    };
-});
 
-//EnkaNetworkのcacheをアップデートする
 const enka = new EnkaClient({ showFetchCacheLog: true });
 
-// スラッシュコマンドハンドラー
-client.commands = new Collection();
-fs.readdirSync('./commands/').forEach(async dir => {
-    const commandsPath = path.join(__dirname, `./commands/${dir}`);
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-    for (const file of commandFiles) {
-        const filePath = path.join(commandsPath, file);
-        const command = require(filePath);
 
-        if ('data' in command && 'execute' in command) {
-            client.commands.set(command.data.name, command);
-        } else {
-            console.log(chalk.red("[警告]"), `${filePath}はdataかexecuteプロパティが設定されていません。`);
-        };
-    };
+process.on("uncaughtException", (error) => {
+    Log.error(error)
 });
 
-// 10秒ごとにURLにGETリクエストを送信する
-setInterval(() => {
-    axios.get(process.env.URL)
-        .then(response => {
-            console.log(chalk.green(`[GETリクエスト] ${response.config.url} - ステータスコード: ${response.status}`));
-        })
-        .catch(error => {
-            console.log(chalk.red(`[GETリクエストエラー] ${error.config.url} - ${error.message}`));
-            send({ title: "GETリクエストエラー", description: `${error.config.url} - ${error.message}`, time: new Date(), color: Colors.DarkRed })
-        });
-}, 10000);
-
-// エラー後も処理継続
-process.on("uncaughtException", (reason, promise) => {
-    console.log(chalk.red(`[エラー] ${reason}\n`) + chalk.yellow(`日時:${new Date()}`));
-    send({ title: "その他のエラー", description: `[エラー] ${reason}`, time: new Date(), color: Colors.DarkRed })
-});
-
-client.login(process.env.TOKEN);
+client.login(config.discordToken);
